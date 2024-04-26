@@ -1,4 +1,4 @@
-// npm run test:dev -i __tests__/units/services/funceme/fetch-funceme-stations-measures.spec.js
+// npm run test:dev -i ./src/modules/equipments/__tests__/services/fetch-measurements.spec.js
 
 import {
   afterEach,

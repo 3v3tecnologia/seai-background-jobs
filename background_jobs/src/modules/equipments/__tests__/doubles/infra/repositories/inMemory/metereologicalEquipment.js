@@ -79,7 +79,9 @@ export class MetereologicalEquipmentRepositoryInMemory {
   }
 
   async insertStationsMeasurements(measurements = []) {
+    measurements.forEach((item) => (item.IdRead = Date.now()));
     this.#stationsReads = [...measurements, ...this.#stationsReads];
+    return measurements.map((item) => item.IdRead);
   }
 
   async insertPluviometersMeasurements(measurements = []) {
@@ -123,7 +125,7 @@ export class MetereologicalEquipmentRepositoryInMemory {
   }
 
   async updateStationsMeasurements(measurements = []) {
-    return true;
+    return [];
   }
   async updatePluviometersMeasurements(measurements = []) {
     return true;

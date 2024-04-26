@@ -168,28 +168,30 @@ export class MetereologicalEquipmentRepository {
 
   async insertStationsMeasurements(measurements = []) {
     await this.#connection.transaction(async (trx) => {
-      await trx.batchInsert(
-        "ReadStations",
-        measurements.map((measures) => {
-          return {
-            FK_Equipment: measures.FK_Equipment,
-            FK_Organ: measures.FK_Organ,
-            Time: measures.Time,
-            Hour: measures.Hour,
-            TotalRadiation: measures.TotalRadiation,
-            MaxRelativeHumidity: measures.MaxRelativeHumidity,
-            MinRelativeHumidity: measures.MinRelativeHumidity,
-            AverageRelativeHumidity: measures.AverageRelativeHumidity,
-            MaxAtmosphericTemperature: measures.MaxAtmosphericTemperature,
-            MinAtmosphericTemperature: measures.MinAtmosphericTemperature,
-            AverageAtmosphericTemperature:
-              measures.AverageAtmosphericTemperature,
-            AtmosphericPressure: measures.AtmosphericPressure,
-            WindVelocity: measures.WindVelocity,
-            Et0: measures.Et0,
-          };
-        })
-      );
+      return await trx
+        .batchInsert(
+          "ReadStations",
+          measurements.map((measures) => {
+            return {
+              FK_Equipment: measures.FK_Equipment,
+              FK_Organ: measures.FK_Organ,
+              Time: measures.Time,
+              Hour: measures.Hour,
+              TotalRadiation: measures.TotalRadiation,
+              MaxRelativeHumidity: measures.MaxRelativeHumidity,
+              MinRelativeHumidity: measures.MinRelativeHumidity,
+              AverageRelativeHumidity: measures.AverageRelativeHumidity,
+              MaxAtmosphericTemperature: measures.MaxAtmosphericTemperature,
+              MinAtmosphericTemperature: measures.MinAtmosphericTemperature,
+              AverageAtmosphericTemperature:
+                measures.AverageAtmosphericTemperature,
+              AtmosphericPressure: measures.AtmosphericPressure,
+              WindVelocity: measures.WindVelocity,
+              Et0: null,
+            };
+          })
+        )
+        .returning("IdRead");
     });
   }
 
@@ -211,6 +213,8 @@ export class MetereologicalEquipmentRepository {
   }
 
   async updateStationsMeasurements(measurements = []) {
+    let updatedIds = [];
+
     await this.#connection.transaction(async (trx) => {
       const tempTableName = "Temp_ReadStations";
 
@@ -251,12 +255,13 @@ export class MetereologicalEquipmentRepository {
           AverageAtmosphericTemperature: measures.AverageAtmosphericTemperature,
           AtmosphericPressure: measures.AtmosphericPressure,
           WindVelocity: measures.WindVelocity,
-          Et0: measures.Et0,
         };
       });
 
       // Insert new data into the temporary table
       await trx(tempTableName).insert(toPersistency);
+
+      updatedIds = await trx.select("IdRead").from(tempTableName);
 
       // Perform the batch update
       await trx.raw(`
@@ -274,8 +279,7 @@ export class MetereologicalEquipmentRepository {
           "MinAtmosphericTemperature" = t."MinAtmosphericTemperature",
           "AverageAtmosphericTemperature" = t."AverageAtmosphericTemperature",
           "AtmosphericPressure" = t."AtmosphericPressure",
-          "WindVelocity" = t."WindVelocity",
-          "Et0" = t."Et0"
+          "WindVelocity" = t."WindVelocity"
         FROM "${tempTableName}" AS t
         WHERE rs."Time" = t."Time" AND rs."FK_Equipment" = t."FK_Equipment";
     `);
@@ -283,6 +287,8 @@ export class MetereologicalEquipmentRepository {
       // Clean up the temporary table
       await trx.raw(`DROP TABLE IF EXISTS "${tempTableName}"`);
     });
+
+    return updatedIds;
   }
 
   async updatePluviometersMeasurements(measurements = []) {

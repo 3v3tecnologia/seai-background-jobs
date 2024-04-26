@@ -6,10 +6,12 @@ import { CalcEto } from "../../core/et0/calc-eto.js";
 export class FetchEquipmentsMeasures {
   #fetchEquipmentsService;
   #equipmentRepository;
+  #calcEt0;
 
-  constructor(fetchEquipmentsService, equipmentRepository, calcETO) {
+  constructor(fetchEquipmentsService, equipmentRepository, calcEt0) {
     this.#fetchEquipmentsService = fetchEquipmentsService;
     this.#equipmentRepository = equipmentRepository;
+    this.#calcEt0 = calcEt0;
   }
 
   // OBS: Sempre irá tentar buscar dados de medições do dia anterior a data informada
@@ -80,7 +82,7 @@ export class FetchEquipmentsMeasures {
     const stationsToInsert = [];
 
     stations.forEach((station) => {
-      if (Reflect.has(station.Measurements, "Et0") === false) {
+      /*if (Reflect.has(station.Measurements, "Et0") === false) {
         // Is here or delegate to other services?
         const {
           AverageAtmosphericTemperature,
@@ -115,7 +117,7 @@ export class FetchEquipmentsMeasures {
         });
 
         station.Measurements.Et0 = et0;
-      }
+      }*/
 
       const measurementsAlreadyExists = oldStationsCodesWithMeasurements.has(
         station.Code
@@ -150,6 +152,9 @@ export class FetchEquipmentsMeasures {
     // Is here?
     const equipmentsTypes = await this.#equipmentRepository.getTypes();
 
+    // Measurements IDs needed to calculate ET0
+    let stationsMeasurementsToCalculateEt0 = [];
+
     if (stationsToUpdate.length) {
       const stationsToBePersisted = mapEquipmentsToPersistency(
         existingStationsCodes,
@@ -160,9 +165,12 @@ export class FetchEquipmentsMeasures {
       );
 
       if (stationsToBePersisted.length) {
-        await this.#equipmentRepository.updateStationsMeasurements(
+        const ids = await this.#equipmentRepository.updateStationsMeasurements(
           stationsToBePersisted
         );
+
+        stationsMeasurementsToCalculateEt0 =
+          stationsMeasurementsToCalculateEt0.concat(...ids);
       }
     }
 
@@ -192,10 +200,15 @@ export class FetchEquipmentsMeasures {
 
     // Remove it and replace to one query
     if (stationsToBePersisted.length) {
-      await this.#equipmentRepository.insertStationsMeasurements(
+      const ids = await this.#equipmentRepository.insertStationsMeasurements(
         stationsToBePersisted
       );
+
+      stationsMeasurementsToCalculateEt0 =
+        stationsMeasurementsToCalculateEt0.concat(...ids);
     }
+
+    console.log(stationsMeasurementsToCalculateEt0);
 
     const pluviometersToBePersisted = mapEquipmentsToPersistency(
       existingPluviometersCodes,
@@ -209,6 +222,14 @@ export class FetchEquipmentsMeasures {
       await this.#equipmentRepository.insertPluviometersMeasurements(
         pluviometersToBePersisted
       );
+    }
+
+    const calcEt0OrError = await this.#calcEt0.execute(
+      stationsMeasurementsToCalculateEt0
+    );
+
+    if (calcEt0OrError.isError()) {
+      return Left.create(calcEt0OrError.error().message);
     }
 
     return Right.create("Sucesso ao salvar medições de equipamentos");

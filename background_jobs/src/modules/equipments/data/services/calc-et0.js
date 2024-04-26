@@ -13,6 +13,14 @@ export class CalcEt0ByEquipmentsMeasurements {
     console.log("[CalcET0] Realizando requisição pra o endereço ", this.#url);
 
     try {
+      if (!ids.length) {
+        return Left.create(
+          new Error(
+            "Necessário informar os identificadores das medições para calcular ET0"
+          )
+        );
+      }
+
       const response = await fetch(this.#url, {
         method: "POST",
         headers: {
@@ -31,7 +39,7 @@ export class CalcEt0ByEquipmentsMeasurements {
         });
         return Left.create(new Error(data));
       }
-
+      console.log(data);
       return Right.create(data);
     } catch (error) {
       Logger.error({

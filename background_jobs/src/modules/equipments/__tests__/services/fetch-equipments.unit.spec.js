@@ -9,8 +9,8 @@ import {
   test,
 } from "@jest/globals";
 
-import { MetereologicalEquipmentRepositoryInMemory } from "../../__tests__/doubles/infra/repositories/inMemory/metereologicalEquipment.js";
-import { MetereologicalOrganRepositoryInMemory } from "../../__tests__/doubles/infra/repositories/inMemory/metereologicalOrganRepository.js";
+import { MetereologicalEquipmentRepositoryInMemory } from "../doubles/infra/repositories/inMemory/metereologicalEquipment.js";
+import { MetereologicalOrganRepositoryInMemory } from "../doubles/infra/repositories/inMemory/metereologicalOrganRepository.js";
 
 import { EquipmentCommand } from "../../services/commands/command.js";
 

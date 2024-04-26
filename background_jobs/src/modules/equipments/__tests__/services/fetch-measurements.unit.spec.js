@@ -9,7 +9,7 @@ import {
   test,
 } from "@jest/globals";
 
-import { MetereologicalEquipmentRepositoryInMemory } from "..//doubles/infra/repositories/inMemory/metereologicalEquipment.js";
+import { MetereologicalEquipmentRepositoryInMemory } from "../doubles/infra/repositories/inMemory/metereologicalEquipment.js";
 import { MetereologicalOrganRepositoryInMemory } from "../doubles/infra/repositories/inMemory/metereologicalOrganRepository.js";
 import { FTPClientAdapterMock } from "../doubles/infra/ftp/ftp-stub.js";
 

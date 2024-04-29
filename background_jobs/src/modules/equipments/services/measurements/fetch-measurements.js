@@ -30,8 +30,6 @@ export class FetchEquipmentsMeasures {
       }),
     ]);
 
-    console.log(existingStations);
-
     if (
       [existingStations.length, existingPluviometers.length].every(
         (cond) => cond === 0

@@ -1,60 +1,17 @@
 import { Left, Right } from "../../../../shared/result.js";
 import { StationMapper, PluviometerMapper } from "../../core/mappers/index.js";
+import { EQUIPMENT_TYPE } from "../../core/equipments-types.js";
 
 export class FetchEquipments {
   // Should be a array of services?
   #fetchEquipmentsService;
-  #equipmentRepository;
+  #equipmentsServices;
 
-  constructor(fetchEquipmentsService, equipmentRepository) {
+  constructor(fetchEquipmentsService, equipmentsServices) {
     this.#fetchEquipmentsService = fetchEquipmentsService;
-    this.#equipmentRepository = equipmentRepository;
+    this.#equipmentsServices = equipmentsServices;
   }
 
-  async insertStations(stations) {
-    console.log("Salvando estações");
-    // save equipments, location and measures
-    await this.#equipmentRepository.create(stations);
-
-    console.log("Sucesso ao salvar estações");
-
-    /*
-    console.log("Salvando medições das estações");
-
-    const stationsMeasurements = prepareMeasurementsToPersist(
-      stations,
-      stationsIds
-    );
-
-    await this.#equipmentRepository.insertStationsMeasurements(
-      stationsMeasurements
-    );
-    */
-
-    console.log("Sucesso ao salvar medições das estações");
-  }
-  async insertPluviometers(pluviometers) {
-    console.log("Salvando pluviômetros");
-    // save equipments, location and measures
-    await this.#equipmentRepository.create(pluviometers);
-
-    console.log("Sucesso ao salvar pluviometros");
-
-    /*
-    console.log("Salvando medições dos pluviômetros");
-
-    const pluviometersMeasurements = prepareMeasurementsToPersist(
-      pluviometers,
-      pluviometersIds
-    );
-
-    await this.#equipmentRepository.insertPluviometersMeasurements(
-      pluviometersMeasurements
-    );
-
-    console.log("Sucesso ao salvar medições dos pluviômetros");
-    */
-  }
   // params : Date to Query
   async execute(command) {
     // stations and pluviometers
@@ -69,14 +26,15 @@ export class FetchEquipments {
     const { stations, pluviometers } = equipmentsOrError.value();
 
     // Replace it to one query
-    const [existingStations, existingPluviometers] = await Promise.all([
-      this.#equipmentRepository.getEquipments({
-        eqpType: "station",
-      }),
-      this.#equipmentRepository.getEquipments({
-        eqpType: "pluviometer",
-      }),
-    ]);
+    const existingEquipmentsCodesOrError =
+      await this.#equipmentsServices.getCodesByTypes();
+
+    if (existingEquipmentsCodesOrError.isError()) {
+      return Left.create(existingEquipmentsCodesOrError.error().message);
+    }
+
+    const [existingStations, existingPluviometers] =
+      existingEquipmentsCodesOrError.value();
 
     // Maybe delegate to SQL insert ON duplicated using the column CODE
     const existingEquipmentsCodes = new Set();
@@ -91,30 +49,35 @@ export class FetchEquipments {
       );
     }
 
-    // Is here?
-    const equipmentsTypes = await this.#equipmentRepository.getTypes();
+    const equipmentsTypesOrError = await this.#equipmentsServices.getTypes();
+
+    if (equipmentsTypesOrError.isError()) {
+      return Left.create(equipmentsTypesOrError.error().message);
+    }
+
+    const equipmentsTypes = equipmentsTypesOrError.value();
 
     const stationsToBePersisted = mapEquipmentsToPersistency(
       existingEquipmentsCodes,
       stations,
-      equipmentsTypes.get("station"),
+      equipmentsTypes.get(EQUIPMENT_TYPE.STATION),
       StationMapper.toPersistency
     );
 
     const pluviometersToBePersisted = mapEquipmentsToPersistency(
       existingEquipmentsCodes,
       pluviometers,
-      equipmentsTypes.get("pluviometer"),
+      equipmentsTypes.get(EQUIPMENT_TYPE.PLUVIOMETER),
       PluviometerMapper.toPersistency
     );
 
     // Remove it and replace to one query
     if (stationsToBePersisted.length) {
-      await this.insertStations(stationsToBePersisted);
+      await this.#equipmentsServices.bulkInsert(stationsToBePersisted);
     }
 
     if (pluviometersToBePersisted.length) {
-      await this.insertPluviometers(pluviometersToBePersisted);
+      await this.#equipmentsServices.bulkInsert(pluviometersToBePersisted);
     }
 
     return Right.create("Sucesso ao carregar equipamentos");

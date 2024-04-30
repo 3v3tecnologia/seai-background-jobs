@@ -1,16 +1,16 @@
 import { Logger } from "../../../../shared/logger.js";
 import { Left, Right } from "../../../../shared/result.js";
 import { PluviometerMapper, StationMapper } from "../../core/mappers/index.js";
-import { CalcEto } from "../../core/et0/calc-eto.js";
+import { EQUIPMENT_TYPE } from "../../core/equipments-types.js";
 
 export class FetchEquipmentsMeasures {
   #fetchEquipmentsService;
-  #equipmentRepository;
+  #equipmentsServices;
   #calcEt0;
 
-  constructor(fetchEquipmentsService, equipmentRepository, calcEt0) {
+  constructor(fetchEquipmentsService, equipmentsServices, calcEt0) {
     this.#fetchEquipmentsService = fetchEquipmentsService;
-    this.#equipmentRepository = equipmentRepository;
+    this.#equipmentsServices = equipmentsServices;
     this.#calcEt0 = calcEt0;
   }
 
@@ -21,37 +21,24 @@ export class FetchEquipmentsMeasures {
     });
 
     // Why not fetch all equipments?
-    const [existingStations, existingPluviometers] = await Promise.all([
-      this.#equipmentRepository.getEquipments({
-        eqpType: "station",
-      }),
-      this.#equipmentRepository.getEquipments({
-        eqpType: "pluviometer",
-      }),
-    ]);
+    const existingEquipmentsCodesOrError =
+      await this.#equipmentsServices.getCodesByTypes();
 
-    if (
-      [existingStations.length, existingPluviometers.length].every(
-        (cond) => cond === 0
-      )
-    ) {
-      return Left.create(new Error("Não há equipamentos cadastrados"));
+    if (existingEquipmentsCodesOrError.isError()) {
+      return Left.create(existingEquipmentsCodesOrError.error().message);
     }
 
     const existingStationsCodes = new Map();
     const existingPluviometersCodes = new Map();
 
-    if (existingStations.length) {
-      existingStations.forEach((eqp) =>
-        existingStationsCodes.set(eqp.Code, eqp.Id)
-      );
-    }
+    const [existingStations, existingPluviometers] =
+      existingEquipmentsCodesOrError.value();
 
-    if (existingPluviometers.length) {
-      existingPluviometers.forEach((eqp) =>
-        existingPluviometersCodes.set(eqp.Code, eqp.Id)
-      );
-    }
+    existingStations.forEach((eqp) => stationsCodes.set(eqp.Code, eqp.Id));
+
+    existingPluviometers.forEach((eqp) =>
+      pluviometersCodes.set(eqp.Code, eqp.Id)
+    );
 
     // stations and pluviometers
     const equipmentsOrError = await this.#fetchEquipmentsService.execute(
@@ -68,13 +55,15 @@ export class FetchEquipmentsMeasures {
       oldStationsCodesWithMeasurements,
       oldPluviometersCodesWithMeasurements,
     ] = await Promise.all([
-      this.#equipmentRepository.getStationCodesWithMeasurements(
+      this.#equipmentsServices.getEquipmentsWithMeasurements(
         [...existingStationsCodes.keys()],
-        command.getDate()
+        command.getDate(),
+        EQUIPMENT_TYPE.STATION
       ),
-      this.#equipmentRepository.getPluviometersCodesWithMeasurements(
+      this.#equipmentsServices.getEquipmentsWithMeasurements(
         [...existingPluviometersCodes.keys()],
-        command.getDate()
+        command.getDate(),
+        EQUIPMENT_TYPE.PLUVIOMETER
       ),
     ]);
 
@@ -82,43 +71,6 @@ export class FetchEquipmentsMeasures {
     const stationsToInsert = [];
 
     stations.forEach((station) => {
-      /*if (Reflect.has(station.Measurements, "Et0") === false) {
-        // Is here or delegate to other services?
-        const {
-          AverageAtmosphericTemperature,
-          MinAtmosphericTemperature,
-          MaxAtmosphericTemperature,
-          AverageRelativeHumidity,
-          MaxRelativeHumidity,
-          MinRelativeHumidity,
-          AtmosphericPressure,
-          TotalRadiation,
-          WindVelocity,
-        } = station.Measurements;
-
-        const et0 = CalcEto({
-          date: command.getYesterdayDate(),
-          location: {
-            altitude: station?.Altitude || null,
-            longitude: station?.Longitude || null,
-            latitude: station?.Latitude || null,
-          },
-          measures: {
-            averageAtmosphericTemperature: AverageAtmosphericTemperature,
-            minAtmosphericTemperature: MinAtmosphericTemperature,
-            maxAtmosphericTemperature: MaxAtmosphericTemperature,
-            averageRelativeHumidity: AverageRelativeHumidity,
-            maxRelativeHumidity: MaxRelativeHumidity,
-            minRelativeHumidity: MinRelativeHumidity,
-            atmosphericPressure: AtmosphericPressure,
-            totalRadiation: TotalRadiation,
-            windVelocity: WindVelocity,
-          },
-        });
-
-        station.Measurements.Et0 = et0;
-      }*/
-
       const measurementsAlreadyExists = oldStationsCodesWithMeasurements.has(
         station.Code
       );
@@ -150,7 +102,13 @@ export class FetchEquipmentsMeasures {
     });
 
     // Is here?
-    const equipmentsTypes = await this.#equipmentRepository.getTypes();
+    const equipmentsTypesOrError = await this.#equipmentsServices.getTypes();
+
+    if (equipmentsTypesOrError.isError()) {
+      return Left.create(equipmentsTypesOrError.error().message);
+    }
+
+    const equipmentsTypes = equipmentsTypesOrError.value();
 
     // Measurements IDs needed to calculate ET0
     let stationsMeasurementsToCalculateEt0 = [];
@@ -159,18 +117,24 @@ export class FetchEquipmentsMeasures {
       const stationsToBePersisted = mapEquipmentsToPersistency(
         existingStationsCodes,
         stationsToUpdate,
-        equipmentsTypes.get("station"),
+        equipmentsTypes.get(EQUIPMENT_TYPE.STATION),
         StationMapper.toPersistency,
         command.getDate()
       );
 
       if (stationsToBePersisted.length) {
-        const ids = await this.#equipmentRepository.updateStationsMeasurements(
-          stationsToBePersisted
-        );
+        const idsOrError =
+          await this.#equipmentsServices.bulkUpdateMeasurements(
+            EQUIPMENT_TYPE.STATION,
+            stationsToBePersisted
+          );
+
+        if (idsOrError.isError()) {
+          return Left.create(idsOrError.error().message);
+        }
 
         stationsMeasurementsToCalculateEt0 =
-          stationsMeasurementsToCalculateEt0.concat(...ids);
+          stationsMeasurementsToCalculateEt0.concat(...idsOrError.value());
       }
     }
 
@@ -178,13 +142,14 @@ export class FetchEquipmentsMeasures {
       const pluviometersToBePersisted = mapEquipmentsToPersistency(
         existingPluviometersCodes,
         pluviometersToUpdate,
-        equipmentsTypes.get("pluviometer"),
+        equipmentsTypes.get(EQUIPMENT_TYPE.PLUVIOMETER),
         PluviometerMapper.toPersistency,
         command.getDate()
       );
 
       if (pluviometersToBePersisted.length) {
-        await this.#equipmentRepository.updatePluviometersMeasurements(
+        await this.#equipmentsServices.bulkUpdateMeasurements(
+          EQUIPMENT_TYPE.PLUVIOMETER,
           pluviometersToBePersisted
         );
       }
@@ -193,19 +158,24 @@ export class FetchEquipmentsMeasures {
     const stationsToBePersisted = mapEquipmentsToPersistency(
       existingStationsCodes,
       stationsToInsert,
-      equipmentsTypes.get("station"),
+      equipmentsTypes.get(EQUIPMENT_TYPE.STATION),
       StationMapper.toPersistency,
       command.getDate()
     );
 
     // Remove it and replace to one query
     if (stationsToBePersisted.length) {
-      const ids = await this.#equipmentRepository.insertStationsMeasurements(
+      const idsOrError = await this.#equipmentsServices.bulkInsertMeasurements(
+        EQUIPMENT_TYPE.STATION,
         stationsToBePersisted
       );
 
+      if (idsOrError.isError()) {
+        return Left.create(idsOrError.error().message);
+      }
+
       stationsMeasurementsToCalculateEt0 =
-        stationsMeasurementsToCalculateEt0.concat(...ids);
+        stationsMeasurementsToCalculateEt0.concat(...idsOrError.value());
     }
 
     console.log(stationsMeasurementsToCalculateEt0);
@@ -213,13 +183,14 @@ export class FetchEquipmentsMeasures {
     const pluviometersToBePersisted = mapEquipmentsToPersistency(
       existingPluviometersCodes,
       pluviometersToInsert,
-      equipmentsTypes.get("pluviometer"),
+      equipmentsTypes.get(EQUIPMENT_TYPE.PLUVIOMETER),
       PluviometerMapper.toPersistency,
       command.getDate()
     );
 
     if (pluviometersToBePersisted.length) {
-      await this.#equipmentRepository.insertPluviometersMeasurements(
+      await await this.#equipmentsServices.bulkInsertMeasurements(
+        EQUIPMENT_TYPE.PLUVIOMETER,
         pluviometersToBePersisted
       );
     }

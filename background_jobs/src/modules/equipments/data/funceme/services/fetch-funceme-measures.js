@@ -12,11 +12,11 @@ import { Left, Right } from "../../../../../shared/result.js";
 
 export class FetchFuncemeEquipments {
   #ftpAdapter;
-  #metereologicalOrganRepository;
+  #equipmentsServices;
 
-  constructor(ftpClientAdapter, metereologicalOrganRepository) {
+  constructor(ftpClientAdapter, equipmentsServices) {
     this.#ftpAdapter = ftpClientAdapter;
-    this.#metereologicalOrganRepository = metereologicalOrganRepository;
+    this.#equipmentsServices = equipmentsServices;
     // this.#logger = logger;
   }
 
@@ -74,7 +74,7 @@ export class FetchFuncemeEquipments {
       });
 
       const credentials =
-        await this.#metereologicalOrganRepository.getOrganByName(organName);
+        await this.#equipmentsServices.getMeteorologicalOrganCredentials(organName);
 
       if (credentials === null) {
         return Left.create(

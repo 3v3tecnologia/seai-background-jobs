@@ -16,7 +16,7 @@ import { EquipmentCommand } from "../../services/commands/command.js";
 
 import { FetchEquipmentsMeasures } from "../../services/measurements/fetch-measurements.js";
 
-import { MetereologicalEquipmentRepository } from "../../data/database/repositories/equipment.js";
+import { MetereologicalEquipmentRepository } from "../../data/services/equipments.js";
 import { FetchFuncemeEquipments } from "../../data/funceme/services/fetch-funceme-measures.js";
 import { CalcEt0ByEquipmentsMeasurements } from "../../data/services/calc-et0.js";
 // Domain Model
@@ -160,7 +160,6 @@ describe("Fetch Equipments", () => {
         AverageAtmosphericTemperature: 30.23,
         AtmosphericPressure: 992.46,
         WindVelocity: 99.72,
-        Et0: null,
         Time: "2023-10-01",
         FK_Equipment: 1696215600000,
         FK_Organ: 1,
@@ -175,7 +174,6 @@ describe("Fetch Equipments", () => {
         AverageAtmosphericTemperature: 28.61,
         AtmosphericPressure: 994.6,
         WindVelocity: 3.42,
-        Et0: 6.354057931957724,
         Time: "2023-10-01",
         FK_Equipment: 1696215630000,
         FK_Organ: 1,

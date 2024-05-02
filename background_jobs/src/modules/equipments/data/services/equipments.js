@@ -23,6 +23,7 @@ export class EquipmentsServices {
       return Left.create(new Error(error));
     }
   }
+
   async bulkInsert(data = []) {
     try {
       const response = await (

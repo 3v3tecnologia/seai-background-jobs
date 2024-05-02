@@ -31,13 +31,16 @@ export class FetchEquipmentsMeasures {
     const existingStationsCodes = new Map();
     const existingPluviometersCodes = new Map();
 
+
+    console.log(existingStationsCodes);
+
     const [existingStations, existingPluviometers] =
       existingEquipmentsCodesOrError.value();
 
-    existingStations.forEach((eqp) => stationsCodes.set(eqp.Code, eqp.Id));
+    existingStations.forEach((eqp) => existingStationsCodes.set(eqp.Code, eqp.Id));
 
     existingPluviometers.forEach((eqp) =>
-      pluviometersCodes.set(eqp.Code, eqp.Id)
+      existingPluviometersCodes.set(eqp.Code, eqp.Id)
     );
 
     // stations and pluviometers

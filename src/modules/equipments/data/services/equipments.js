@@ -17,10 +17,10 @@ export class EquipmentsServices {
         )
       ).json();
 
-      return Right.create(data);
+      return data;
     } catch (error) {
       console.log(error);
-      return Left.create(new Error(error));
+      return null;
     }
   }
 

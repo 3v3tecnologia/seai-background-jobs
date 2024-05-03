@@ -2,3 +2,6 @@
 *.env
 *.txt
 *coverage
+.env
+*password.txt
+*coverage

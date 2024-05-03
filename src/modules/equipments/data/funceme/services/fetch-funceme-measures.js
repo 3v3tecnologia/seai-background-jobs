@@ -11,11 +11,11 @@ import {
 import { Left, Right } from "../../../../../shared/result.js";
 
 export class FetchFuncemeEquipments {
-  #ftpAdapter;
+  #ftpClient;
   #equipmentsServices;
 
   constructor(ftpClientAdapter, equipmentsServices) {
-    this.#ftpAdapter = ftpClientAdapter;
+    this.#ftpClient = ftpClientAdapter;
     this.#equipmentsServices = equipmentsServices;
     // this.#logger = logger;
   }
@@ -24,7 +24,7 @@ export class FetchFuncemeEquipments {
     const currentYear = new Date().getFullYear();
 
     const filesDescriptionsFromFolder =
-      await this.#ftpAdapter.getFolderContentDescription(folder);
+      await this.#ftpClient.getFolderContentDescription(folder);
 
     if (filesDescriptionsFromFolder.length === 0) {
       return null;
@@ -50,7 +50,7 @@ export class FetchFuncemeEquipments {
       return null;
     }
 
-    const compressedStreamOfFiles = await this.#ftpAdapter.getFile(
+    const compressedStreamOfFiles = await this.#ftpClient.getFile(
       folder,
       fileName
     );
@@ -73,8 +73,11 @@ export class FetchFuncemeEquipments {
         msg: `Iniciando busca de credenciais de acesso para FTP do órgão ${organName}`,
       });
 
+      // Must be replaced with environment variables
       const credentials =
-        await this.#equipmentsServices.getMeteorologicalOrganCredentials(organName);
+        await this.#equipmentsServices.getMeteorologicalOrganCredentials(
+          organName
+        );
 
       if (credentials === null) {
         return Left.create(
@@ -85,7 +88,7 @@ export class FetchFuncemeEquipments {
       }
 
       // Start a new Connection to FTP
-      await this.#ftpAdapter.connect({
+      await this.#ftpClient.connect({
         host: credentials.Host,
         user: credentials.User,
         password: credentials.Password,
@@ -111,7 +114,7 @@ export class FetchFuncemeEquipments {
       ];
 
       // If throw error but connection still alive?
-      await this.#ftpAdapter.close();
+      await this.#ftpClient.close();
 
       return Right.create({
         stations,
@@ -126,7 +129,7 @@ export class FetchFuncemeEquipments {
       console.error(error);
 
       if (error instanceof ConnectionError === false) {
-        await this.#ftpAdapter.close();
+        await this.#ftpClient.close();
       }
 
       //Essencial para o PG-BOSS entender que ocorreu um erro

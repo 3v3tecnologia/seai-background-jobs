@@ -26,15 +26,15 @@ export class FetchEquipments {
     const { stations, pluviometers } = equipmentsOrError.value();
 
     // Replace it to one query
-    const existingEquipmentsCodesOrError =
+    const existingEquipmentsOrError =
       await this.#equipmentsServices.getCodesByTypes();
 
-    if (existingEquipmentsCodesOrError.isError()) {
-      return Left.create(existingEquipmentsCodesOrError.error().message);
+    if (existingEquipmentsOrError.isError()) {
+      return Left.create(existingEquipmentsOrError.error().message);
     }
 
     const [existingStations, existingPluviometers] =
-      existingEquipmentsCodesOrError.value();
+      existingEquipmentsOrError.value();
 
     // Maybe delegate to SQL insert ON duplicated using the column CODE
     const existingEquipmentsCodes = new Set();

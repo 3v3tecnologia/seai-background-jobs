@@ -31,16 +31,21 @@ export class FetchEquipmentsMeasures {
     const existingStationsCodes = new Map();
     const existingPluviometersCodes = new Map();
 
-
-    console.log(existingStationsCodes);
-
     const [existingStations, existingPluviometers] =
       existingEquipmentsCodesOrError.value();
 
-    existingStations.forEach((eqp) => existingStationsCodes.set(eqp.Code, eqp.Id));
+    existingStations.forEach((eqp) =>
+      existingStationsCodes.set(eqp.Code, {
+        Id: eqp.Id,
+        Location: eqp.Location,
+      })
+    );
 
     existingPluviometers.forEach((eqp) =>
-      existingPluviometersCodes.set(eqp.Code, eqp.Id)
+      existingPluviometersCodes.set(eqp.Code, {
+        Id: eqp.Id,
+        Location: eqp.Location,
+      })
     );
 
     // stations and pluviometers
@@ -181,8 +186,6 @@ export class FetchEquipmentsMeasures {
         stationsMeasurementsToCalculateEt0.concat(...idsOrError.value());
     }
 
-    console.log(stationsMeasurementsToCalculateEt0);
-
     const pluviometersToBePersisted = mapEquipmentsToPersistency(
       existingPluviometersCodes,
       pluviometersToInsert,
@@ -192,19 +195,19 @@ export class FetchEquipmentsMeasures {
     );
 
     if (pluviometersToBePersisted.length) {
-      await await this.#equipmentsServices.bulkInsertMeasurements(
+      await this.#equipmentsServices.bulkInsertMeasurements(
         EQUIPMENT_TYPE.PLUVIOMETER,
         pluviometersToBePersisted
       );
     }
 
-    const calcEt0OrError = await this.#calcEt0.execute(
-      stationsMeasurementsToCalculateEt0
-    );
+    // const calcEt0OrError = await this.#calcEt0.execute(
+    //   stationsMeasurementsToCalculateEt0
+    // );
 
-    if (calcEt0OrError.isError()) {
-      return Left.create(calcEt0OrError.error().message);
-    }
+    // if (calcEt0OrError.isError()) {
+    //   return Left.create(calcEt0OrError.error().message);
+    // }
 
     return Right.create("Sucesso ao salvar medições de equipamentos");
   }
@@ -235,14 +238,22 @@ function mapEquipmentsToPersistency(
 }
 
 // Optimize
-function prepareMeasurementsToPersist(equipments = [], ids) {
+function prepareMeasurementsToPersist(equipments = [], oldEquipments) {
   const measures = [];
 
-  equipments.forEach((station) => {
-    if (ids.has(station.IdEquipmentExternal)) {
-      station.Measurements.FK_Equipment = ids.get(station.IdEquipmentExternal);
-      station.Measurements.FK_Organ = station.FK_Organ;
-      measures.push(station.Measurements);
+  equipments.forEach((equipment) => {
+    const oldEquipment = oldEquipments.get(equipment.IdEquipmentExternal);
+
+    if (oldEquipment) {
+      equipment.Measurements.FK_Equipment = oldEquipment.Id;
+
+      equipment.Measurements.Altitude = equipment.Altitude || null;
+      equipment.Measurements.Longitude = equipment.Location?.Longitude || null;
+      equipment.Measurements.Latitude = equipment.Location?.Latitude || null;
+
+      equipment.Measurements.FK_Organ = equipment.FK_Organ;
+
+      measures.push(equipment.Measurements);
     }
   });
 

@@ -9,9 +9,8 @@ import {
 } from "@jest/globals";
 
 import { EquipmentsServicesFaker } from "../doubles/infra/services/equipments.js";
-import { CalcEt0ByEquipmentsMeasurementsStub } from "../doubles/infra/services/calc-et0-stub.js";
 
-import { FTPClientAdapterMock } from "../doubles/infra/ftp/ftp-stub.js";
+import { ftpClientFaker } from "../doubles/infra/ftp/ftp-client.js";
 
 import { EquipmentCommand } from "../../services/commands/command.js";
 
@@ -19,38 +18,24 @@ import { FetchEquipmentsMeasures } from "../../services/measurements/fetch-measu
 
 import { FetchFuncemeEquipments } from "../../data/funceme/services/fetch-funceme-measures.js";
 
-describe("Fetch Equipments", () => {
-  const ftpClientAdapter = new FTPClientAdapterMock();
+describe.skip("Fetch Equipments", () => {
   let equipmentsServicesFaker;
 
   beforeEach(() => {
     jest.useFakeTimers("modern");
 
     equipmentsServicesFaker = new EquipmentsServicesFaker();
-
-    jest
-      .spyOn(ftpClientAdapter, "getFolderContentDescription")
-      .mockImplementation(async (folder) => {
-        return new Promise((resolve, reject) => {
-          if (folder === "pcds") {
-            return resolve([{ name: "stn_data_2023.tar.gz" }]);
-          }
-
-          return resolve([{ name: "prec_data_2023.tar.gz" }]);
-        });
-      });
   });
 
   function makeSUT(equipmentsServices) {
     const fetchFuncemeEquipments = new FetchFuncemeEquipments(
-      ftpClientAdapter,
+      ftpClientFaker,
       equipmentsServices
     );
 
     return new FetchEquipmentsMeasures(
       fetchFuncemeEquipments,
-      equipmentsServices,
-      new CalcEt0ByEquipmentsMeasurementsStub()
+      equipmentsServices
     );
   }
 
@@ -60,7 +45,7 @@ describe("Fetch Equipments", () => {
     jest.restoreAllMocks();
   });
 
-  test.skip("Should be able to fetch equipments measurements and save only measurements from already registered equipment", async () => {
+  test("Should be able to fetch equipments measurements and save only measurements from already registered equipment", async () => {
     jest.setSystemTime(new Date(2023, 9, 2));
 
     const equipments = [

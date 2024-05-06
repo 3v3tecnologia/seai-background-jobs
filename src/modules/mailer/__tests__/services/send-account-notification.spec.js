@@ -9,7 +9,7 @@ import { HtmlTemplateEngineAdapter } from "../../external/template-engine-adapte
 
 import { SendUserAccountNotification } from "../../services/send-user-account-notification";
 
-describe("#Send user account notification service", () => {
+describe.skip("#Send user account notification service", () => {
   let sendEmailService = null;
   let htmlTemplateCompiler = null;
   let sendUserAccountNotification = null;

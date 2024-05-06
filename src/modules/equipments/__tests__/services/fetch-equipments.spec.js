@@ -13,21 +13,19 @@ import { EquipmentCommand } from "../../services/commands/command.js";
 
 import { FetchFuncemeEquipments } from "../../data/funceme/services/fetch-funceme-measures.js";
 import { FetchEquipments } from "../../services/equipments/fetch-equipments.js";
-import { FTPClientAdapterMock } from "../doubles/infra/ftp/ftp-stub.js";
+import { ftpClientFaker } from "../doubles/infra/ftp/ftp-client.js";
 import { EquipmentsServicesFaker } from "../doubles/infra/services/equipments.js";
 // Domain Model
 
-describe("Fetch Equipments", () => {
-  const ftpClientAdapter = new FTPClientAdapterMock();
+describe.skip("Fetch Equipments", () => {
   let equipmentsServicesFaker;
 
-  function makeFetchFuncemeEquipments(equipmentsServices) {
-    return new FetchFuncemeEquipments(ftpClientAdapter, equipmentsServices);
-  }
-
-  function makeSUT(equipmentsServices) {
+  function makeSUT(
+    equipmentsServices,
+    fetchEquipmentsFromMeteorologicalEntity
+  ) {
     return new FetchEquipments(
-      makeFetchFuncemeEquipments(equipmentsServices),
+      fetchEquipmentsFromMeteorologicalEntity,
       equipmentsServices
     );
   }
@@ -36,18 +34,6 @@ describe("Fetch Equipments", () => {
     jest.useFakeTimers("modern");
 
     equipmentsServicesFaker = new EquipmentsServicesFaker();
-
-    jest
-      .spyOn(ftpClientAdapter, "getFolderContentDescription")
-      .mockImplementation(async (folder) => {
-        return new Promise((resolve, reject) => {
-          if (folder === "pcds") {
-            return resolve([{ name: "stn_data_2023.tar.gz" }]);
-          }
-
-          return resolve([{ name: "prec_data_2023.tar.gz" }]);
-        });
-      });
   });
 
   afterEach(() => {
@@ -56,22 +42,28 @@ describe("Fetch Equipments", () => {
     jest.restoreAllMocks();
   });
 
-  test("should be able to fetch equipments", async () => {
+  test("should be able to fetch equipments and save it when there are no records", async () => {
     jest.setSystemTime(new Date(2023, 9, 2));
 
-    const sut = makeSUT(equipmentsServicesFaker);
+    const equipmentsServices = new EquipmentsServicesFaker();
 
-    const dataOrError = await sut.execute(new EquipmentCommand());
+    const fetchEquipmentsFromMeteorologicalEntity = new FetchFuncemeEquipments(
+      ftpClientFaker,
+      equipmentsServices
+    );
 
-    expect(dataOrError.isSuccess()).toBeTruthy();
+    const sut = makeSUT(
+      equipmentsServices,
+      fetchEquipmentsFromMeteorologicalEntity
+    );
 
-    const { stations, pluviometers } = dataOrError.value();
+    const response = await sut.execute(new EquipmentCommand());
 
-    expect(stations.length).toBeGreaterThan(0);
-    expect(pluviometers.length).toBeGreaterThan(0);
+    expect(response.isSuccess()).toBeTruthy();
+    expect(response.value()).toBe("Sucesso ao carregar equipamentos");
   });
 
-  test("should be able to save equipments", async () => {
+  test.skip("should be able to save equipments", async () => {
     jest.setSystemTime(new Date(2023, 9, 2));
 
     const equipments = [

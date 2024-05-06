@@ -4,9 +4,11 @@ import { Left, Right } from "../../../../shared/result.js";
 
 export class EquipmentsServices {
   #baseUrl;
+
   constructor() {
     this.#baseUrl = SEAI_BASE_URL + "/api/v2/equipments";
   }
+
   async getMeteorologicalOrganCredentials(organName) {
     try {
       const { data } = await (
@@ -17,7 +19,18 @@ export class EquipmentsServices {
         )
       ).json();
 
-      return data;
+      if (data) {
+        const { Id, Host, User, Password } = data;
+
+        return {
+          Id,
+          Host,
+          User,
+          Password,
+        };
+      }
+
+      return null;
     } catch (error) {
       console.log(error);
       return null;
@@ -50,71 +63,54 @@ export class EquipmentsServices {
     }
   }
 
-  async getCodesByTypes(types = ["station", "pluviometer"]) {
+  async getEquipmentsByTypes(types = ["station", "pluviometer"]) {
     try {
-      const equipments = {
-        station: [],
-        pluviometer: [],
-      };
+      const organizedByTypes = new Map();
 
       for (const type of types) {
-        const response = await (
+        const organizedByCodes = new Map();
+
+        const { data } = await (
           await fetch(`${this.#baseUrl}?type=${type}`)
         ).json();
 
-        if (response.data) {
+        if (data) {
           Logger.info({
             msg: `Sucesso ao obter medições de ${type}`,
           });
 
-          equipments[type] = response.data;
+          data.forEach((item) => {
+            organizedByCodes.set(item.Code, {
+              Id: item.Id,
+              Name: item.Name,
+              Location: item.Location,
+              Altitude: item.Altitude,
+              Type: item.Type,
+              Organ: item.Organ,
+              Id_Organ: item.Id_Organ,
+            });
+          });
         }
+
+        organizedByTypes.set(type, organizedByCodes);
       }
 
       if (
-        [equipments.station.length, equipments.pluviometer.length].every(
-          (cond) => cond === 0
-        )
+        [
+          organizedByTypes.get("station").size,
+          organizedByTypes.get("pluviometer").size,
+        ].every((cond) => cond === 0)
       ) {
         return Left.create(new Error("Não há equipamentos cadastrados"));
       }
 
-      return Right.create([equipments.station, equipments.pluviometer]);
+      return Right.create(organizedByTypes);
     } catch (error) {
       console.log(error);
       return Left.create(new Error(error));
     }
   }
-  async getEquipmentsWithMeasurements(codes = [], date, type) {
-    const resultSet = new Set();
-    try {
-      const response = await (
-        await fetch(`${this.#baseUrl}/measurements`, {
-          method: "GET",
-          body: JSON.stringify({
-            type,
-            codes,
-            date,
-          }),
-        })
-      ).json();
 
-      if (response.data) {
-        Logger.info({
-          msg: `Sucesso ao obter códigos de leituras ${type}`,
-        });
-
-        const codes = response.data;
-
-        codes.forEach((code) => {
-          resultSet.add(code);
-        });
-      }
-    } catch (error) {
-      console.log(error);
-    }
-    return resultSet;
-  }
   async getTypes() {
     try {
       const { data } = await (await fetch(`${this.#baseUrl}/types`)).json();
@@ -137,35 +133,6 @@ export class EquipmentsServices {
       const response = await (
         await fetch(`${this.#baseUrl}/measurements`, {
           method: "POST",
-          body: JSON.stringify({
-            type,
-            items: measurements,
-          }),
-        })
-      ).json();
-
-      if (response.status >= 400 && response.status <= 500) {
-        Logger.error({
-          msg: "Falha ao tentar atualizar leituras",
-        });
-
-        return Left.create(new Error(response.error));
-      }
-
-      const ids = response.data.map((item) => item.IdRead);
-
-      return Right.create(ids);
-    } catch (error) {
-      console.log(error);
-      return Left.create(new Error(error));
-    }
-  }
-
-  async bulkUpdateMeasurements(type, measurements) {
-    try {
-      const response = await (
-        await fetch(`${this.#baseUrl}/measurements`, {
-          method: "PUT",
           body: JSON.stringify({
             type,
             items: measurements,

@@ -1,55 +1,86 @@
 import { Left, Right } from "../../../../shared/result.js";
-import { StationMapper, PluviometerMapper } from "../../core/mappers/index.js";
+import {
+  EquipmentMapper,
+  mapItemsToPersistency,
+} from "../../core/mappers/index.js";
 import { EQUIPMENT_TYPE } from "../../core/equipments-types.js";
 
+import { Filter } from "../helpers/filters.js";
+import { NotBelongTo } from "../helpers/predicates.js";
 export class FetchEquipments {
   // Should be a array of services?
-  #fetchEquipmentsService;
-  #equipmentsServices;
+  #fetchEquipmentsFromMeteorologicalEntity;
+  #equipmentsApi;
 
-  constructor(fetchEquipmentsService, equipmentsServices) {
-    this.#fetchEquipmentsService = fetchEquipmentsService;
-    this.#equipmentsServices = equipmentsServices;
+  constructor(fetchEquipmentsFromMeteorologicalEntity, equipmentsApi) {
+    this.#fetchEquipmentsFromMeteorologicalEntity =
+      fetchEquipmentsFromMeteorologicalEntity;
+    this.#equipmentsApi = equipmentsApi;
+  }
+
+  removeDuplicated({ items, toCompare }) {
+    if (toCompare.size) {
+      const removeDuplicatedFilter = new Filter({
+        items,
+        predicate: new NotBelongTo(toCompare),
+      });
+
+      return removeDuplicatedFilter.exec();
+    }
+
+    return items;
+  }
+
+  removeDuplicatedEquipments(
+    equipmentsFromMeteorologicalEntity,
+    alreadyRecordedEquipments
+  ) {
+    return {
+      station: this.removeDuplicated({
+        items: equipmentsFromMeteorologicalEntity.get(EQUIPMENT_TYPE.STATION),
+        toCompare: alreadyRecordedEquipments.get(EQUIPMENT_TYPE.STATION),
+      }),
+      pluviometer: this.removeDuplicated({
+        items: equipmentsFromMeteorologicalEntity.get(
+          EQUIPMENT_TYPE.PLUVIOMETER
+        ),
+        toCompare: alreadyRecordedEquipments.get(EQUIPMENT_TYPE.PLUVIOMETER),
+      }),
+    };
   }
 
   // params : Date to Query
   async execute(command) {
-    // stations and pluviometers
-    const equipmentsOrError = await this.#fetchEquipmentsService.execute(
-      command
-    );
+    const equipmentsFromMeteorologicalEntityOrError =
+      await this.#fetchEquipmentsFromMeteorologicalEntity.execute(command);
 
-    if (equipmentsOrError.isError()) {
-      return Left.create(equipmentsOrError.error().message);
-    }
-
-    const { stations, pluviometers } = equipmentsOrError.value();
-
-    // Replace it to one query
-    const existingEquipmentsOrError =
-      await this.#equipmentsServices.getCodesByTypes();
-
-    if (existingEquipmentsOrError.isError()) {
-      return Left.create(existingEquipmentsOrError.error().message);
-    }
-
-    const [existingStations, existingPluviometers] =
-      existingEquipmentsOrError.value();
-
-    // Maybe delegate to SQL insert ON duplicated using the column CODE
-    const existingEquipmentsCodes = new Set();
-
-    if (existingStations.length) {
-      existingStations.forEach((eqp) => existingEquipmentsCodes.add(eqp.Code));
-    }
-
-    if (existingPluviometers.length) {
-      existingPluviometers.forEach((eqp) =>
-        existingEquipmentsCodes.add(eqp.Code)
+    if (equipmentsFromMeteorologicalEntityOrError.isError()) {
+      return Left.create(
+        equipmentsFromMeteorologicalEntityOrError.error().message
       );
     }
 
-    const equipmentsTypesOrError = await this.#equipmentsServices.getTypes();
+    // Map<'station'|'pluviometer',Array>
+    const equipmentsFromMeteorologicalEntity =
+      allEquipmentsFetchedFromEntityOrError.value();
+
+    // Replace it to one query
+    const alreadyRecordedEquipmentsOrError =
+      await this.#equipmentsApi.getEquipmentsByTypes();
+
+    if (alreadyRecordedEquipmentsOrError.isError()) {
+      return Left.create(alreadyRecordedEquipmentsOrError.error().message);
+    }
+
+    // Map<'station'|'pluviometer',Map<code,Array>>
+    const alreadyRecordedEquipments = alreadyRecordedEquipmentsOrError.value();
+
+    const equipmentsWithoutDuplication = this.removeDuplicatedEquipments(
+      equipmentsFromMeteorologicalEntity,
+      alreadyRecordedEquipments
+    );
+
+    const equipmentsTypesOrError = await this.#equipmentsApi.getTypes();
 
     if (equipmentsTypesOrError.isError()) {
       return Left.create(equipmentsTypesOrError.error().message);
@@ -57,51 +88,29 @@ export class FetchEquipments {
 
     const equipmentsTypes = equipmentsTypesOrError.value();
 
-    const stationsToBePersisted = mapEquipmentsToPersistency(
-      existingEquipmentsCodes,
-      stations,
-      equipmentsTypes.get(EQUIPMENT_TYPE.STATION),
-      StationMapper.toPersistency
+    const stationsToBePersisted = mapItemsToPersistency(EquipmentMapper)(
+      equipmentsWithoutDuplication.station,
+      {
+        Id_Type: equipmentsTypes.get(EQUIPMENT_TYPE.STATION),
+      }
     );
 
-    const pluviometersToBePersisted = mapEquipmentsToPersistency(
-      existingEquipmentsCodes,
-      pluviometers,
-      equipmentsTypes.get(EQUIPMENT_TYPE.PLUVIOMETER),
-      PluviometerMapper.toPersistency
+    const pluviometersToBePersisted = mapItemsToPersistency(EquipmentMapper)(
+      equipmentsWithoutDuplication.pluviometer,
+      {
+        Id_Type: equipmentsTypes.get(EQUIPMENT_TYPE.PLUVIOMETER),
+      }
     );
 
-    // Remove it and replace to one query
+    // Maybe delegate to SQL insert **ON CONFLICT** clause using the column CODE
     if (stationsToBePersisted.length) {
-      await this.#equipmentsServices.bulkInsert(stationsToBePersisted);
+      await this.#equipmentsApi.bulkInsert(stationsToBePersisted);
     }
 
     if (pluviometersToBePersisted.length) {
-      await this.#equipmentsServices.bulkInsert(pluviometersToBePersisted);
+      await this.#equipmentsApi.bulkInsert(pluviometersToBePersisted);
     }
 
     return Right.create("Sucesso ao carregar equipamentos");
   }
-}
-
-function mapEquipmentsToPersistency(
-  oldEquipments,
-  newEquipments,
-  idType,
-  mapper
-) {
-  const toPersist = [];
-  newEquipments.forEach((station) => {
-    if (oldEquipments.has(station.Code)) {
-      return;
-    }
-
-    Object.assign(station, {
-      FK_Type: idType,
-    });
-
-    toPersist.push(mapper(station));
-  });
-
-  return toPersist;
 }

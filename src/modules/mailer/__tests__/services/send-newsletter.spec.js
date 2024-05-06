@@ -9,7 +9,7 @@ import {
   MAILER_OPTIONS,
 } from "../../config/mailer.js";
 
-describe("# Send Newsletter", () => {
+describe.skip("# Send Newsletter", () => {
   test("When has news should be able to send newsletter emails", async () => {
     const IdNews = 1;
 

@@ -4,15 +4,27 @@ export class EquipmentsServicesFaker {
   equipmentList = [];
   stationsMeasurementsList = [];
   pluviometersMeasurementsList = [];
-  organsList = [
-    {
-      Id: 1,
-      Name: "FUNCEME",
-      Host: "testr",
-      User: "test",
-      Password: "test",
-    },
-  ];
+  organsList = [];
+
+  constructor({
+    equipmentList,
+    stationsMeasurements,
+    pluviometersMeasurements,
+    meteorologicalOrgans,
+  }) {
+    this.equipmentList = equipmentList;
+    this.stationsMeasurementsList = stationsMeasurements || [];
+    this.pluviometersMeasurementsList = pluviometersMeasurements || [];
+    this.organsList = meteorologicalOrgans || [
+      {
+        Id: 1,
+        Name: "FUNCEME",
+        Host: "testr",
+        User: "test",
+        Password: "test",
+      },
+    ];
+  }
 
   async getMeteorologicalOrganCredentials(organName) {
     const organ = this.organsList.find((organ) => organ.Name === organName);
@@ -41,7 +53,8 @@ export class EquipmentsServicesFaker {
     return insertedEquipments;
   }
 
-  async getCodesByTypes(types = ["station", "pluviometer"]) {
+  // Why not fetch all equipments?
+  async getEquipmentsByTypes(types = ["station", "pluviometer"]) {
     const allTypesOrError = await this.getTypes();
 
     if (allTypesOrError.isError()) {
@@ -50,64 +63,110 @@ export class EquipmentsServicesFaker {
 
     const allTypes = allTypesOrError.value();
 
-    let equipments = [];
+    const organizedByTypes = new Map();
 
-    equipments = types.map((eqpType) => {
+    types.forEach((eqpType) => {
       const idType = allTypes.get(eqpType);
-      const list = this.equipmentList.filter((eqp) => eqp.Type == idType);
 
-      return list.map((eqp) => {
-        return {
-          Id: eqp.Id,
-          Code: eqp.Code,
-          Name: eqp.Name,
-          Location: eqp.Location,
-          Altitude: eqp.Altitude,
-          Type: eqp.Type,
-          Organ: eqp.Organ,
-          Id_Organ: eqp.Organ_Id,
-        };
+      const organizedByCodes = new Map();
+
+      const sanitizedItems = this.equipmentList
+        .filter((eqp) => eqp.Type == idType)
+        .map((eqp) => {
+          return {
+            Id: eqp.Id,
+            Code: eqp.Code,
+            Name: eqp.Name,
+            Location: eqp.Location,
+            Altitude: eqp.Altitude,
+            Type: eqp.Type,
+            Organ: eqp.Organ,
+            Id_Organ: eqp.Id_Organ,
+          };
+        });
+
+      sanitizedItems.forEach((item) => {
+        organizedByCodes.set(item.Code, {
+          Id: item.Id,
+          Name: item.Name,
+          Location: item.Location,
+          Altitude: item.Altitude,
+          Type: item.Type,
+          Organ: item.Organ,
+          Id_Organ: item.Id_Organ,
+        });
       });
+
+      organizedByTypes.set(eqpType, organizedByCodes);
     });
 
     if (
-      [equipments[0].length, equipments[1].length].every((cond) => cond === 0)
+      [
+        organizedByTypes.get("station").size,
+        organizedByTypes.get("pluviometer").size,
+      ].every((cond) => cond === 0)
     ) {
       return Left.create(new Error("Não há equipamentos cadastrados"));
     }
 
-    return Right.create(equipments);
+    return Right.create(organizedByTypes);
   }
 
-  async getEquipmentsWithMeasurements(codes = [], date, type) {
-    const eqps = this.equipmentList.filter((eqp) => codes.includes(eqp.Code));
+  // list all equipments codes whose measurements already exist
+  // Filtrar equipamentos cadastrados listando somente os que já possuem leituras de hoje
+  async getEquipmentsCodesWithAlreadyRegisteredMeasurements({
+    equipments,
+    date,
+  }) {
+    const eqpsTypes = equipmentsMap.keys();
 
     const makeFilter = (equipments) => {
-      return (measurements, date) => {
-        const codes = new Set();
+      return (equipmentsMeasurements, date) => {
+        const equipmentsWithAlreadyRegisteredMeasurements = new Set();
 
-        measurements.forEach((item) => {
-          const eqp = equipments.find((eqp) => eqp.Id === item.FK_Equipment);
+        equipmentsMeasurements.forEach((measurements) => {
+          const eqp = equipments.find(
+            (eqp) => eqp.Id === measurements.FK_Equipment
+          );
 
-          if (item.Time === date && !!eqp) {
-            codes.add(eqp.Code);
+          if (measurements.Time === date && !!eqp) {
+            equipmentsWithAlreadyRegisteredMeasurements.add(eqp.Code);
           }
         });
 
-        return codes;
+        return equipmentsWithAlreadyRegisteredMeasurements;
       };
     };
 
-    const filterMeasurements = makeFilter(eqps);
+    // Map<stationType,Set<string>>
+    const equipmentsCodesMap = new Map();
 
-    switch (type) {
-      case "station":
-        return filterMeasurements(this.stationsMeasurementsList, date);
-      case "pluviometer":
-        return filterMeasurements(this.pluviometersMeasurementsList, date);
-      default:
-        return new Set();
+    for (const equipmentType of eqpsTypes) {
+      const codes = equipments.get(equipmentType).keys();
+
+      const item = this.equipmentList.filter((eqp) => codes.includes(eqp.Code));
+
+      const getEquipmentsCodes = makeFilter(item);
+
+      switch (type) {
+        case "station":
+          equipmentsCodesMap.set(
+            "station",
+            getEquipmentsCodes(this.stationsMeasurementsList, date)
+          );
+          break;
+        case "pluviometer":
+          equipmentsCodesMap.set(
+            "pluviometer",
+            getEquipmentsCodes(this.pluviometersMeasurementsList, date)
+          );
+          break;
+        // default:
+        //   return new Set();
+      }
     }
+
+    return equipmentsCodesMap;
   }
 
   async getTypes() {
@@ -120,7 +179,6 @@ export class EquipmentsServicesFaker {
   }
 
   async bulkInsertMeasurements(type, measurements) {
-    measurements.forEach((item) => (item.IdRead = Date.now()));
     switch (type) {
       case "station":
         this.stationsMeasurementsList = [
@@ -138,13 +196,8 @@ export class EquipmentsServicesFaker {
       default:
         return Left.create(new Error("Tipo de equipamento não encontrado"));
     }
-
-    const ids = measurements.map((item) => item.IdRead);
+    const ids = measurements.map((_) => Date.now());
 
     return Right.create(ids);
-  }
-
-  async bulkUpdateMeasurements(type, measurements) {
-    return Right.create([]);
   }
 }

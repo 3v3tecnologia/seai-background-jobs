@@ -1,8 +1,8 @@
-import { config } from "dotenv";
+import "dotenv/config";
 
-config({
-  path: ".env",
-});
+// config({
+//   path: ".env",
+// });
 
 export const env = process.env.NODE_ENV || "test";
 

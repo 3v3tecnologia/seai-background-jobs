@@ -1,17 +1,27 @@
 import { Logger } from "../../../../shared/logger.js";
 import { Left, Right } from "../../../../shared/result.js";
-import { PluviometerMapper, StationMapper } from "../../core/mappers/index.js";
 import { EQUIPMENT_TYPE } from "../../core/equipments-types.js";
+import { MeasurementsMapper } from "../../core/mappers/index.js";
+import { Filter } from "../helpers/filters.js";
+import { BelongTo } from "../helpers/predicates.js";
 
 export class FetchEquipmentsMeasures {
-  #fetchEquipmentsService;
-  #equipmentsServices;
-  #calcEt0;
+  #fetchEquipmentsFromMeteorologicalEntity;
+  #equipmentsApi;
 
-  constructor(fetchEquipmentsService, equipmentsServices, calcEt0) {
-    this.#fetchEquipmentsService = fetchEquipmentsService;
-    this.#equipmentsServices = equipmentsServices;
-    this.#calcEt0 = calcEt0;
+  constructor(fetchEquipmentsFromMeteorologicalEntity, equipmentsApi) {
+    this.#fetchEquipmentsFromMeteorologicalEntity =
+      fetchEquipmentsFromMeteorologicalEntity;
+    this.#equipmentsApi = equipmentsApi;
+  }
+
+  getOnlyRecordedEquipments({ items, alreadyRecorded }) {
+    const filterByCodes = new Filter({
+      items,
+      predicate: new BelongTo(alreadyRecorded),
+    });
+
+    return filterByCodes.exec();
   }
 
   // OBS: Sempre irá tentar buscar dados de medições do dia anterior a data informada
@@ -20,242 +30,87 @@ export class FetchEquipmentsMeasures {
       msg: `Iniciando busca de dados pelo FTP da FUNCEME pela data ${command.getDate()}`,
     });
 
-    // Why not fetch all equipments?
-    const existingEquipmentsCodesOrError =
-      await this.#equipmentsServices.getCodesByTypes();
+    const alreadyRecordedEquipmentsOrError =
+      await this.#equipmentsApi.getEquipmentsByTypes();
 
-    if (existingEquipmentsCodesOrError.isError()) {
-      return Left.create(existingEquipmentsCodesOrError.error().message);
+    if (alreadyRecordedEquipmentsOrError.isError()) {
+      return Left.create(alreadyRecordedEquipmentsOrError.error());
     }
 
-    const existingStationsCodes = new Map();
-    const existingPluviometersCodes = new Map();
+    const alreadyRecordedEquipments = alreadyRecordedEquipmentsOrError.value();
 
-    const [existingStations, existingPluviometers] =
-      existingEquipmentsCodesOrError.value();
+    // stations and pluviometers from Funceme
+    const equipmentsFromMeteorologicalEntityOrError =
+      await this.#fetchEquipmentsFromMeteorologicalEntity.execute(command);
 
-    existingStations.forEach((eqp) =>
-      existingStationsCodes.set(eqp.Code, {
-        Id: eqp.Id,
-        Location: eqp.Location,
-      })
-    );
-
-    existingPluviometers.forEach((eqp) =>
-      existingPluviometersCodes.set(eqp.Code, {
-        Id: eqp.Id,
-        Location: eqp.Location,
-      })
-    );
-
-    // stations and pluviometers
-    const equipmentsOrError = await this.#fetchEquipmentsService.execute(
-      command
-    );
-
-    if (equipmentsOrError.isError()) {
-      return Left.create(equipmentsOrError.error().message);
+    if (equipmentsFromMeteorologicalEntityOrError.isError()) {
+      return Left.create(equipmentsFromMeteorologicalEntityOrError.error());
     }
 
-    const { stations, pluviometers } = equipmentsOrError.value();
+    // new measurements from FUNCEME
+    const equipmentsFromMeteorologicalEntity =
+      equipmentsFromMeteorologicalEntityOrError.value();
 
-    const [
-      oldStationsCodesWithMeasurements,
-      oldPluviometersCodesWithMeasurements,
-    ] = await Promise.all([
-      this.#equipmentsServices.getEquipmentsWithMeasurements(
-        [...existingStationsCodes.keys()],
-        command.getDate(),
-        EQUIPMENT_TYPE.STATION
-      ),
-      this.#equipmentsServices.getEquipmentsWithMeasurements(
-        [...existingPluviometersCodes.keys()],
-        command.getDate(),
+    const stations = this.getOnlyRecordedEquipments({
+      items: equipmentsFromMeteorologicalEntity.get(EQUIPMENT_TYPE.STATION),
+      alreadyRecorded: alreadyRecordedEquipments.get(EQUIPMENT_TYPE.STATION),
+    });
+
+    const pluviometers = this.getOnlyRecordedEquipments({
+      items: equipmentsFromMeteorologicalEntity.get(EQUIPMENT_TYPE.PLUVIOMETER),
+      alreadyRecorded: alreadyRecordedEquipments.get(
         EQUIPMENT_TYPE.PLUVIOMETER
       ),
-    ]);
-
-    const stationsToUpdate = [];
-    const stationsToInsert = [];
-
-    stations.forEach((station) => {
-      const measurementsAlreadyExists = oldStationsCodesWithMeasurements.has(
-        station.Code
-      );
-
-      // add to update
-      if (measurementsAlreadyExists) {
-        stationsToUpdate.push(station);
-        return;
-      }
-
-      //add to insert
-      stationsToInsert.push(station);
     });
 
-    const pluviometersToUpdate = [];
-    const pluviometersToInsert = [];
+    const stationsMeasurements = MeasurementsMapper.ToPersistency(
+      stations,
+      alreadyRecordedEquipments.get(EQUIPMENT_TYPE.STATION)
+    );
 
-    pluviometers.forEach((pluviometer) => {
-      const measurementsAlreadyExists =
-        oldPluviometersCodesWithMeasurements.has(pluviometer.Code);
+    const pluviometersMeasurements = MeasurementsMapper.ToPersistency(
+      pluviometers,
+      alreadyRecordedEquipments.get(EQUIPMENT_TYPE.PLUVIOMETER)
+    );
 
-      if (measurementsAlreadyExists) {
-        pluviometersToUpdate.push(pluviometer);
+    const toBulkInsertPromises = [];
 
-        return;
-      }
-
-      pluviometersToInsert.push(pluviometer);
-    });
-
-    // Is here?
-    const equipmentsTypesOrError = await this.#equipmentsServices.getTypes();
-
-    if (equipmentsTypesOrError.isError()) {
-      return Left.create(equipmentsTypesOrError.error().message);
+    if (stationsMeasurements.length) {
+      toBulkInsertPromises.push(
+        this.#equipmentsApi.bulkInsertMeasurements(
+          EQUIPMENT_TYPE.STATION,
+          stationsMeasurements
+        )
+      );
     }
 
-    const equipmentsTypes = equipmentsTypesOrError.value();
-
-    // Measurements IDs needed to calculate ET0
-    let stationsMeasurementsToCalculateEt0 = [];
-
-    if (stationsToUpdate.length) {
-      const stationsToBePersisted = mapEquipmentsToPersistency(
-        existingStationsCodes,
-        stationsToUpdate,
-        equipmentsTypes.get(EQUIPMENT_TYPE.STATION),
-        StationMapper.toPersistency,
-        command.getDate()
-      );
-
-      if (stationsToBePersisted.length) {
-        const idsOrError =
-          await this.#equipmentsServices.bulkUpdateMeasurements(
-            EQUIPMENT_TYPE.STATION,
-            stationsToBePersisted
-          );
-
-        if (idsOrError.isError()) {
-          return Left.create(idsOrError.error().message);
-        }
-
-        stationsMeasurementsToCalculateEt0 =
-          stationsMeasurementsToCalculateEt0.concat(...idsOrError.value());
-      }
-    }
-
-    if (pluviometersToUpdate.length) {
-      const pluviometersToBePersisted = mapEquipmentsToPersistency(
-        existingPluviometersCodes,
-        pluviometersToUpdate,
-        equipmentsTypes.get(EQUIPMENT_TYPE.PLUVIOMETER),
-        PluviometerMapper.toPersistency,
-        command.getDate()
-      );
-
-      if (pluviometersToBePersisted.length) {
-        await this.#equipmentsServices.bulkUpdateMeasurements(
+    if (pluviometersMeasurements.length) {
+      toBulkInsertPromises.push(
+        this.#equipmentsApi.bulkInsertMeasurements(
           EQUIPMENT_TYPE.PLUVIOMETER,
-          pluviometersToBePersisted
-        );
-      }
-    }
-
-    const stationsToBePersisted = mapEquipmentsToPersistency(
-      existingStationsCodes,
-      stationsToInsert,
-      equipmentsTypes.get(EQUIPMENT_TYPE.STATION),
-      StationMapper.toPersistency,
-      command.getDate()
-    );
-
-    // Remove it and replace to one query
-    if (stationsToBePersisted.length) {
-      const idsOrError = await this.#equipmentsServices.bulkInsertMeasurements(
-        EQUIPMENT_TYPE.STATION,
-        stationsToBePersisted
-      );
-
-      if (idsOrError.isError()) {
-        return Left.create(idsOrError.error().message);
-      }
-
-      stationsMeasurementsToCalculateEt0 =
-        stationsMeasurementsToCalculateEt0.concat(...idsOrError.value());
-    }
-
-    const pluviometersToBePersisted = mapEquipmentsToPersistency(
-      existingPluviometersCodes,
-      pluviometersToInsert,
-      equipmentsTypes.get(EQUIPMENT_TYPE.PLUVIOMETER),
-      PluviometerMapper.toPersistency,
-      command.getDate()
-    );
-
-    if (pluviometersToBePersisted.length) {
-      await this.#equipmentsServices.bulkInsertMeasurements(
-        EQUIPMENT_TYPE.PLUVIOMETER,
-        pluviometersToBePersisted
+          pluviometersMeasurements
+        )
       );
     }
 
-    // const calcEt0OrError = await this.#calcEt0.execute(
-    //   stationsMeasurementsToCalculateEt0
-    // );
+    if (toBulkInsertPromises.length) {
+      const bulkInsertResult = await Promise.all(toBulkInsertPromises);
 
-    // if (calcEt0OrError.isError()) {
-    //   return Left.create(calcEt0OrError.error().message);
-    // }
+      bulkInsertResult.forEach((result) => {
+        if (result.isError()) {
+          Logger.error({
+            msg: result.error().message,
+          });
 
-    return Right.create("Sucesso ao salvar medições de equipamentos");
+          return;
+        }
+      });
+
+      return Right.create("Sucesso ao salvar medições de equipamentos");
+    }
+
+    return Right.create(
+      "Nenhuma operação de escrita de medições foi realizada"
+    );
   }
-}
-
-// Optimize
-function mapEquipmentsToPersistency(
-  oldEquipments, //db
-  newEquipments, // ftp
-  idType,
-  mapper,
-  date
-) {
-  const toPersist = [];
-  newEquipments.forEach((station) => {
-    if (oldEquipments.has(station.Code) === false) {
-      return;
-    }
-
-    Object.assign(station, {
-      FK_Type: idType,
-    });
-
-    toPersist.push(mapper(station, date));
-  });
-
-  return prepareMeasurementsToPersist(toPersist, oldEquipments);
-}
-
-// Optimize
-function prepareMeasurementsToPersist(equipments = [], oldEquipments) {
-  const measures = [];
-
-  equipments.forEach((equipment) => {
-    const oldEquipment = oldEquipments.get(equipment.IdEquipmentExternal);
-
-    if (oldEquipment) {
-      equipment.Measurements.FK_Equipment = oldEquipment.Id;
-
-      equipment.Measurements.Altitude = equipment.Altitude || null;
-      equipment.Measurements.Longitude = equipment.Location?.Longitude || null;
-      equipment.Measurements.Latitude = equipment.Location?.Latitude || null;
-
-      equipment.Measurements.FK_Organ = equipment.FK_Organ;
-
-      measures.push(equipment.Measurements);
-    }
-  });
-
-  return measures;
 }

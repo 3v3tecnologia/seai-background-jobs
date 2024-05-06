@@ -5,22 +5,24 @@ import { EquipmentParser } from "../parser/index.js";
 import { convertCompressedFileStream } from "../external/adapters/unzip/untar-adapter.js";
 import { Logger } from "../../../../../shared/logger.js";
 import {
-  PluviometerMapper,
-  StationMapper,
+  PluviometerWithMeasurementsMapper,
+  StationWithMeasurementsMapper,
 } from "../../../core/mappers/index.js";
 import { Left, Right } from "../../../../../shared/result.js";
+import { EQUIPMENT_TYPE } from "../../../core/equipments-types.js";
 
 export class FetchFuncemeEquipments {
   #ftpClient;
-  #equipmentsServices;
+  #equipmentsApi;
 
-  constructor(ftpClientAdapter, equipmentsServices) {
+  constructor(ftpClientAdapter, equipmentsApi) {
     this.#ftpClient = ftpClientAdapter;
-    this.#equipmentsServices = equipmentsServices;
+    this.#equipmentsApi = equipmentsApi;
     // this.#logger = logger;
   }
 
   async getLastUpdatedFileName(folder) {
+    // Make sure that it finds the most recent folder
     const currentYear = new Date().getFullYear();
 
     const filesDescriptionsFromFolder =
@@ -30,6 +32,7 @@ export class FetchFuncemeEquipments {
       return null;
     }
 
+    // Get the folder that contain the current date
     const fileDescription = filesDescriptionsFromFolder.filter((file) => {
       return file.name.includes(currentYear);
     });
@@ -74,12 +77,10 @@ export class FetchFuncemeEquipments {
       });
 
       // Must be replaced with environment variables
-      const credentials =
-        await this.#equipmentsServices.getMeteorologicalOrganCredentials(
-          organName
-        );
+      const meteorologicalOrgan =
+        await this.#equipmentsApi.getMeteorologicalOrganCredentials(organName);
 
-      if (credentials === null) {
+      if (meteorologicalOrgan === null) {
         return Left.create(
           new Error(
             `Não foi possível buscar credenciais de acesso do FTP da ${organName}`
@@ -89,9 +90,9 @@ export class FetchFuncemeEquipments {
 
       // Start a new Connection to FTP
       await this.#ftpClient.connect({
-        host: credentials.Host,
-        user: credentials.User,
-        password: credentials.Password,
+        host: meteorologicalOrgan.Host,
+        user: meteorologicalOrgan.User,
+        password: meteorologicalOrgan.Password,
       });
 
       // Add timeout?
@@ -100,26 +101,34 @@ export class FetchFuncemeEquipments {
         this.getFiles(FUNCEME_FTP_DIRECTORIES.directories.pluviometer.folder),
       ]);
 
-      const [stations, pluviometers] = [
+      const [parsedStations, parsedPluviometers] = [
         await EquipmentParser.parse(
           stationLists,
-          getLastMeasurements(FetchEquipmentsCommand.getDate(), credentials.Id),
-          StationMapper.toDomain
+          getLastMeasurements(
+            FetchEquipmentsCommand.getDate(),
+            meteorologicalOrgan.Id
+          ),
+          StationWithMeasurementsMapper.toDomain
         ),
         await EquipmentParser.parse(
           pluviometerList,
-          getLastMeasurements(FetchEquipmentsCommand.getDate(), credentials.Id),
-          PluviometerMapper.toDomain
+          getLastMeasurements(
+            FetchEquipmentsCommand.getDate(),
+            meteorologicalOrgan.Id
+          ),
+          PluviometerWithMeasurementsMapper.toDomain
         ),
       ];
 
       // If throw error but connection still alive?
       await this.#ftpClient.close();
 
-      return Right.create({
-        stations,
-        pluviometers,
-      });
+      const equipments = new Map([
+        [EQUIPMENT_TYPE.STATION, parsedStations],
+        [EQUIPMENT_TYPE.PLUVIOMETER, parsedPluviometers],
+      ]);
+
+      return Right.create(equipments);
     } catch (error) {
       // Logger.error({
       //   msg: "Falha ao executar buscar equipamentos da Funceme.",
@@ -128,12 +137,13 @@ export class FetchFuncemeEquipments {
 
       console.error(error);
 
-      if (error instanceof ConnectionError === false) {
+      // TO-DO: detect when has a connection error
+      if (error) {
         await this.#ftpClient.close();
       }
 
       //Essencial para o PG-BOSS entender que ocorreu um erro
-      return Left.create(error);
+      return Left.create(error.message);
     }
   }
 }
@@ -143,16 +153,18 @@ function getLastMeasurements(date, organId) {
   return function (list) {
     const eqps = [];
 
+    // TO-DO: add mapper
     list.forEach((data) => {
       const measure = data.Measurements.find((measure) => measure.data == date);
       if (measure) {
+        // Add mapper to tomain
         eqps.push({
           Code: data.Code,
           Name: data.Name,
           Latitude: data.Latitude,
           Altitude: data.Altitude,
           Longitude: data.Longitude,
-          FK_Organ: organId,
+          Id_Organ: organId,
           Measurements: measure,
         });
       }

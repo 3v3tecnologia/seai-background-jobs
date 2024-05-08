@@ -14,6 +14,7 @@ function convertCompressedFileStream(tarballStream) {
       for await (let chunk of stream) {
         chunks += chunk.toString();
       }
+
       //Transforma array de buffers em um único buffer
       results.push(chunks);
       next();

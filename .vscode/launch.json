@@ -6,12 +6,40 @@
     "configurations": [
         {
             "type": "node",
-            "name": "Debug Node.js Tests",
+            "name": "Debug Node.js Unit Tests",
             "request": "launch",
             "runtimeExecutable": "npm",
             "runtimeArgs": [
                 "run",
-                "test:debug"
+                "test:unit:debug"
+            ],
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "console": "integratedTerminal",
+        },
+        {
+            "type": "node",
+            "name": "Debug Node.js Integration Tests",
+            "request": "launch",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+                "run",
+                "test:integration:debug"
+            ],
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "console": "integratedTerminal",
+        },
+        {
+            "type": "node",
+            "name": "Debug Node.js Temporary Tests",
+            "request": "launch",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+                "run",
+                "test:integration:temp"
             ],
             "skipFiles": [
                 "<node_internals>/**"

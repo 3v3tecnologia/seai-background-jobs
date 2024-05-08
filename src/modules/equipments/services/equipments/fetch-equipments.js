@@ -7,6 +7,7 @@ import { EQUIPMENT_TYPE } from "../../core/equipments-types.js";
 
 import { Filter } from "../helpers/filters.js";
 import { NotBelongTo } from "../helpers/predicates.js";
+import { Logger } from "../../../../shared/logger.js";
 export class FetchEquipments {
   // Should be a array of services?
   #fetchEquipmentsFromMeteorologicalEntity;
@@ -55,21 +56,19 @@ export class FetchEquipments {
       await this.#fetchEquipmentsFromMeteorologicalEntity.execute(command);
 
     if (equipmentsFromMeteorologicalEntityOrError.isError()) {
-      return Left.create(
-        equipmentsFromMeteorologicalEntityOrError.error().message
-      );
+      return Left.create(equipmentsFromMeteorologicalEntityOrError.error());
     }
 
     // Map<'station'|'pluviometer',Array>
     const equipmentsFromMeteorologicalEntity =
-      allEquipmentsFetchedFromEntityOrError.value();
+      equipmentsFromMeteorologicalEntityOrError.value();
 
     // Replace it to one query
     const alreadyRecordedEquipmentsOrError =
       await this.#equipmentsApi.getEquipmentsByTypes();
 
     if (alreadyRecordedEquipmentsOrError.isError()) {
-      return Left.create(alreadyRecordedEquipmentsOrError.error().message);
+      return Left.create(alreadyRecordedEquipmentsOrError.error());
     }
 
     // Map<'station'|'pluviometer',Map<code,Array>>
@@ -83,7 +82,7 @@ export class FetchEquipments {
     const equipmentsTypesOrError = await this.#equipmentsApi.getTypes();
 
     if (equipmentsTypesOrError.isError()) {
-      return Left.create(equipmentsTypesOrError.error().message);
+      return Left.create(equipmentsTypesOrError.error());
     }
 
     const equipmentsTypes = equipmentsTypesOrError.value();
@@ -104,11 +103,31 @@ export class FetchEquipments {
 
     // Maybe delegate to SQL insert **ON CONFLICT** clause using the column CODE
     if (stationsToBePersisted.length) {
-      await this.#equipmentsApi.bulkInsert(stationsToBePersisted);
+      const response = await this.#equipmentsApi.bulkInsert(
+        stationsToBePersisted
+      );
+
+      if (response.isError()) {
+        Left.create(response.error());
+      }
+
+      Logger.info({
+        msg: `Sucesso ao realizar a inserção das estações`,
+      });
     }
 
     if (pluviometersToBePersisted.length) {
-      await this.#equipmentsApi.bulkInsert(pluviometersToBePersisted);
+      const response = await this.#equipmentsApi.bulkInsert(
+        pluviometersToBePersisted
+      );
+
+      if (response.isError()) {
+        Left.create(response.error());
+      }
+
+      Logger.info({
+        msg: `Sucesso ao realizar a inserção das pluviômetros`,
+      });
     }
 
     return Right.create("Sucesso ao carregar equipamentos");

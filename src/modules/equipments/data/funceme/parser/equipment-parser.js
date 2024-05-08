@@ -29,7 +29,7 @@ export class EquipmentParser extends CsvParser {
   static async parse(rawData = [], filter, mapper) {
     const parser = new EquipmentParser();
 
-    if (rawData.length) {
+    if (rawData && rawData.length) {
       const raw = await parser.parse(rawData);
       return filter(raw).map(mapper);
     }

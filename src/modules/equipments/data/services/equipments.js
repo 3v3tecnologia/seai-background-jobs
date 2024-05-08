@@ -39,14 +39,17 @@ export class EquipmentsServices {
 
   async bulkInsert(data = []) {
     try {
-      const response = await (
-        await fetch(this.#baseUrl, {
-          method: "POST",
-          body: JSON.stringify({
-            items: data,
-          }),
-        })
-      ).json();
+      const response = await fetch(this.#baseUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json", // Set the content type
+        },
+        body: JSON.stringify({
+          items: data,
+        }),
+      });
+
+      console.log("RESPONSE ", response);
 
       if (response.status >= 400 && response.status <= 500) {
         Logger.error({
@@ -56,7 +59,9 @@ export class EquipmentsServices {
         return Left.create(new Error(response.error));
       }
 
-      return Right.create(response.data);
+      const result = await response.json();
+
+      return Right.create(result.data);
     } catch (error) {
       console.log(error);
       return Left.create(new Error(error));
@@ -121,6 +126,12 @@ export class EquipmentsServices {
         types.set(item.Name, item.Type);
       });
 
+      if (types.size === 0) {
+        return Left.create(
+          new Error("Não foi possível encontrar tipos de equipamentos")
+        );
+      }
+
       return Right.create(types);
     } catch (error) {
       console.log(error);
@@ -129,16 +140,18 @@ export class EquipmentsServices {
   }
 
   async bulkInsertMeasurements(type, measurements) {
+    console.log({ type, measurements });
     try {
-      const response = await (
-        await fetch(`${this.#baseUrl}/measurements`, {
-          method: "POST",
-          body: JSON.stringify({
-            type,
-            items: measurements,
-          }),
-        })
-      ).json();
+      const response = await fetch(`${this.#baseUrl}/measurements`, {
+        headers: {
+          "Content-Type": "application/json", // Set the content type
+        },
+        method: "POST",
+        body: JSON.stringify({
+          type,
+          items: measurements,
+        }),
+      });
 
       if (response.status >= 400 && response.status <= 500) {
         Logger.error({
@@ -148,7 +161,13 @@ export class EquipmentsServices {
         return Left.create(new Error(response.error));
       }
 
-      const ids = response.data.map((item) => item.IdRead);
+      const result = await response.json();
+
+      const ids = result.data.map((item) => item.IdRead);
+
+      Logger.info({
+        msg: `Sucesso ao salva leituras de ${type}`,
+      });
 
       return Right.create(ids);
     } catch (error) {

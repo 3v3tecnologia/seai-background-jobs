@@ -38,11 +38,11 @@ export class FetchEquipments {
   ) {
     return {
       station: this.removeDuplicated({
-        items: equipmentsFromMeteorologicalEntity.get(EQUIPMENT_TYPE.STATION),
+        items: equipmentsFromMeteorologicalEntity.equipments.get(EQUIPMENT_TYPE.STATION),
         toCompare: alreadyRecordedEquipments.get(EQUIPMENT_TYPE.STATION),
       }),
       pluviometer: this.removeDuplicated({
-        items: equipmentsFromMeteorologicalEntity.get(
+        items: equipmentsFromMeteorologicalEntity.equipments.get(
           EQUIPMENT_TYPE.PLUVIOMETER
         ),
         toCompare: alreadyRecordedEquipments.get(EQUIPMENT_TYPE.PLUVIOMETER),
@@ -62,6 +62,7 @@ export class FetchEquipments {
     // Map<'station'|'pluviometer',Array>
     const equipmentsFromMeteorologicalEntity =
       equipmentsFromMeteorologicalEntityOrError.value();
+
 
     // Replace it to one query
     const alreadyRecordedEquipmentsOrError =

@@ -2,7 +2,7 @@ import { SEAI_BASE_URL } from "../../../../shared/config/seaiApi.js";
 import { Logger } from "../../../../shared/logger.js";
 import { Left, Right } from "../../../../shared/result.js";
 
-export class EquipmentsServices {
+class EquipmentsServicesApi {
   #baseUrl;
 
   constructor() {
@@ -177,3 +177,5 @@ export class EquipmentsServices {
     }
   }
 }
+
+export const equipmentsApi = new EquipmentsServicesApi() 

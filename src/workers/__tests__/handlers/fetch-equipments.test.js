@@ -10,7 +10,7 @@
 import { FetchFuncemeMeasurementsWorker,FetchFuncemeEquipmentsWorker } from "../../handlers/funceme/index.js";
 
 async function runner() {
-  await FetchFuncemeMeasurementsWorker.handler();
+  await FetchFuncemeEquipmentsWorker.handler();
 }
 
 runner();

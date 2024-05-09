@@ -100,14 +100,14 @@ export class EquipmentsServices {
         organizedByTypes.set(type, organizedByCodes);
       }
 
-      if (
-        [
-          organizedByTypes.get("station").size,
-          organizedByTypes.get("pluviometer").size,
-        ].every((cond) => cond === 0)
-      ) {
-        return Left.create(new Error("Não há equipamentos cadastrados"));
-      }
+      // if (
+      //   [
+      //     organizedByTypes.get("station").size,
+      //     organizedByTypes.get("pluviometer").size,
+      //   ].every((cond) => cond === 0)
+      // ) {
+      //   return Left.create(new Error("Não há equipamentos cadastrados"));
+      // }
 
       return Right.create(organizedByTypes);
     } catch (error) {
@@ -139,8 +139,7 @@ export class EquipmentsServices {
     }
   }
 
-  async bulkInsertMeasurements(type, measurements) {
-    console.log({ type, measurements });
+  async bulkInsertMeasurements({type, items,organId,date}) {
     try {
       const response = await fetch(`${this.#baseUrl}/measurements`, {
         headers: {
@@ -149,7 +148,9 @@ export class EquipmentsServices {
         method: "POST",
         body: JSON.stringify({
           type,
-          items: measurements,
+          items,
+          organId,
+          date
         }),
       });
 
@@ -161,15 +162,15 @@ export class EquipmentsServices {
         return Left.create(new Error(response.error));
       }
 
-      const result = await response.json();
+      const {data} = await response.json();
 
-      const ids = result.data.map((item) => item.IdRead);
+      console.log(data)
 
       Logger.info({
         msg: `Sucesso ao salva leituras de ${type}`,
       });
 
-      return Right.create(ids);
+      return Right.create(data);
     } catch (error) {
       console.log(error);
       return Left.create(new Error(error));

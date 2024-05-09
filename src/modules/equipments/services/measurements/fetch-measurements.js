@@ -39,6 +39,10 @@ export class FetchEquipmentsMeasures {
 
     const alreadyRecordedEquipments = alreadyRecordedEquipmentsOrError.value();
 
+     if(alreadyRecordedEquipments.size === 0){
+      return Left.create(new Error("Não há equipamentos cadastrados"));
+     }
+
     // stations and pluviometers from Funceme
     const equipmentsFromMeteorologicalEntityOrError =
       await this.#fetchEquipmentsFromMeteorologicalEntity.execute(command);
@@ -52,12 +56,12 @@ export class FetchEquipmentsMeasures {
       equipmentsFromMeteorologicalEntityOrError.value();
 
     const stations = this.getOnlyRecordedEquipments({
-      items: equipmentsFromMeteorologicalEntity.get(EQUIPMENT_TYPE.STATION),
+      items: equipmentsFromMeteorologicalEntity.equipments.get(EQUIPMENT_TYPE.STATION),
       alreadyRecorded: alreadyRecordedEquipments.get(EQUIPMENT_TYPE.STATION),
     });
 
     const pluviometers = this.getOnlyRecordedEquipments({
-      items: equipmentsFromMeteorologicalEntity.get(EQUIPMENT_TYPE.PLUVIOMETER),
+      items: equipmentsFromMeteorologicalEntity.equipments.get(EQUIPMENT_TYPE.PLUVIOMETER),
       alreadyRecorded: alreadyRecordedEquipments.get(
         EQUIPMENT_TYPE.PLUVIOMETER
       ),
@@ -78,8 +82,12 @@ export class FetchEquipmentsMeasures {
     if (stationsMeasurements.length) {
       toBulkInsertPromises.push(
         this.#equipmentsApi.bulkInsertMeasurements(
-          EQUIPMENT_TYPE.STATION,
-          stationsMeasurements
+          {
+            type:EQUIPMENT_TYPE.STATION,
+            items:stationsMeasurements,
+            organId:equipmentsFromMeteorologicalEntity.organId,
+            date: command.getDate()
+          }
         )
       );
     }
@@ -87,8 +95,12 @@ export class FetchEquipmentsMeasures {
     if (pluviometersMeasurements.length) {
       toBulkInsertPromises.push(
         this.#equipmentsApi.bulkInsertMeasurements(
-          EQUIPMENT_TYPE.PLUVIOMETER,
-          pluviometersMeasurements
+          {
+            type:EQUIPMENT_TYPE.PLUVIOMETER,
+            items:pluviometersMeasurements,
+            organId:equipmentsFromMeteorologicalEntity.organId,
+            date: command.getDate()
+          }
         )
       );
     }

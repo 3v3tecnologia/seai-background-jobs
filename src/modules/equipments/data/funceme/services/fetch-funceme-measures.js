@@ -128,7 +128,10 @@ export class FetchFuncemeEquipments {
         [EQUIPMENT_TYPE.PLUVIOMETER, parsedPluviometers],
       ]);
 
-      return Right.create(equipments);
+      return Right.create({
+        organId: meteorologicalOrgan.Id,
+        equipments
+      });
     } catch (error) {
       // Logger.error({
       //   msg: "Falha ao executar buscar equipamentos da Funceme.",

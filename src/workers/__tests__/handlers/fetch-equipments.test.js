@@ -7,7 +7,7 @@
 //   test,
 // } from "@jest/globals";
 
-import { FetchFuncemeMeasurementsWorker } from "../../handlers/funceme/fetch-measurements.js";
+import { FetchFuncemeMeasurementsWorker,FetchFuncemeEquipmentsWorker } from "../../handlers/funceme/index.js";
 
 async function runner() {
   await FetchFuncemeMeasurementsWorker.handler();

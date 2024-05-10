@@ -7,10 +7,10 @@
 //   test,
 // } from "@jest/globals";
 
-import { FetchFuncemeEquipmentsWorker } from "../../handlers/funceme/index.js";
+import { FetchFuncemeMeasurementsWorker } from "../../handlers/funceme/index.js";
 
 async function runner() {
-  await FetchFuncemeEquipmentsWorker.handler();
+  await FetchFuncemeMeasurementsWorker.handler();
 }
 
 runner();

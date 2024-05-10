@@ -1,16 +1,28 @@
 import nodemailer from "nodemailer";
 import { MAILER_OPTIONS, MAILER_TRANSPORT_CONFIG } from "../config/mailer.js";
+import { Logger } from "../../../shared/logger.js";
 
 export class SendEmailService {
-  async send(options) {
+  async sendMail(command) {
     const transporter = nodemailer.createTransport(MAILER_TRANSPORT_CONFIG);
 
+    return new Promise((resolve, reject) => {
+      transporter.sendMail(command, (err, info) => {
+        if (err) return reject(err);
+        resolve(info);
+      });
+    });
+  }
+
+  async send(options) {
     const command = {
       from: MAILER_OPTIONS.from,
       to: options.to,
       subject: options.subject,
       attachments: options.attachments,
     };
+
+    console.log(command);
 
     if (options.text) {
       Object.assign(command, {
@@ -30,8 +42,31 @@ export class SendEmailService {
       });
     }
 
-    const info = await transporter.sendMail(command);
+    /**
+     * {
+        accepted: [ ],
+        rejected: [],
+        ehlo: [ ],
+        envelopeTime: ,
+        messageTime: ,
+        messageSize: ,
+        response: '',
+        envelope: {
+          from: '',
+          to: [ '' ]
+        },
+        messageId: ''
+      }
+     */
 
-    console.log("[SendEmailService] Message sent: %s", info.messageId);
+    const data = await this.sendMail(command);
+
+    Logger.info({
+      msg: "Email enviado com sucesso",
+    });
+
+    Logger.info({
+      msg: data.response,
+    });
   }
 }

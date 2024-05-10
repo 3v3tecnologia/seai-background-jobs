@@ -39,9 +39,9 @@ export class FetchEquipmentsMeasures {
 
     const alreadyRecordedEquipments = alreadyRecordedEquipmentsOrError.value();
 
-     if(alreadyRecordedEquipments.size === 0){
+    if (alreadyRecordedEquipments.size === 0) {
       return Left.create(new Error("Não há equipamentos cadastrados"));
-     }
+    }
 
     // stations and pluviometers from Funceme
     const equipmentsFromMeteorologicalEntityOrError =
@@ -56,12 +56,16 @@ export class FetchEquipmentsMeasures {
       equipmentsFromMeteorologicalEntityOrError.value();
 
     const stations = this.getOnlyRecordedEquipments({
-      items: equipmentsFromMeteorologicalEntity.equipments.get(EQUIPMENT_TYPE.STATION),
+      items: equipmentsFromMeteorologicalEntity.equipments.get(
+        EQUIPMENT_TYPE.STATION
+      ),
       alreadyRecorded: alreadyRecordedEquipments.get(EQUIPMENT_TYPE.STATION),
     });
 
     const pluviometers = this.getOnlyRecordedEquipments({
-      items: equipmentsFromMeteorologicalEntity.equipments.get(EQUIPMENT_TYPE.PLUVIOMETER),
+      items: equipmentsFromMeteorologicalEntity.equipments.get(
+        EQUIPMENT_TYPE.PLUVIOMETER
+      ),
       alreadyRecorded: alreadyRecordedEquipments.get(
         EQUIPMENT_TYPE.PLUVIOMETER
       ),
@@ -81,27 +85,23 @@ export class FetchEquipmentsMeasures {
 
     if (stationsMeasurements.length) {
       toBulkInsertPromises.push(
-        this.#equipmentsApi.bulkInsertMeasurements(
-          {
-            type:EQUIPMENT_TYPE.STATION,
-            items:stationsMeasurements,
-            organId:equipmentsFromMeteorologicalEntity.organId,
-            date: command.getDate()
-          }
-        )
+        this.#equipmentsApi.bulkInsertMeasurements({
+          type: EQUIPMENT_TYPE.STATION,
+          items: stationsMeasurements,
+          id_organ: equipmentsFromMeteorologicalEntity.organId,
+          date: command.getDate(),
+        })
       );
     }
 
     if (pluviometersMeasurements.length) {
       toBulkInsertPromises.push(
-        this.#equipmentsApi.bulkInsertMeasurements(
-          {
-            type:EQUIPMENT_TYPE.PLUVIOMETER,
-            items:pluviometersMeasurements,
-            organId:equipmentsFromMeteorologicalEntity.organId,
-            date: command.getDate()
-          }
-        )
+        this.#equipmentsApi.bulkInsertMeasurements({
+          type: EQUIPMENT_TYPE.PLUVIOMETER,
+          items: pluviometersMeasurements,
+          id_organ: equipmentsFromMeteorologicalEntity.organId,
+          date: command.getDate(),
+        })
       );
     }
 

@@ -1,12 +1,12 @@
 import fs from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { Logger } from "../../../shared/logger.js";
 import { Left, Right } from "../../../shared/result.js";
-import { HTML_TEMPLATES } from "../config/resources.js";
-import path from "node:path";
-import { FileNotFoundError } from "../errors/FileNotFound.js";
-import { fileURLToPath } from "node:url";
-import { MAILER_OPTIONS } from "../config/mailer.js";
 import { SEAI_API } from "../config/api.js";
+import { MAILER_OPTIONS } from "../config/mailer.js";
+import { HTML_TEMPLATES } from "../config/resources.js";
+import { FileNotFoundError } from "../errors/FileNotFound.js";
 
 export class SendUserAccountNotification {
   constructor(sendMailService, htmlTemplateCompiler, templatesFolders = null) {
@@ -77,7 +77,7 @@ export class SendUserAccountNotification {
     } catch (error) {
       Logger.error({
         msg: "Falha ao enviar email.",
-        obj: error,
+        obj: error.message,
       });
 
       return Left.create(error);

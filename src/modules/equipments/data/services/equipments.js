@@ -37,7 +37,7 @@ class EquipmentsServicesApi {
     }
   }
 
-  async bulkInsert(data = []) {
+  async bulkInsert({ items, id_organ }) {
     try {
       const response = await fetch(this.#baseUrl, {
         method: "POST",
@@ -45,11 +45,10 @@ class EquipmentsServicesApi {
           "Content-Type": "application/json", // Set the content type
         },
         body: JSON.stringify({
-          items: data,
+          items,
+          id_organ,
         }),
       });
-
-      console.log("RESPONSE ", response);
 
       if (response.status >= 400 && response.status <= 500) {
         Logger.error({
@@ -139,7 +138,7 @@ class EquipmentsServicesApi {
     }
   }
 
-  async bulkInsertMeasurements({type, items,organId,date}) {
+  async bulkInsertMeasurements({ type, items, id_organ, date }) {
     try {
       const response = await fetch(`${this.#baseUrl}/measurements`, {
         headers: {
@@ -149,8 +148,8 @@ class EquipmentsServicesApi {
         body: JSON.stringify({
           type,
           items,
-          organId,
-          date
+          id_organ,
+          date,
         }),
       });
 
@@ -162,9 +161,9 @@ class EquipmentsServicesApi {
         return Left.create(new Error(response.error));
       }
 
-      const {data} = await response.json();
+      const { data } = await response.json();
 
-      console.log(data)
+      console.log(data);
 
       Logger.info({
         msg: `Sucesso ao salva leituras de ${type}`,
@@ -178,4 +177,4 @@ class EquipmentsServicesApi {
   }
 }
 
-export const equipmentsApi = new EquipmentsServicesApi() 
+export const equipmentsApi = new EquipmentsServicesApi();

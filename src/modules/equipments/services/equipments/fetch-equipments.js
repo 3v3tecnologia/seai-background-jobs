@@ -38,7 +38,9 @@ export class FetchEquipments {
   ) {
     return {
       station: this.removeDuplicated({
-        items: equipmentsFromMeteorologicalEntity.equipments.get(EQUIPMENT_TYPE.STATION),
+        items: equipmentsFromMeteorologicalEntity.equipments.get(
+          EQUIPMENT_TYPE.STATION
+        ),
         toCompare: alreadyRecordedEquipments.get(EQUIPMENT_TYPE.STATION),
       }),
       pluviometer: this.removeDuplicated({
@@ -62,7 +64,6 @@ export class FetchEquipments {
     // Map<'station'|'pluviometer',Array>
     const equipmentsFromMeteorologicalEntity =
       equipmentsFromMeteorologicalEntityOrError.value();
-
 
     // Replace it to one query
     const alreadyRecordedEquipmentsOrError =
@@ -104,9 +105,10 @@ export class FetchEquipments {
 
     // Maybe delegate to SQL insert **ON CONFLICT** clause using the column CODE
     if (stationsToBePersisted.length) {
-      const response = await this.#equipmentsApi.bulkInsert(
-        stationsToBePersisted
-      );
+      const response = await this.#equipmentsApi.bulkInsert({
+        items: stationsToBePersisted,
+        id_organ: equipmentsFromMeteorologicalEntity.organId,
+      });
 
       if (response.isError()) {
         Left.create(response.error());
@@ -118,9 +120,10 @@ export class FetchEquipments {
     }
 
     if (pluviometersToBePersisted.length) {
-      const response = await this.#equipmentsApi.bulkInsert(
-        pluviometersToBePersisted
-      );
+      const response = await this.#equipmentsApi.bulkInsert({
+        items: pluviometersToBePersisted,
+        id_organ: equipmentsFromMeteorologicalEntity.organId,
+      });
 
       if (response.isError()) {
         Left.create(response.error());

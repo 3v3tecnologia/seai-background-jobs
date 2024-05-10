@@ -32,4 +32,7 @@ const MAILER_OPTIONS = {
   to: "test@gmail.com", //???
 };
 
+console.log(env);
+console.log(MAILER_TRANSPORT_CONFIG);
+
 export { MAILER_TRANSPORT_CONFIG, MAILER_OPTIONS };

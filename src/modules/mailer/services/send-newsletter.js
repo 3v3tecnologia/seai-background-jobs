@@ -9,9 +9,9 @@ export class SendNewsletterEmail {
     this.sendMail = sendMailAdapter;
   }
 
-  async execute(request) {
+  async execute(command) {
     try {
-      const { idNews } = request;
+      const idNews = command.getNewsId();
 
       Logger.info(`Iniciando envio de emails da notícia ${idNews}`);
 

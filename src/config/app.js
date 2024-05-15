@@ -8,20 +8,6 @@ export const env = process.env.NODE_ENV || "test";
 
 const databaseCredentials = {
   development: {
-    equipments: {
-      client: "pg",
-      connection: {
-        host: process.env.DATABASE_HOST_DEV,
-        port: Number(process.env.DATABASE_PORT_DEV),
-        user: process.env.DATABASE_USER_DEV,
-        password: process.env.DATABASE_PASSWORD_DEV,
-        database: "equipments",
-      },
-      pool: {
-        min: 0,
-        max: 10,
-      },
-    },
     logs: {
       client: "pg",
       connection: {
@@ -60,20 +46,6 @@ const databaseCredentials = {
     },
   },
   production: {
-    equipments: {
-      client: "pg",
-      connection: {
-        host: process.env.DATABASE_HOST_PROD,
-        port: Number(process.env.DATABASE_PORT_PROD),
-        user: process.env.DATABASE_USER_PROD,
-        password: process.env.DATABASE_PASSWORD_PROD,
-        database: "equipments",
-      },
-      pool: {
-        min: 0,
-        max: 10,
-      },
-    },
     logs: {
       client: "pg",
       connection: {
@@ -112,20 +84,6 @@ const databaseCredentials = {
     },
   },
   test: {
-    equipments: {
-      client: "pg",
-      connection: {
-        host: process.env.DATABASE_HOST_TEST,
-        port: Number(process.env.DATABASE_PORT_TEST),
-        user: process.env.DATABASE_USER_TEST,
-        password: process.env.DATABASE_PASSWORD_TEST,
-        database: "equipments",
-      },
-      pool: {
-        min: 0,
-        max: 10,
-      },
-    },
     logs: {
       client: "pg",
       connection: {

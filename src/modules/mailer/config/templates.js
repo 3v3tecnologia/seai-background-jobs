@@ -5,12 +5,14 @@ export const HTML_TEMPLATES = (function () {
       "createUserAccount",
       {
         path: `${dir}/create_user_account.html`,
+        subject: "Bem vindo ao SEAI!",
       },
     ],
     [
       "forgotUserPassword",
       {
         path: `${dir}/forgot_password.html`,
+        subject: "Recuperação de senha",
       },
     ],
   ]);

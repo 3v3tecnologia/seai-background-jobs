@@ -1,11 +1,8 @@
-import {
-  FetchFuncemeEquipmentsWorker,
-  FetchFuncemeMeasurementsWorker,
-} from "./handlers/funceme/index.js";
+import { QUEUES } from "./queues";
 
 export const cronJobs = [
   {
-    queue: FetchFuncemeEquipmentsWorker.name_queue,
+    queue: QUEUES.FETCH_EQUIPMENTS,
     cron: "0 0 * * *",
     data: null,
     options: {
@@ -16,7 +13,7 @@ export const cronJobs = [
     },
   },
   {
-    queue: FetchFuncemeMeasurementsWorker.name_queue,
+    queue: QUEUES.FETCH_MEASUREMENTS,
     cron: "0 1 * * *",
     data: null,
     options: {

@@ -32,7 +32,7 @@ class EquipmentsServicesApi {
 
       return null;
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return null;
     }
   }
@@ -62,7 +62,7 @@ class EquipmentsServicesApi {
 
       return Right.create(result.data);
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return Left.create(new Error(error));
     }
   }
@@ -110,7 +110,7 @@ class EquipmentsServicesApi {
 
       return Right.create(organizedByTypes);
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return Left.create(new Error(error));
     }
   }
@@ -133,7 +133,7 @@ class EquipmentsServicesApi {
 
       return Right.create(types);
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return Left.create(new Error(error));
     }
   }
@@ -171,7 +171,7 @@ class EquipmentsServicesApi {
 
       return Right.create(data);
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return Left.create(new Error(error));
     }
   }

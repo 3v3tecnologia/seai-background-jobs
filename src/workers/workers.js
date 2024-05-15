@@ -1,18 +1,14 @@
 import {
-  makeSendAccountNotificationHandler,
-  makeSendNewsletterHandler,
-} from "./factories/handlers/index.js";
-
-import {
   FetchFuncemeEquipmentsWorker,
   FetchFuncemeMeasurementsWorker,
   SendNewsletterWorker,
   SendUserAccountNotificationWorker,
 } from "./handlers/index.js";
+import { QUEUES } from "./queues.js";
 
 export default [
   {
-    queue_name: FetchFuncemeEquipmentsWorker.name_queue,
+    queue_name: QUEUES.FETCH_EQUIPMENTS,
     workers: [
       {
         name: FetchFuncemeEquipmentsWorker.worker_name,
@@ -21,7 +17,7 @@ export default [
     ],
   },
   {
-    queue_name: FetchFuncemeMeasurementsWorker.name_queue,
+    queue_name: QUEUES.FETCH_MEASUREMENTS,
     workers: [
       {
         name: FetchFuncemeMeasurementsWorker.worker_name,
@@ -30,21 +26,21 @@ export default [
     ],
   },
   {
-    queue_name: SendNewsletterWorker.name_queue,
+    queue_name: QUEUES.NEWSLETTER,
     workers: [
       {
         name: SendNewsletterWorker.worker_name,
-        process: (command) => makeSendNewsletterHandler().handler(command),
+        process: (command) => SendNewsletterWorker.handler(command),
       },
     ],
   },
   {
-    queue_name: SendUserAccountNotificationWorker.name_queue,
+    queue_name: QUEUES.USER_ACCOUNT_NOTIFICATION,
     workers: [
       {
         name: SendUserAccountNotificationWorker.worker_name,
         process: (command) =>
-          makeSendAccountNotificationHandler().handler(command),
+          SendUserAccountNotificationWorker.handler(command),
       },
     ],
   },

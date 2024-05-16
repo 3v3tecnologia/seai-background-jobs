@@ -12,9 +12,11 @@ export class InviteUserService {
 
   async execute(command) {
     try {
-      const { user, templateName } = command;
+      const email = command.getEmail()
+      const code = command.getCode()
+      const templateName = command.getTemplateName()
 
-      Logger.info(`Iniciando envio de email para  ${user.email}`);
+      Logger.info(`Iniciando envio de email para  ${email}`);
 
       const templateOrError = await getTemplate(templateName);
 
@@ -27,17 +29,17 @@ export class InviteUserService {
       const html = await this.htmlTemplateCompiler.compile({
         file: template.file,
         args: {
-          user_code: user.code,
-          user_email: user.email,
+          user_code: code,
+          user_email: email,
           from: MAILER_OPTIONS.from,
           subject: template.subject,
-          service_url: SEAI_API.ACCOUNT.CREATE_USER,
+          service_url: template.service_url,
         },
       });
 
       await this.sendMail.send({
         from: MAILER_OPTIONS.from,
-        to: user.email,
+        to: email,
         subject: template.subject,
         html,
       });

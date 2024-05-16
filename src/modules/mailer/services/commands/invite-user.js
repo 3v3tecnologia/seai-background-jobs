@@ -13,7 +13,7 @@ export class InviteUserCommand {
     }
 
     const isValidPayloadOrError = Validator.againstNullOrUndefinedProperties(
-      ["email", "code", "template"],
+      ["email", "base64Code", "templateName"],
       props
     );
 
@@ -22,17 +22,18 @@ export class InviteUserCommand {
     }
 
     this.#props.email = props.email;
-    this.#props.code = props.code;
-    this.#props.template = props.template;
+    this.#props.code = props.base64Code;
+    this.#props.template = props.templateName;
 
     Object.freeze(this);
   }
 
-  getRecipient() {
-    return {
-      email: this.#props.email,
-      code: this.#props.code,
-    };
+  getEmail() {
+    return this.#props.email
+  }
+
+  getCode() {
+    return this.#props.code
   }
 
   getTemplateName() {

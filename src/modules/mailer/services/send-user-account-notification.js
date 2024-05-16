@@ -1,10 +1,10 @@
 import { Logger } from "../../../shared/logger.js";
 import { Left, Right } from "../../../shared/result.js";
-import { SEAI_API } from "../config/api.js";
 import { MAILER_OPTIONS } from "../config/mailer.js";
 import { getTemplate } from "../helpers/getTemplateFile.js";
 
-export class InviteUserService {
+export class SendUserAccountService {
+
   constructor({ sendMailService, htmlTemplateCompiler }) {
     this.sendMail = sendMailService;
     this.htmlTemplateCompiler = htmlTemplateCompiler;

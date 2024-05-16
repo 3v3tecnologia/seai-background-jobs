@@ -1,9 +1,9 @@
-import { InviteUserCommand } from "../../../modules/mailer/services/commands/invite-user.js";
-import { inviteUserService } from "../../../modules/mailer/services/factories/invite-user.js";
+import { SendUserAccountNotificationCommand } from "../../../modules/mailer/services/commands/send-user-account-notification.js";
+import { sendUserAccountService } from "../../../modules/mailer/services/factories/send-user-account-notification.js";
 import { Validator } from "../../../shared/validator.js";
 
 export class SendUserAccountNotificationWorker {
-  static worker_name = "InviteUser";
+  static worker_name = "SendUserAccountNotification";
 
   static queue_options = {
     limiter: {
@@ -25,9 +25,9 @@ export class SendUserAccountNotificationWorker {
     // Destruct from pg-boss job payload object
     const { id, data, name } = payload[0];
 
-    const inviteUserCommand = new InviteUserCommand(data);
+    const inviteUserCommand = new SendUserAccountNotificationCommand(data);
 
-    const resultOrError = await inviteUserService.execute(inviteUserCommand);
+    const resultOrError = await sendUserAccountService.execute(inviteUserCommand);
 
     if (resultOrError.isError()) {
       throw resultOrError.error();

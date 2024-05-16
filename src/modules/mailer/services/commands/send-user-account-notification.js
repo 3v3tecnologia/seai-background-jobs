@@ -1,6 +1,6 @@
 import { Validator } from "../../../../shared/validator.js";
 
-export class InviteUserCommand {
+export class SendUserAccountNotificationCommand {
   #props;
   constructor(props) {
     const hasNullOrUndefinedProps = Validator.againstNullOrUndefined({

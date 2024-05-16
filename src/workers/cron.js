@@ -1,4 +1,4 @@
-import { QUEUES } from "./queues";
+import { QUEUES } from "./queues.js";
 
 export const cronJobs = [
   {

@@ -1,7 +1,9 @@
 import { Validator } from "../../../../shared/validator.js";
 
 export class SendUserAccountNotificationCommand {
-  #props;
+  #email;
+  #code;
+  #template;
   constructor(props) {
     const hasNullOrUndefinedProps = Validator.againstNullOrUndefined({
       name: "data",
@@ -21,22 +23,22 @@ export class SendUserAccountNotificationCommand {
       throw isValidPayloadOrError.error();
     }
 
-    this.#props.email = props.email;
-    this.#props.code = props.base64Code;
-    this.#props.template = props.templateName;
+    this.#email = props.email;
+    this.#code = props.base64Code;
+    this.#template = props.templateName;
 
     Object.freeze(this);
   }
 
   getEmail() {
-    return this.#props.email
+    return this.#email;
   }
 
   getCode() {
-    return this.#props.code
+    return this.#code;
   }
 
   getTemplateName() {
-    return this.#props.template;
+    return this.#template;
   }
 }

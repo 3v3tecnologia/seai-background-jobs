@@ -4,17 +4,18 @@ import { MAILER_OPTIONS } from "../config/mailer.js";
 import { getTemplate } from "../helpers/getTemplateFile.js";
 
 export class SendUserAccountService {
-
-  constructor({ sendMailService, htmlTemplateCompiler }) {
+  htmlTemplateCompiler;
+  sendMail;
+  constructor(sendMailService, htmlTemplateCompiler) {
     this.sendMail = sendMailService;
     this.htmlTemplateCompiler = htmlTemplateCompiler;
   }
 
   async execute(command) {
     try {
-      const email = command.getEmail()
-      const code = command.getCode()
-      const templateName = command.getTemplateName()
+      const email = command.getEmail();
+      const code = command.getCode();
+      const templateName = command.getTemplateName();
 
       Logger.info(`Iniciando envio de email para  ${email}`);
 
@@ -26,21 +27,32 @@ export class SendUserAccountService {
 
       const template = templateOrError.value();
 
+      console.log({
+        file: template.file,
+        args: {
+          user_code: code,
+          user_email: email,
+          from: MAILER_OPTIONS.from,
+          subject: template.info.subject,
+          service_url: template.info.service_url,
+        },
+      });
+
       const html = await this.htmlTemplateCompiler.compile({
         file: template.file,
         args: {
           user_code: code,
           user_email: email,
           from: MAILER_OPTIONS.from,
-          subject: template.subject,
-          service_url: template.service_url,
+          subject: template.info.subject,
+          service_url: template.info.service_url,
         },
       });
 
       await this.sendMail.send({
         from: MAILER_OPTIONS.from,
         to: email,
-        subject: template.subject,
+        subject: template.info.subject,
         html,
       });
 
@@ -48,6 +60,7 @@ export class SendUserAccountService {
 
       return Right.create(`Sucesso ao enviar email`);
     } catch (error) {
+      console.error(error);
       Logger.error({
         msg: "Falha ao enviar email.",
         obj: error.message,

@@ -5,9 +5,9 @@ import { SendEmailDummy } from "../doubles/services/send-email-dummy";
 
 import { FileNotFoundError } from "../../errors/FileNotFound";
 
-import { HtmlTemplateEngineAdapter } from "../../external/template-engine-adapter";
+import { HtmlTemplateEngineAdapter } from "../../infra/html-template-engine";
 
-import { SendUserAccountNotification } from "../../services/send-user-account-notification";
+import { SendUserAccountService } from "../../services/send-user-account-notification";
 
 describe.skip("#Send user account notification service", () => {
   let sendEmailService = null;

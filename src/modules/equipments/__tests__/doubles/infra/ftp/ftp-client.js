@@ -8,9 +8,8 @@ const FILES = {
 };
 
 class FTPClientAdapterStub {
-  async close() {
+  close() {
     return new Promise((resolve) => {
-      console.log("Closing connection...");
       resolve();
     });
   }

@@ -1,21 +1,13 @@
-import { SEAI_BASE_URL } from "../../../../shared/config/seaiApi.js";
 import { Logger } from "../../../../shared/logger.js";
 import { Left, Right } from "../../../../shared/result.js";
+import { EQUIPMENTS_API_BASE_URL } from "../../config/equipments-api.js";
 
-class EquipmentsServicesApi {
-  #baseUrl;
-
-  constructor() {
-    this.#baseUrl = SEAI_BASE_URL + "/api/v2/equipments";
-  }
-
+class EquipmentsServices {
   async getMeteorologicalOrganCredentials(organName) {
     try {
       const { data } = await (
         await fetch(
-          `${
-            this.#baseUrl
-          }/meteorological_organ/access_credentials?organName=${organName}`
+          `${EQUIPMENTS_API_BASE_URL}/meteorological_organ/access_credentials?organName=${organName}`
         )
       ).json();
 
@@ -39,7 +31,7 @@ class EquipmentsServicesApi {
 
   async bulkInsert({ items, id_organ }) {
     try {
-      const response = await fetch(this.#baseUrl, {
+      const response = await fetch(EQUIPMENTS_API_BASE_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json", // Set the content type
@@ -75,7 +67,7 @@ class EquipmentsServicesApi {
         const organizedByCodes = new Map();
 
         const { data } = await (
-          await fetch(`${this.#baseUrl}?type=${type}`)
+          await fetch(`${EQUIPMENTS_API_BASE_URL}?type=${type}`)
         ).json();
 
         if (data) {
@@ -117,7 +109,9 @@ class EquipmentsServicesApi {
 
   async getTypes() {
     try {
-      const { data } = await (await fetch(`${this.#baseUrl}/types`)).json();
+      const { data } = await (
+        await fetch(`${EQUIPMENTS_API_BASE_URL}/types`)
+      ).json();
 
       const types = new Map();
 
@@ -140,7 +134,7 @@ class EquipmentsServicesApi {
 
   async bulkInsertMeasurements({ type, items, id_organ, date }) {
     try {
-      const response = await fetch(`${this.#baseUrl}/measurements`, {
+      const response = await fetch(`${EQUIPMENTS_API_BASE_URL}/measurements`, {
         headers: {
           "Content-Type": "application/json", // Set the content type
         },
@@ -177,4 +171,4 @@ class EquipmentsServicesApi {
   }
 }
 
-export const equipmentsApi = new EquipmentsServicesApi();
+export const equipmentsApi = new EquipmentsServices();

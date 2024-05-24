@@ -1,16 +1,13 @@
-import { Logger } from "../../../../shared/logger";
-import { Right, Left } from "../../../../shared/result";
+import { Logger } from "../../../../shared/logger.js";
+import { Right, Left } from "../../../../shared/result.js";
+import { NEWSLETTER_API_BASE_URL } from "../../config/api.js";
 
-class NewsletterServicesApi {
-  #baseUrl;
-
-  constructor() {
-    this.#baseUrl = SEAI_BASE_URL + "/api/v1/news";
-  }
-
+class NewsletterServices {
   async getNewsById(id) {
     try {
-      const { data } = await (await fetch(`${this.#baseUrl}/${id}`)).json();
+      const { data } = await (
+        await fetch(`${NEWSLETTER_API_BASE_URL}/${id}`)
+      ).json();
 
       if (data) {
         return {
@@ -38,9 +35,9 @@ class NewsletterServicesApi {
     }
   }
 
-  async getRecipients() {
+  async getAllRecipientsEmails() {
     const { data } = await (
-      await fetch(`${this.#baseUrl}/subscribers/email`)
+      await fetch(`${NEWSLETTER_API_BASE_URL}/subscribers/email`)
     ).json();
 
     if (data) {
@@ -50,9 +47,9 @@ class NewsletterServicesApi {
     return null;
   }
 
-  async updateSendAt({ id, date }) {
+  async updateNewsletterSendAt({ id, date }) {
     try {
-      const response = await fetch(`${this.#baseUrl}/${id}`, {
+      const response = await fetch(`${NEWSLETTER_API_BASE_URL}/${id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -80,4 +77,4 @@ class NewsletterServicesApi {
   }
 }
 
-export const newsletterServiceAPI = new NewsletterServicesApi();
+export const newsletterServiceAPI = new NewsletterServices();

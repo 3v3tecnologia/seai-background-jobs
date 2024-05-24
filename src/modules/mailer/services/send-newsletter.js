@@ -22,7 +22,7 @@ export class SendNewsletterEmail {
         return Left.create(new Error(`Notícia ${idNews} não existe`));
       }
 
-      const subscribers = await this.newsletterService.getSubscribers();
+      const subscribers = await this.newsletterService.getAllRecipientsEmails();
 
       if (subscribers === null) {
         Logger.warn({
@@ -47,7 +47,7 @@ export class SendNewsletterEmail {
         msg: "Newsletter enviada com sucesso...",
       });
 
-      await this.newsletterService.updateSendDate({
+      await this.newsletterService.updateNewsletterSendAt({
         id: idNews,
         date: new Date(),
       });

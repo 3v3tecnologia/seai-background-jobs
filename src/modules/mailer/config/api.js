@@ -1,9 +1,9 @@
 const USER_ACCOUNT_API_BASE_URL =
-  process.env.USER_API_SERVER_BASE_URL || "http://localhost:8080/account";
+  `${process.env.USER_API_ADDR}/account` || "http://localhost:8080/account";
 
-export const SERVICES_API_URL = {
-  USER_ACCOUNT: {
-    FORGOT_PASSWORD: USER_ACCOUNT_API_BASE_URL + "/password/reset",
-    CREATE_USER: USER_ACCOUNT_API_BASE_URL + "/complete-register",
-  },
+export const USERS_SERVICES_API_URL = {
+  FORGOT_PASSWORD: USER_ACCOUNT_API_BASE_URL + "/password/reset",
+  CREATE_USER: USER_ACCOUNT_API_BASE_URL + "/complete-register",
 };
+
+export const NEWSLETTER_API_BASE_URL = `${process.env.NEWSLETTER_API_ADDR}/api/v1/news`;

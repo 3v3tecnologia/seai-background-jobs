@@ -1,4 +1,4 @@
-import { SEAI_API } from "./api.js";
+import { SERVICES_API_URL } from "./api.js";
 
 export const HTML_TEMPLATES = (function () {
   const dir = "./resources/mail/templates";
@@ -7,16 +7,16 @@ export const HTML_TEMPLATES = (function () {
       "createUserAccount",
       {
         path: `${dir}/create_user_account.html`,
-        subject: "Bem vindo ao SEAI!",
-        service_url: SEAI_API.ACCOUNT.CREATE_USER
+        subject: "SEAI - Verifique o seu email",
+        service_url: SERVICES_API_URL.USER_ACCOUNT.CREATE_USER,
       },
     ],
     [
       "forgotUserPassword",
       {
         path: `${dir}/forgot_password.html`,
-        subject: "Recuperação de senha",
-        service_url: SEAI_API.ACCOUNT.FORGOT_PASSWORD
+        subject: "SEAI - Verifique o seu email",
+        service_url: SERVICES_API_URL.USER_ACCOUNT.FORGOT_PASSWORD,
       },
     ],
   ]);

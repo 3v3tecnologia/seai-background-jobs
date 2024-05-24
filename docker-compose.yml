@@ -1,7 +1,9 @@
-version: '3'
 services:
   jobs:
-    build: .
+    build: 
+      context: .
+      args:
+        - NODE_ENV=$NODE_ENV
     container_name: "jobs_workers"
     volumes:
       - .:/usr/src/app
@@ -10,6 +12,7 @@ services:
       jobs_database:
         condition: service_healthy
     restart: on-failure
+  
     networks:
       - back-tier
       - custom-proxy

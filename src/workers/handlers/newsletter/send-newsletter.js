@@ -12,7 +12,11 @@ export class SendNewsletterWorker {
     );
 
     if (payloadOrError.isError()) {
-      throw resultOrError.error();
+      Logger.error({
+        msg: "Falha ao enviar notícias",
+        obj: payloadOrError.error(),
+      });
+      throw payloadOrError.error();
     }
 
     // Destruct from pg-boss job payload object
@@ -25,6 +29,10 @@ export class SendNewsletterWorker {
     );
 
     if (resultOrError.isError()) {
+      Logger.error({
+        msg: "Falha ao enviar notícias",
+        obj: resultOrError.error(),
+      });
       throw resultOrError.error();
     }
 

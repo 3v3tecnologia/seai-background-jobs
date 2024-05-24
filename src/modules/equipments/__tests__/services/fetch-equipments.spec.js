@@ -11,15 +11,12 @@ import {
 
 import { EquipmentCommand } from "../../services/commands/command.js";
 
-import { FetchFuncemeEquipments } from "../../data/funceme/services/fetch-funceme-measures.js";
+import { FetchFuncemeEquipments } from "../../data/funceme/services/funceme.js";
 import { FetchEquipments } from "../../services/equipments/fetch-equipments.js";
 import { ftpClientFaker } from "../doubles/infra/ftp/ftp-client.js";
 import { EquipmentsServicesFaker } from "../doubles/infra/services/equipments.js";
-// Domain Model
 
-describe.skip("Fetch Equipments", () => {
-  let equipmentsServicesFaker;
-
+describe("Fetch Equipments", () => {
   function makeSUT(
     equipmentsServices,
     fetchEquipmentsFromMeteorologicalEntity
@@ -32,8 +29,6 @@ describe.skip("Fetch Equipments", () => {
 
   beforeEach(() => {
     jest.useFakeTimers("modern");
-
-    equipmentsServicesFaker = new EquipmentsServicesFaker();
   });
 
   afterEach(() => {
@@ -58,12 +53,13 @@ describe.skip("Fetch Equipments", () => {
     );
 
     const response = await sut.execute(new EquipmentCommand());
+    console.log(response);
 
     expect(response.isSuccess()).toBeTruthy();
     expect(response.value()).toBe("Sucesso ao carregar equipamentos");
   });
 
-  test.skip("should be able to save equipments", async () => {
+  test("should be able to save equipments", async () => {
     jest.setSystemTime(new Date(2023, 9, 2));
 
     const equipments = [
@@ -94,12 +90,25 @@ describe.skip("Fetch Equipments", () => {
       },
     ];
 
-    equipmentsServicesFaker.equipmentList = equipments;
+    const equipmentsServices = new EquipmentsServicesFaker({
+      equipmentList: equipments,
+    });
 
-    const sut = makeSUT(equipmentsServicesFaker);
+    const insertEquipmentsSpy = jest.spyOn(equipmentsServices, "bulkInsert");
+
+    const fetchEquipmentsFromMeteorologicalEntity = new FetchFuncemeEquipments(
+      ftpClientFaker,
+      equipmentsServices
+    );
+
+    const sut = makeSUT(
+      equipmentsServices,
+      fetchEquipmentsFromMeteorologicalEntity
+    );
 
     const result = await sut.execute(new EquipmentCommand());
 
+    expect(insertEquipmentsSpy).toHaveBeenCalled();
     expect(result.isSuccess()).toBeTruthy();
     expect(result.value()).toBe("Sucesso ao carregar equipamentos");
   });

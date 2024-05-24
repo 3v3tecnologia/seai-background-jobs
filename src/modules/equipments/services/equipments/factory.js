@@ -1,13 +1,10 @@
 import { FetchEquipments } from "./fetch-equipments.js";
-import { fetchFuncemeEquipmentsWithLastMeasurementsService } from "../../data/funceme/services/fetch-equipments-service.factory.js";
+import { funcemeService } from "../../data/funceme/services/funceme-service.factory.js";
 import { equipmentsApi } from "../../data/services/index.js";
 
-
 const fetchEquipmentsService = new FetchEquipments(
-    fetchFuncemeEquipmentsWithLastMeasurementsService,
-    equipmentsApi
-  );
+  funcemeService,
+  equipmentsApi
+);
 
-export {
-  fetchEquipmentsService
-}
+export { fetchEquipmentsService };

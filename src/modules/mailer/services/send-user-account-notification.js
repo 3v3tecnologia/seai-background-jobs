@@ -27,17 +27,6 @@ export class SendUserAccountService {
 
       const template = templateOrError.value();
 
-      console.log({
-        file: template.file,
-        args: {
-          user_code: code,
-          user_email: email,
-          from: MAILER_OPTIONS.from,
-          subject: template.info.subject,
-          service_url: template.info.service_url,
-        },
-      });
-
       const html = await this.htmlTemplateCompiler.compile({
         file: template.file,
         args: {

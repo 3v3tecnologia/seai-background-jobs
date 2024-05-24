@@ -6,24 +6,37 @@ export class EquipmentsServicesFaker {
   pluviometersMeasurementsList = [];
   organsList = [];
 
-  constructor({
-    equipmentList,
-    stationsMeasurements,
-    pluviometersMeasurements,
-    meteorologicalOrgans,
-  }) {
-    this.equipmentList = equipmentList;
-    this.stationsMeasurementsList = stationsMeasurements || [];
-    this.pluviometersMeasurementsList = pluviometersMeasurements || [];
-    this.organsList = meteorologicalOrgans || [
-      {
-        Id: 1,
-        Name: "FUNCEME",
-        Host: "testr",
-        User: "test",
-        Password: "test",
-      },
-    ];
+  constructor(
+    {
+      equipmentList,
+      stationsMeasurements,
+      pluviometersMeasurements,
+      meteorologicalOrgans,
+    } = {
+      equipmentList: null,
+      stationsMeasurements: null,
+      pluviometersMeasurements: null,
+      meteorologicalOrgans: null,
+    }
+  ) {
+    this.equipmentList = equipmentList ? equipmentList : [];
+    this.stationsMeasurementsList = stationsMeasurements
+      ? stationsMeasurements
+      : [];
+    this.pluviometersMeasurementsList = pluviometersMeasurements
+      ? pluviometersMeasurements
+      : [];
+    this.organsList = meteorologicalOrgans
+      ? meteorologicalOrgans
+      : [
+          {
+            Id: 1,
+            Name: "FUNCEME",
+            Host: "testr",
+            User: "test",
+            Password: "test",
+          },
+        ];
   }
 
   async getMeteorologicalOrganCredentials(organName) {
@@ -38,10 +51,10 @@ export class EquipmentsServicesFaker {
       : null;
   }
 
-  async bulkInsert(data = []) {
+  async bulkInsert({ items, id_organ }) {
     const insertedEquipments = new Map();
 
-    for (const item of data) {
+    for (const item of items) {
       const id = new Date().getTime();
       item.IdEquipment = id;
 
@@ -50,7 +63,7 @@ export class EquipmentsServicesFaker {
       insertedEquipments.set(item.IdEquipmentExternal, id);
     }
 
-    return insertedEquipments;
+    return Right.create(insertedEquipments);
   }
 
   // Why not fetch all equipments?
@@ -100,14 +113,14 @@ export class EquipmentsServicesFaker {
       organizedByTypes.set(eqpType, organizedByCodes);
     });
 
-    if (
-      [
-        organizedByTypes.get("station").size,
-        organizedByTypes.get("pluviometer").size,
-      ].every((cond) => cond === 0)
-    ) {
-      return Left.create(new Error("Não há equipamentos cadastrados"));
-    }
+    // if (
+    //   [
+    //     organizedByTypes.get("station").size,
+    //     organizedByTypes.get("pluviometer").size,
+    //   ].every((cond) => cond === 0)
+    // ) {
+    //   return Left.create(new Error("Não há equipamentos cadastrados"));
+    // }
 
     return Right.create(organizedByTypes);
   }

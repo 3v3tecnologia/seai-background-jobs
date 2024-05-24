@@ -25,7 +25,8 @@ function toBlob() {
   return new TransformStream({
     transform(chunk, controller) {
       const dataURL = chunk.toString();
-      controller.enqueue(dataURItoBlob(dataURL));
+      controller.enqueue(dataURL);
+      // controller.enqueue(dataURItoBlob(dataURL));
     },
   });
 }
@@ -37,7 +38,8 @@ export function bufferToBlob(contentBuffer) {
 }
 
 export async function blobToHTML(blob) {
-  const readable = blobToBase64(blob).pipeThrough(toBlob());
+  // const readable = blobToBase64(blob).pipeThrough(toBlob());
+  const readable = blob.stream().pipeThrough(toBlob());
 
   let html = "";
   await pipeline(

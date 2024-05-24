@@ -1,11 +1,9 @@
 import { Logger } from "../../../shared/logger.js";
 import { Left, Right } from "../../../shared/result.js";
-import { MAILER_OPTIONS } from "../config/mailer.js";
-import { bufferToBlob, blobToHTML } from "../helpers/convertToBlob.js";
 
 export class SendNewsletterEmail {
-  constructor(repository, sendMailAdapter) {
-    this.repository = repository;
+  constructor(newsletterService, sendMailAdapter) {
+    this.newsletterService = newsletterService;
     this.sendMail = sendMailAdapter;
   }
 
@@ -13,42 +11,50 @@ export class SendNewsletterEmail {
     try {
       const idNews = command.getNewsId();
 
-      Logger.info(`Iniciando envio de emails da notícia ${idNews}`);
+      Logger.info({
+        msg: `Iniciando envio de emails da notícia ${idNews}`,
+      });
 
-      const news = await this.repository.getNewsById(idNews);
+      const news = await this.newsletterService.getNewsById(idNews);
 
       if (news === null) {
         return Left.create(new Error(`Notícia ${idNews} não existe`));
       }
 
-      const subscribers = await this.repository.getSubscribers();
+      const subscribers = await this.newsletterService.getAllRecipientsEmails();
 
       if (subscribers === null) {
         Logger.warn({
           msg: `Não há leitores inscritos na notícia ${idNews}`,
         });
+
+        return Left.create(new Error("Deve haver no mínimo um destinatário"));
       }
 
-      const html = await blobToHTML(bufferToBlob(news.Data));
+      const buffer = Buffer.from(news.Data);
 
-      const mailList =
-        subscribers && subscribers.length
-          ? [
-              ...subscribers.map((data) => data.Email),
-              // ...[MAILER_OPTIONS.to],
-            ].join(",")
-          : [MAILER_OPTIONS.from].join(",");
+      const html = buffer.toString("utf-8");
+      // const html = await blobToHTML(bufferToBlob(news.Data));
 
-      Logger.info("Enviando newsletter...");
+      Logger.info({
+        msg: "Enviando newsletter...",
+      });
 
       await this.sendMail.send({
-        to: mailList,
+        to: subscribers.join(","),
         subject: "NEWSLETTER",
         html,
         cc: "*******",
       });
 
-      Logger.info("Newsletter enviada com sucesso...");
+      Logger.info({
+        msg: "Newsletter enviada com sucesso...",
+      });
+
+      await this.newsletterService.updateNewsletterSendAt({
+        id: idNews,
+        date: new Date(),
+      });
 
       return Right.create("Sucesso ao enviar notícia");
     } catch (error) {

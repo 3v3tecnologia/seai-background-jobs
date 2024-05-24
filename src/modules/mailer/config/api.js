@@ -1,9 +1,9 @@
-const SEAI_BASE_URL = process.env.SEAI_SERVER_URL || "http://localhost:8080";
+const USER_ACCOUNT_API_BASE_URL =
+  `${process.env.USER_API_ADDR}/account` || "http://localhost:8080/account";
 
-export const SEAI_API = {
-  BASE_URL: SEAI_BASE_URL,
-  ACCOUNT: {
-    FORGOT_PASSWORD: SEAI_BASE_URL + "/account/password/reset",
-    CREATE_USER: SEAI_BASE_URL + "/account/complete-register",
-  },
+export const USERS_SERVICES_API_URL = {
+  FORGOT_PASSWORD: USER_ACCOUNT_API_BASE_URL + "/password/reset",
+  CREATE_USER: USER_ACCOUNT_API_BASE_URL + "/complete-register",
 };
+
+export const NEWSLETTER_API_BASE_URL = `${process.env.NEWSLETTER_API_ADDR}/api/v1/news`;

@@ -1,6 +1,9 @@
 import nodemailer from "nodemailer";
-import { MAILER_OPTIONS, MAILER_TRANSPORT_CONFIG } from "../config/mailer.js";
-import { Logger } from "../../../shared/logger.js";
+import {
+  MAILER_OPTIONS,
+  MAILER_TRANSPORT_CONFIG,
+} from "../../config/mailer.js";
+import { Logger } from "../../../../shared/logger.js";
 
 export class SendEmailService {
   async sendMail(command) {

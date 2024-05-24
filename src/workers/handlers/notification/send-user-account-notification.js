@@ -13,36 +13,6 @@ export class SendUserAccountNotificationWorker {
   };
 
   static async handler(payload) {
-    /*
-      [
-        {
-          id: 'ce4200a1-feff-4273-8d81-a22287caba8d',
-          name: 'user-account-notification',
-          priority: 2,
-          data: {
-            email: 'davi1321@3v3.com.br',
-            base64Code: 'ZGF2aTEzMjFAM3YzLmNvbS5icg==',
-            templateName: 'createUserAccount'
-          },
-          state: 'active',
-          retrylimit: 1,
-          retrycount: 0,
-          retrydelay: 60,
-          retrybackoff: false,
-          startafter: 2024-05-17T10:25:20.032Z,
-          startedon: 2024-05-17T10:25:20.688Z,
-          singletonkey: null,
-          singletonon: null,
-          expirein: PostgresInterval { minutes: 15 },
-          createdon: 2024-05-17T10:25:20.032Z,
-          completedon: null,
-          keepuntil: 2024-05-31T10:25:20.032Z,
-          on_complete: false,
-          output: null,
-          expire_in_seconds: '900.000000'
-        }
-      ]
-    */
     const payloadOrError = Validator.againstEmptyArray(
       payload,
       "Worker payload is null or undefined."
@@ -62,6 +32,10 @@ export class SendUserAccountNotificationWorker {
     );
 
     if (resultOrError.isError()) {
+      Logger.error({
+        msg: "Falha ao enviar notificação para usuário",
+        obj: resultOrError.error(),
+      });
       throw resultOrError.error();
     }
 

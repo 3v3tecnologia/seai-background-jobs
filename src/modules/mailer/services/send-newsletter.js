@@ -1,6 +1,5 @@
 import { Logger } from "../../../shared/logger.js";
 import { Left, Right } from "../../../shared/result.js";
-import { blobToHTML, bufferToBlob } from "../helpers/convertToBlob.js";
 
 export class SendNewsletterEmail {
   constructor(newsletterService, sendMailAdapter) {
@@ -28,9 +27,14 @@ export class SendNewsletterEmail {
         Logger.warn({
           msg: `Não há leitores inscritos na notícia ${idNews}`,
         });
+
+        return Left.create(new Error("Deve haver no mínimo um destinatário"));
       }
 
-      const html = await blobToHTML(bufferToBlob(news.Data));
+      const buffer = Buffer.from(news.Data);
+
+      const html = buffer.toString("utf-8");
+      // const html = await blobToHTML(bufferToBlob(news.Data));
 
       Logger.info({
         msg: "Enviando newsletter...",

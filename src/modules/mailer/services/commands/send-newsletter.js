@@ -1,7 +1,9 @@
 import { Validator } from "../../../../shared/validator.js";
 
 export class SendNewsletterCommand {
-  #props;
+  #props = {
+    newsId: null,
+  };
   constructor(props) {
     const hasNullOrUndefinedProps = Validator.againstNullOrUndefined({
       name: "data",

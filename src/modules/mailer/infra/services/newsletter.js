@@ -1,12 +1,16 @@
 import { Logger } from "../../../../shared/logger.js";
 import { Right, Left } from "../../../../shared/result.js";
 import { NEWSLETTER_API_BASE_URL } from "../../config/api.js";
-
+import { SEAI_API_KEY } from "../../../../shared/api-key.js";
 class NewsletterServices {
   async getNewsById(id) {
     try {
       const { data } = await (
-        await fetch(`${NEWSLETTER_API_BASE_URL}/${id}`)
+        await fetch(`${NEWSLETTER_API_BASE_URL}/${id}`, {
+          headers: {
+            "Access-Key": SEAI_API_KEY,
+          },
+        })
       ).json();
 
       if (data) {
@@ -19,7 +23,7 @@ class NewsletterServices {
           },
           Title: data.Title,
           Description: data.Description,
-          Data: data.Content,
+          Data: data.Data.data,
           CreatedAt: data.CreatedAt,
           UpdatedAt: data.UpdatedAt,
         };
@@ -36,15 +40,27 @@ class NewsletterServices {
   }
 
   async getAllRecipientsEmails() {
-    const { data } = await (
-      await fetch(`${NEWSLETTER_API_BASE_URL}/subscribers/email`)
-    ).json();
+    try {
+      const { data } = await (
+        await fetch(`${NEWSLETTER_API_BASE_URL}/subscribers/email`, {
+          headers: {
+            "Access-Key": SEAI_API_KEY,
+          },
+        })
+      ).json();
 
-    if (data) {
-      return data;
+      if (data) {
+        return data;
+      }
+
+      return null;
+    } catch (error) {
+      Logger.error({
+        msg: "Falha ao buscar destinatários da notícia",
+        obj: error,
+      });
+      return Left.create(new Error(error));
     }
-
-    return null;
   }
 
   async updateNewsletterSendAt({ id, date }) {
@@ -53,6 +69,7 @@ class NewsletterServices {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
+          "Access-Key": SEAI_API_KEY,
         },
         body: JSON.stringify({
           SendAt: date,
@@ -71,7 +88,10 @@ class NewsletterServices {
 
       return Right.create(result.data);
     } catch (error) {
-      console.error(error);
+      Logger.error({
+        msg: "Falha ao atualizar notícia",
+        obj: error,
+      });
       return Left.create(new Error(error));
     }
   }

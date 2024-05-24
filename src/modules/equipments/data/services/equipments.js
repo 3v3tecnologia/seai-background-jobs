@@ -1,3 +1,4 @@
+import { SEAI_API_KEY } from "../../../../shared/api-key.js";
 import { Logger } from "../../../../shared/logger.js";
 import { Left, Right } from "../../../../shared/result.js";
 import { EQUIPMENTS_API_BASE_URL } from "../../config/equipments-api.js";
@@ -5,9 +6,15 @@ import { EQUIPMENTS_API_BASE_URL } from "../../config/equipments-api.js";
 class EquipmentsServices {
   async getMeteorologicalOrganCredentials(organName) {
     try {
+      console.log(EQUIPMENTS_API_BASE_URL);
       const { data } = await (
         await fetch(
-          `${EQUIPMENTS_API_BASE_URL}/meteorological_organ/access_credentials?organName=${organName}`
+          `${EQUIPMENTS_API_BASE_URL}/meteorological_organ/access_credentials?organName=${organName}`,
+          {
+            headers: {
+              "Access-Key": SEAI_API_KEY,
+            },
+          }
         )
       ).json();
 
@@ -35,6 +42,7 @@ class EquipmentsServices {
         method: "POST",
         headers: {
           "Content-Type": "application/json", // Set the content type
+          "Access-Key": SEAI_API_KEY,
         },
         body: JSON.stringify({
           items,
@@ -67,7 +75,11 @@ class EquipmentsServices {
         const organizedByCodes = new Map();
 
         const { data } = await (
-          await fetch(`${EQUIPMENTS_API_BASE_URL}?type=${type}`)
+          await fetch(`${EQUIPMENTS_API_BASE_URL}?type=${type}`, {
+            headers: {
+              "Access-Key": SEAI_API_KEY,
+            },
+          })
         ).json();
 
         if (data) {
@@ -110,7 +122,11 @@ class EquipmentsServices {
   async getTypes() {
     try {
       const { data } = await (
-        await fetch(`${EQUIPMENTS_API_BASE_URL}/types`)
+        await fetch(`${EQUIPMENTS_API_BASE_URL}/types`, {
+          headers: {
+            "Access-Key": SEAI_API_KEY,
+          },
+        })
       ).json();
 
       const types = new Map();
@@ -137,6 +153,7 @@ class EquipmentsServices {
       const response = await fetch(`${EQUIPMENTS_API_BASE_URL}/measurements`, {
         headers: {
           "Content-Type": "application/json", // Set the content type
+          "Access-Key": SEAI_API_KEY,
         },
         method: "POST",
         body: JSON.stringify({

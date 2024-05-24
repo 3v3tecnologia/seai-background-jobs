@@ -80,6 +80,8 @@ export class FetchFuncemeEquipments {
       const meteorologicalOrgan =
         await this.#equipmentsApi.getMeteorologicalOrganCredentials(organName);
 
+      console.log(meteorologicalOrgan);
+
       if (meteorologicalOrgan === null) {
         return Left.create(
           new Error(
@@ -130,7 +132,7 @@ export class FetchFuncemeEquipments {
 
       return Right.create({
         organId: meteorologicalOrgan.Id,
-        equipments
+        equipments,
       });
     } catch (error) {
       // Logger.error({

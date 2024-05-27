@@ -68,12 +68,8 @@ class NewsletterServices {
       const response = await fetch(`${NEWSLETTER_API_BASE_URL}/${id}`, {
         method: "PATCH",
         headers: {
-          "Content-Type": "application/json",
           "Access-Key": SEAI_API_KEY,
         },
-        body: JSON.stringify({
-          SendAt: date,
-        }),
       });
 
       if (response.status >= 400 && response.status <= 500) {

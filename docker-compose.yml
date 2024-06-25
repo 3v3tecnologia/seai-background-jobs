@@ -21,15 +21,15 @@ services:
     image: postgres:14.2
     container_name: "seai-jobs-database"
     user: postgres
-    secrets:
-      - db-password
+    # secrets:
+    #   - db-password
     volumes:
       - db-data:/var/lib/postgresql/data
     ports:
       - "5433:5432"
     restart: on-failure
     environment:
-      - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
+      - POSTGRES_PASSWORD=${DB_JOB_PASSWORD}
     healthcheck:
       test: [ "CMD", "pg_isready" ]
       interval: 10s
@@ -44,9 +44,9 @@ volumes:
   nodemodules: {}
   nodemodules_api: {}
 
-secrets:
-  db-password:
-    file: password.txt
+# secrets:
+#   db-password:
+#     file: password.txt
 
 networks:
   back-tier:

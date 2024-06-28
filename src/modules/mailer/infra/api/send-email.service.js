@@ -25,8 +25,6 @@ export class SendEmailService {
       attachments: options.attachments,
     };
 
-    console.log(command);
-
     if (options.text) {
       Object.assign(command, {
         text: options.text,

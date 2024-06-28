@@ -24,7 +24,7 @@ export const cronJobs = [
     },
   },
   {
-    queue: QUEUES.IRRIGATION_REPORTS,
+    queue: QUEUES.IRRIGATION_REPORTS_SCHEDULER,
     cron: "0 4 * * *",
     data: null,
     options: {

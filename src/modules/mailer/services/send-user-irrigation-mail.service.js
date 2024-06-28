@@ -33,6 +33,7 @@ export class SendUserIrrigationMail {
           name,
           email,
           irrigations,
+          notification: dto.getNotification(),
           from: MAILER_OPTIONS.from,
           subject: template.info.subject,
         },

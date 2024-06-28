@@ -22,4 +22,8 @@ export class SendUserIrrigationMailDTO {
   getIrrigation() {
     return this.#props.Irrigation;
   }
+
+  getNotification() {
+    return this.#props?.Notification || null;
+  }
 }

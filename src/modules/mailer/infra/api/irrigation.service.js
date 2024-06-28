@@ -6,6 +6,7 @@ class IrrigationRecommendationsService {
     const response = await fetch(`${IRRIGATION_API_BASE_URL}/recommendations`, {
       method: "GET",
       headers: {
+        "Content-Type": "text/plain",
         "x-api-key": SEAI_API_KEY,
       },
       signal,

@@ -1,5 +1,7 @@
+import { pgBoss } from "../../../shared/jobQueue/pg-boss.js";
 import { Logger } from "../../../shared/logger.js";
 import { Left, Right } from "../../../shared/result.js";
+import { irrigationRecommendationsService } from "../infra/api/irrigation.service.js";
 
 export class ScheduleIrrigationMail {
   #queueServices;
@@ -12,30 +14,33 @@ export class ScheduleIrrigationMail {
 
   async execute() {
     const abortController = new AbortController();
-    // Convert a stream of text in a binary encoding into strings
-    const decoderStream = new TextDecoder("utf-8");
-
-    const responseStream =
-      await this.#irrigationRecommendationService.getIrrigationsPerUserDataStream(
-        abortController.signal
-      );
 
     try {
+      // Convert a stream of text in a binary encoding into strings
+      const decoderStream = new TextDecoder("utf-8");
+
+      const responseStream =
+        await this.#irrigationRecommendationService.getIrrigationsPerUserDataStream(
+          abortController.signal
+        );
+
       while (true) {
-        const { chunk, done } = await responseStream.read();
+        const { value, done } = await responseStream.read();
 
         if (done) {
           console.log("End of stream.");
           break;
         }
 
-        const data = decoderStream.decode(chunk);
+        const data = decoderStream.decode(value, { stream: true });
 
         // Process the chunk (e.g., log it or manipulate it)
-        console.log("data: ", JSON.parse(data));
+        console.log("to js data: ", JSON.parse(data));
 
         //What if the jobs services is down?
-        await this.#queueServices.enqueue("irrigation-reports", data);
+        if (data) {
+          await this.#queueServices.enqueue("irrigation-reports", data);
+        }
       }
 
       return Right.create(

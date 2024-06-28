@@ -4,15 +4,30 @@ import { Logger } from "./shared/logger.js";
 
 import workers from "./workers/workers.js";
 import { cronJobs } from "./workers/cron.js";
-import { BackgroundJobsManager } from "./workers/lib/jobQueue/background-jobs-manager.js";
+import { pgBoss } from "./shared/jobQueue/pg-boss.js";
 
-await BackgroundJobsManager.connectToQueue();
+await pgBoss.startQueueMonitoring();
 
-await BackgroundJobsManager.startQueueMonitoring();
+Logger.info({
+  msg: "Registrando seeds...",
+});
 
-await BackgroundJobsManager.scheduleCronJobs(cronJobs);
+for (const job of cronJobs) {
+  const { cron, data, options, queue } = job;
+  await pgBoss.schedule(queue, cron, data, options);
+}
 
-await BackgroundJobsManager.registerAllWorkers(workers);
+Logger.info({ msg: "[⚡] Iniciando workers..." });
+
+for (const task of workers) {
+  for (const worker of task.workers) {
+    await pgBoss.registerWorker(task.queue_name, worker);
+  }
+}
+
+Logger.info({
+  msg: "[😉] Sucesso ao iniciar os workers...",
+});
 
 process.on("uncaughtException", (error) => {
   Logger.error({

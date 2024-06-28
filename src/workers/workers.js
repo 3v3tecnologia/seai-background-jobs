@@ -5,6 +5,7 @@ import {
   SendUserAccountNotificationWorker,
 } from "./handlers/index.js";
 import { IrrigationMailerScheduler } from "./handlers/irrigation/irrigation_mailer_scheduler.js";
+import { SendUserIrrigationMail } from "./handlers/irrigation/send-user-irrigation-mail.js";
 import { QUEUES } from "./queues.js";
 
 export default [
@@ -13,7 +14,7 @@ export default [
     workers: [
       {
         name: FetchFuncemeEquipmentsWorker.worker_name,
-        process: (command) => FetchFuncemeEquipmentsWorker.handler(command),
+        handle: (command) => FetchFuncemeEquipmentsWorker.handler(command),
       },
     ],
   },
@@ -22,7 +23,7 @@ export default [
     workers: [
       {
         name: FetchFuncemeMeasurementsWorker.worker_name,
-        process: (command) => FetchFuncemeMeasurementsWorker.handler(command),
+        handle: (command) => FetchFuncemeMeasurementsWorker.handler(command),
       },
     ],
   },
@@ -31,7 +32,7 @@ export default [
     workers: [
       {
         name: SendNewsletterWorker.worker_name,
-        process: (command) => SendNewsletterWorker.handler(command),
+        handle: (command) => SendNewsletterWorker.handler(command),
       },
     ],
   },
@@ -40,8 +41,7 @@ export default [
     workers: [
       {
         name: SendUserAccountNotificationWorker.worker_name,
-        process: (command) =>
-          SendUserAccountNotificationWorker.handler(command),
+        handle: (command) => SendUserAccountNotificationWorker.handler(command),
       },
     ],
   },
@@ -49,8 +49,8 @@ export default [
     queue_name: QUEUES.IRRIGATION_REPORTS,
     workers: [
       {
-        name: IrrigationMailerScheduler.worker_name,
-        process: (command) => IrrigationMailerScheduler.handler(command),
+        name: SendUserIrrigationMail.worker_name,
+        handle: (command) => SendUserIrrigationMail.handler(command),
       },
     ],
   },
@@ -59,7 +59,7 @@ export default [
     workers: [
       {
         name: IrrigationMailerScheduler.worker_name,
-        process: (command) => IrrigationMailerScheduler.handler(command),
+        handle: (command) => IrrigationMailerScheduler.handler(command),
       },
     ],
   },

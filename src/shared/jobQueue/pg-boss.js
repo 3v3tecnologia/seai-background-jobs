@@ -1,4 +1,4 @@
-import { Logger } from "../../../../shared/logger.js";
+import { Logger } from "../logger.js";
 import { pgBossConnection } from "./connection.js";
 
 export class PgBossAdapter {
@@ -30,14 +30,14 @@ export class PgBossAdapter {
         msg: "[⚙️] Criando conexão com o banco de dados de jobs",
       });
 
-      pgBossConnection.on("error", (error) => {
-        Logger.error({
-          msg: `Falha ao realizar conexão com o banco de dados de JOBS`,
-          obj: error,
-        });
+      // pgBossConnection.on("error", (error) => {
+      //   Logger.error({
+      //     msg: `Falha ao realizar conexão com o banco de dados de JOBS`,
+      //     obj: error,
+      //   });
 
-        throw error;
-      });
+      //   throw error;
+      // });
 
       Logger.info({
         msg: "[✅] Conexão iniciada com sucesso",
@@ -74,7 +74,7 @@ export class PgBossAdapter {
         batchSize: 1,
         includeMetadata: true,
       },
-      worker
+      worker.handle
     );
   }
 }

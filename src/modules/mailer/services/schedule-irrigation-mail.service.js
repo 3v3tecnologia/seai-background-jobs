@@ -1,10 +1,7 @@
 import { Logger } from "../../../shared/logger.js";
 import { Left, Right } from "../../../shared/result.js";
-import { IRRIGATION_API } from "../config/api.js";
 
 export class ScheduleIrrigationMail {
-  url = IRRIGATION_API;
-
   #queueServices;
   #irrigationRecommendationService;
 

@@ -1,6 +1,6 @@
 import { EquipmentCommand } from "../../../modules/equipments/services/commands/command.js";
 
-import { fetchEquipmentsService } from "../../../modules/equipments/services/equipments/factory.js";
+import { fetchEquipmentsService } from "../../../modules/equipments/services/factories/fetch-equipments.service.js";
 import { Logger } from "../../../shared/logger.js";
 
 export class FetchFuncemeEquipmentsWorker {

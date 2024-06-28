@@ -1,13 +1,14 @@
-import { Left, Right } from "../../../../shared/result.js";
+import { Left, Right } from "../../../shared/result.js";
 import {
   EquipmentMapper,
   mapItemsToPersistency,
-} from "../../core/mappers/index.js";
-import { EQUIPMENT_TYPE } from "../../core/equipments-types.js";
+} from "../core/mappers/index.js";
+import { EQUIPMENT_TYPE } from "../core/equipments-types.js";
 
 import { Filter } from "../helpers/filters.js";
 import { NotBelongTo } from "../helpers/predicates.js";
-import { Logger } from "../../../../shared/logger.js";
+import { Logger } from "../../../shared/logger.js";
+
 export class FetchEquipments {
   // Should be a array of services?
   #fetchEquipmentsFromMeteorologicalEntity;

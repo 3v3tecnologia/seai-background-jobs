@@ -7,7 +7,6 @@ export class FetchFuncemeMeasurementsWorker {
   static worker_name = "FetchFuncemeMeasurements";
 
   static async handler() {
-    console.log(process.env);
     const fetchedDataOrError = await fetchEquipmentsMeasurementsService.execute(
       new EquipmentCommand()
     );

@@ -2,13 +2,14 @@ import { Logger } from "../../../../shared/logger.js";
 import { Right, Left } from "../../../../shared/result.js";
 import { NEWSLETTER_API_BASE_URL } from "../../config/api.js";
 import { SEAI_API_KEY } from "../../../../shared/api-key.js";
+
 class NewsletterServices {
   async getNewsById(id) {
     try {
       const { data } = await (
         await fetch(`${NEWSLETTER_API_BASE_URL}/${id}`, {
           headers: {
-            "Access-Key": SEAI_API_KEY,
+            "x-api-key": SEAI_API_KEY,
           },
         })
       ).json();
@@ -44,7 +45,7 @@ class NewsletterServices {
       const { data } = await (
         await fetch(`${NEWSLETTER_API_BASE_URL}/subscribers/email`, {
           headers: {
-            "Access-Key": SEAI_API_KEY,
+            "x-api-key": SEAI_API_KEY,
           },
         })
       ).json();
@@ -68,7 +69,7 @@ class NewsletterServices {
       const response = await fetch(`${NEWSLETTER_API_BASE_URL}/${id}`, {
         method: "PATCH",
         headers: {
-          "Access-Key": SEAI_API_KEY,
+          "x-api-key": SEAI_API_KEY,
         },
       });
 

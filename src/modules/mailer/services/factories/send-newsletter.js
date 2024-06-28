@@ -1,6 +1,6 @@
-import { SendEmailService } from "../../infra/services/send-email.js";
-import { newsletterServiceAPI } from "../../infra/services/newsletter.js";
-import { SendNewsletterEmail } from "../send-newsletter.js";
+import { newsletterServiceAPI } from "../../infra/api/newsletter.service.js";
+import { SendEmailService } from "../../infra/api/send-email.service.js";
+import { SendNewsletterEmail } from "../send-newsletter.service.js";
 
 const sendNewsletterEmailService = new SendNewsletterEmail(
   newsletterServiceAPI,

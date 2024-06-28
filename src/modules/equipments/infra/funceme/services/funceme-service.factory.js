@@ -1,4 +1,4 @@
-import { equipmentsApi } from "../../services/equipments.js";
+import { equipmentsApi } from "../../equipments/equipments.service.js";
 import { FTPClientAdapter } from "../external/adapters/ftp/client/ftp-client-adapter.js";
 
 import { FetchFuncemeEquipments } from "./funceme.js";

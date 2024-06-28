@@ -4,6 +4,7 @@ import {
   SendNewsletterWorker,
   SendUserAccountNotificationWorker,
 } from "./handlers/index.js";
+import { IrrigationMailerScheduler } from "./handlers/irrigation/irrigation_mailer_scheduler.js";
 import { QUEUES } from "./queues.js";
 
 export default [
@@ -41,6 +42,24 @@ export default [
         name: SendUserAccountNotificationWorker.worker_name,
         process: (command) =>
           SendUserAccountNotificationWorker.handler(command),
+      },
+    ],
+  },
+  {
+    queue_name: QUEUES.IRRIGATION_REPORTS,
+    workers: [
+      {
+        name: IrrigationMailerScheduler.worker_name,
+        process: (command) => IrrigationMailerScheduler.handler(command),
+      },
+    ],
+  },
+  {
+    queue_name: QUEUES.IRRIGATION_REPORTS_SCHEDULER,
+    workers: [
+      {
+        name: IrrigationMailerScheduler.worker_name,
+        process: (command) => IrrigationMailerScheduler.handler(command),
       },
     ],
   },

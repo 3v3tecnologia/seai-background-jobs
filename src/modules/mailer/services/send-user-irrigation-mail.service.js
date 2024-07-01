@@ -3,12 +3,13 @@ import { Left, Right } from "../../../shared/result.js";
 import { MAILER_OPTIONS } from "../config/mailer.js";
 import { getTemplate } from "../helpers/getTemplateFile.js";
 
-export class SendUserIrrigationMail {
-  htmlTemplateCompiler;
-  sendMail;
+export class SendUserIrrigationMailService {
+  #htmlTemplateCompiler;
+  #sendMail;
+
   constructor(sendMailService, htmlTemplateCompiler) {
-    this.sendMail = sendMailService;
-    this.htmlTemplateCompiler = htmlTemplateCompiler;
+    this.#sendMail = sendMailService;
+    this.#htmlTemplateCompiler = htmlTemplateCompiler;
   }
 
   async execute(dto) {
@@ -27,7 +28,7 @@ export class SendUserIrrigationMail {
 
       const template = templateOrError.value();
 
-      const html = await this.htmlTemplateCompiler.compile({
+      const html = await this.#htmlTemplateCompiler.compile({
         file: template.file,
         args: {
           name,
@@ -39,7 +40,7 @@ export class SendUserIrrigationMail {
         },
       });
 
-      await this.sendMail.send({
+      await this.#sendMail.send({
         from: MAILER_OPTIONS.from,
         to: email,
         subject: template.info.subject,

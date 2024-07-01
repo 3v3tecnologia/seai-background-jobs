@@ -3,7 +3,7 @@ import { Logger } from "../../../../shared/logger.js";
 import { Left, Right } from "../../../../shared/result.js";
 import { EQUIPMENTS_API_BASE_URL } from "../../config/equipments-api.js";
 
-class EquipmentsServices {
+export class EquipmentsServices {
   async getMeteorologicalOrganCredentials(organName) {
     try {
       console.log(EQUIPMENTS_API_BASE_URL);
@@ -187,5 +187,3 @@ class EquipmentsServices {
     }
   }
 }
-
-export const equipmentsApi = new EquipmentsServices();

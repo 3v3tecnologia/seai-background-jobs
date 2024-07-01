@@ -3,7 +3,7 @@ import { Left, Right } from "../../../shared/result.js";
 import { MAILER_OPTIONS } from "../config/mailer.js";
 import { getTemplate } from "../helpers/getTemplateFile.js";
 
-export class SendUserAccountService {
+export class SendUserAccountNotificationService {
   htmlTemplateCompiler;
   sendMail;
   constructor(sendMailService, htmlTemplateCompiler) {

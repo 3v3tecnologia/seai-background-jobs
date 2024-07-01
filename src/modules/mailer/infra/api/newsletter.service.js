@@ -3,7 +3,7 @@ import { Right, Left } from "../../../../shared/result.js";
 import { NEWSLETTER_API_BASE_URL } from "../../config/api.js";
 import { SEAI_API_KEY } from "../../../../shared/api-key.js";
 
-class NewsletterServices {
+export class NewsletterApi {
   async getNewsById(id) {
     try {
       const { data } = await (
@@ -93,5 +93,3 @@ class NewsletterServices {
     }
   }
 }
-
-export const newsletterServiceAPI = new NewsletterServices();

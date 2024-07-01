@@ -1,5 +1,5 @@
-import { Logger } from "../logger.js";
 import { pgBossConnection } from "./connection.js";
+import { Logger } from "../../../shared/logger.js";
 
 export class PgBossAdapter {
   #boss;
@@ -10,6 +10,10 @@ export class PgBossAdapter {
     this.#boss = pgBossConnection;
 
     Object.freeze(this);
+  }
+
+  async nack(queue) {
+    throw new Error("Not implemented");
   }
 
   async startQueueMonitoring() {

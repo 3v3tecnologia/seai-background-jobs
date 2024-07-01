@@ -1,10 +1,11 @@
 import "dotenv/config.js";
 
-import { Logger } from "./shared/logger.js";
+import { Logger } from "../shared/logger.js";
 
-import workers from "./workers/workers.js";
-import { cronJobs } from "./workers/cron.js";
-import { pgBoss } from "./shared/jobQueue/pg-boss.js";
+import workers from "./workers.js";
+
+import { cronJobs } from "./cron.js";
+import { pgBoss } from "./lib/queue/pg-boss.js";
 
 await pgBoss.startQueueMonitoring();
 

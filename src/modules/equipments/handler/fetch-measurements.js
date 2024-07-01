@@ -1,9 +1,9 @@
-import { EquipmentCommand } from "../../../modules/equipments/services/commands/command.js";
+import { EquipmentCommand } from "../services/commands/command.js";
 
-import { fetchEquipmentsMeasurementsService } from "../../../modules/equipments/services/factories/fetch-measurements.service.js";
+import { fetchEquipmentsMeasurementsService } from "../services/factories/fetch-measurements.service.js";
 import { Logger } from "../../../shared/logger.js";
 
-export class FetchFuncemeMeasurementsWorker {
+export class FetchEquipmentsMeasurements {
   static worker_name = "FetchFuncemeMeasurements";
 
   static async handler() {

@@ -1,5 +1,5 @@
-import { SendUserIrrigationMailDTO } from "../../../modules/mailer/services/commands/send-user-irrigation-mail.js";
-import { sendUserIrrigationMailService } from "../../../modules/mailer/services/factories/send-user-irrigation-mail.js";
+import { SendUserIrrigationMailDTO } from "../services/commands/send-user-irrigation-mail.js";
+import { sendUserIrrigationMailService } from "../services/factories/send-user-irrigation-mail.js";
 import { Validator } from "../../../shared/validator.js";
 
 export class SendUserIrrigationMail {

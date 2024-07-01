@@ -1,7 +1,7 @@
 import { Logger } from "../../../shared/logger.js";
 import { Left, Right } from "../../../shared/result.js";
 
-export class SendNewsletterEmail {
+export class SendNewsletterEmailService {
   constructor(newsletterService, sendMailAdapter) {
     this.newsletterService = newsletterService;
     this.sendMail = sendMailAdapter;

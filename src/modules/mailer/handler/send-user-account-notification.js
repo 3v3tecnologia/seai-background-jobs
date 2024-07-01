@@ -1,8 +1,8 @@
-import { SendUserAccountNotificationCommand } from "../../../modules/mailer/services/commands/send-user-account-notification.js";
-import { sendUserAccountService } from "../../../modules/mailer/services/factories/send-user-account-notification.js";
+import { SendUserAccountNotificationCommand } from "../services/commands/send-user-account-notification.js";
+import { sendUserAccountService } from "../services/factories/send-user-account-notification.js";
 import { Validator } from "../../../shared/validator.js";
 
-export class SendUserAccountNotificationWorker {
+export class SendUserAccountNotification {
   static worker_name = "SendUserAccountNotification";
 
   static queue_options = {

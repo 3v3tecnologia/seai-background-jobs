@@ -1,8 +1,8 @@
-import { SendNewsletterCommand } from "../../../modules/mailer/services/commands/send-newsletter.js";
-import { sendNewsletterEmailService } from "../../../modules/mailer/services/factories/send-newsletter.js";
+import { SendNewsletterCommand } from "../services/commands/send-newsletter.js";
+import { sendNewsletterEmailService } from "../services/factories/send-newsletter.js";
 import { Validator } from "../../../shared/validator.js";
 
-export class SendNewsletterWorker {
+export class SendNewsletter {
   static worker_name = "SendNewsletter";
 
   static async handler(payload) {

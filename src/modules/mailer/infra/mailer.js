@@ -1,9 +1,6 @@
 import nodemailer from "nodemailer";
-import {
-  MAILER_OPTIONS,
-  MAILER_TRANSPORT_CONFIG,
-} from "../../config/mailer.js";
-import { Logger } from "../../../../shared/logger.js";
+import { MAILER_OPTIONS, MAILER_TRANSPORT_CONFIG } from "../config/mailer.js";
+import { Logger } from "../../../shared/logger.js";
 
 export class SendEmailService {
   async sendMail(command) {
@@ -60,14 +57,10 @@ export class SendEmailService {
       }
      */
 
-    const data = await this.sendMail(command);
+    await this.sendMail(command);
 
     Logger.info({
       msg: "Email enviado com sucesso",
-    });
-
-    Logger.info({
-      msg: data.response,
     });
   }
 }

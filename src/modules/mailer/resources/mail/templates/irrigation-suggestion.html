@@ -142,9 +142,9 @@
               <th>Cultura</th>
               <th>Lâmina</th>
               <th>Dia da cultura</th>
-              <th>Eficiência</th>
-              <th>Tempo de irrigação</th>
               <th>Data de plantio</th>
+              <th>Estádio fenológico</th>
+              <th>Tempo de irrigação</th>
               <th>Aviso</th>
             </tr>
           </thead>
@@ -153,28 +153,33 @@
             <tr>
               <td>{{Crop.Name}}</td>
 
-              {{#if Suggestion.RepositionBlade}}
-              <td class="highlight">{{Suggestion.RepositionBlade}}</td>
+              {{#if Crop.RepositionBlade}}
+              <td class="highlight">{{Crop.RepositionBlade}}</td>
               {{else}}
               <td>-</td>
-              {{/if}} {{#if Suggestion.CropDays}}
-              <td>{{Suggestion.CropDays}}</td>
+
+              {{/if}} {{#if Crop.CropDays}}
+              <td>{{Crop.CropDays}}</td>
               {{else}}
               <td>-</td>
-              {{/if}} {{#if Suggestion.IrrigationEfficiency}}
-              <td class="highlight">{{Suggestion.IrrigationEfficiency}}</td>
+
+              {{/if}} {{#if Crop.PlantingDate}}
+              <td>{{Crop.PlantingDate}}</td>
               {{else}}
               <td>-</td>
-              {{/if}} {{#if Suggestion.IrrigationTime}}
-              <td>{{Suggestion.IrrigationTime}}</td>
+
+              {{/if}} {{#if Crop.Stage}}
+              <td class="highlight">{{Crop.Stage}}</td>
               {{else}}
               <td>-</td>
-              {{/if}} {{#if Suggestion.PlantingDate}}
-              <td>{{Suggestion.PlantingDate}}</td>
+
+              {{/if}} {{#if Crop.IrrigationTime}}
+              <td>{{Crop.IrrigationTime}}</td>
               {{else}}
               <td>-</td>
-              {{/if}} {{#if Suggestion.Warning}}
-              <td>{{Suggestion.Warning}}</td>
+
+              {{/if}} {{#if Crop.Warning}}
+              <td>{{Crop.Warning}}</td>
               {{else}}
               <td>-</td>
               {{/if}}

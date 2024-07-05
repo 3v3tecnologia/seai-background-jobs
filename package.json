@@ -27,6 +27,7 @@
   "author": "Davi Silva <https://github.com/Spinnafre>",
   "license": "ISC",
   "dependencies": {
+    "@turf/boolean-point-in-polygon": "^7.0.0",
     "cors": "^2.8.5",
     "csvtojson": "^2.0.10",
     "dotenv": "^16.0.3",
@@ -39,7 +40,8 @@
     "pg": "^8.11.0",
     "pg-boss": "^9.0.1",
     "pino": "^8.15.0",
-    "tar-stream": "^3.0.0"
+    "tar-stream": "^3.0.0",
+    "turf": "^3.0.14"
   },
   "devDependencies": {
     "@jest/globals": "^29.5.0",

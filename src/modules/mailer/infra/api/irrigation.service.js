@@ -7,7 +7,7 @@ export class IrrigationRecommendationsService {
       method: "GET",
       headers: {
         "Content-Type": "text/plain",
-        "x-api-key": SEAI_API_KEY,
+        "Access-Key": SEAI_API_KEY,
       },
       signal,
     });

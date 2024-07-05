@@ -5,7 +5,7 @@ export class EquipmentParser extends CsvParser {
     super();
   }
   getMetadata(string) {
-    const [code, name, latitude, longitude, altitude] = string
+    const [code, name, longitude, latitude, altitude] = string
       .slice(0, 5)
       .map((data) => data.split(":")[1]);
 

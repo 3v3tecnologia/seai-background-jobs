@@ -9,7 +9,7 @@ export class NewsletterApi {
       const { data } = await (
         await fetch(`${NEWSLETTER_API_BASE_URL}/${id}`, {
           headers: {
-            "x-api-key": SEAI_API_KEY,
+            "Access-Key": SEAI_API_KEY,
           },
         })
       ).json();
@@ -45,7 +45,7 @@ export class NewsletterApi {
       const { data } = await (
         await fetch(`${NEWSLETTER_API_BASE_URL}/subscribers/email`, {
           headers: {
-            "x-api-key": SEAI_API_KEY,
+            "Access-Key": SEAI_API_KEY,
           },
         })
       ).json();
@@ -69,7 +69,7 @@ export class NewsletterApi {
       const response = await fetch(`${NEWSLETTER_API_BASE_URL}/${id}`, {
         method: "PATCH",
         headers: {
-          "x-api-key": SEAI_API_KEY,
+          "Access-Key": SEAI_API_KEY,
         },
       });
 

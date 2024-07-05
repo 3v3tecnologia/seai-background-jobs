@@ -13,11 +13,17 @@ export class FetchEquipments {
   // Should be a array of services?
   #fetchEquipmentsFromMeteorologicalEntity;
   #equipmentsApi;
+  #geolocationProvider;
 
-  constructor(fetchEquipmentsFromMeteorologicalEntity, equipmentsApi) {
+  constructor(
+    fetchEquipmentsFromMeteorologicalEntity,
+    equipmentsApi,
+    geolocationProvider
+  ) {
     this.#fetchEquipmentsFromMeteorologicalEntity =
       fetchEquipmentsFromMeteorologicalEntity;
     this.#equipmentsApi = equipmentsApi;
+    this.#geolocationProvider = geolocationProvider;
   }
 
   removeDuplicated({ items, toCompare }) {
@@ -33,24 +39,39 @@ export class FetchEquipments {
     return items;
   }
 
-  removeDuplicatedEquipments(
+  withoutInvalidEquipments(
     equipmentsFromMeteorologicalEntity,
     alreadyRecordedEquipments
   ) {
+    const stations = this.removeDuplicated({
+      items: equipmentsFromMeteorologicalEntity.equipments.get(
+        EQUIPMENT_TYPE.STATION
+      ),
+      toCompare: alreadyRecordedEquipments.get(EQUIPMENT_TYPE.STATION),
+    });
+
+    const pluviometers = this.removeDuplicated({
+      items: equipmentsFromMeteorologicalEntity.equipments.get(
+        EQUIPMENT_TYPE.PLUVIOMETER
+      ),
+      toCompare: alreadyRecordedEquipments.get(EQUIPMENT_TYPE.PLUVIOMETER),
+    });
+
     return {
-      station: this.removeDuplicated({
-        items: equipmentsFromMeteorologicalEntity.equipments.get(
-          EQUIPMENT_TYPE.STATION
-        ),
-        toCompare: alreadyRecordedEquipments.get(EQUIPMENT_TYPE.STATION),
-      }),
-      pluviometer: this.removeDuplicated({
-        items: equipmentsFromMeteorologicalEntity.equipments.get(
-          EQUIPMENT_TYPE.PLUVIOMETER
-        ),
-        toCompare: alreadyRecordedEquipments.get(EQUIPMENT_TYPE.PLUVIOMETER),
-      }),
+      station: this.removeEquipmentsWithInvalidCoordinates(stations),
+      pluviometer: this.removeEquipmentsWithInvalidCoordinates(pluviometers),
     };
+  }
+
+  removeEquipmentsWithInvalidCoordinates(equipments) {
+    return equipments.filter((eqp) => {
+      const { Latitude, Longitude } = eqp.Location;
+
+      return this.#geolocationProvider.isPointInsideThePolygon(
+        Longitude,
+        Latitude
+      );
+    });
   }
 
   // params : Date to Query
@@ -77,7 +98,7 @@ export class FetchEquipments {
     // Map<'station'|'pluviometer',Map<code,Array>>
     const alreadyRecordedEquipments = alreadyRecordedEquipmentsOrError.value();
 
-    const equipmentsWithoutDuplication = this.removeDuplicatedEquipments(
+    const equipments = this.withoutInvalidEquipments(
       equipmentsFromMeteorologicalEntity,
       alreadyRecordedEquipments
     );
@@ -91,14 +112,14 @@ export class FetchEquipments {
     const equipmentsTypes = equipmentsTypesOrError.value();
 
     const stationsToBePersisted = mapItemsToPersistency(EquipmentMapper)(
-      equipmentsWithoutDuplication.station,
+      equipments.station,
       {
         Id_Type: equipmentsTypes.get(EQUIPMENT_TYPE.STATION),
       }
     );
 
     const pluviometersToBePersisted = mapItemsToPersistency(EquipmentMapper)(
-      equipmentsWithoutDuplication.pluviometer,
+      equipments.pluviometer,
       {
         Id_Type: equipmentsTypes.get(EQUIPMENT_TYPE.PLUVIOMETER),
       }

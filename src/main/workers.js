@@ -10,6 +10,7 @@ import { sendUserAccountNotification } from "../modules/mailer/handler/factories
 import { sendUserIrrigationMail } from "../modules/mailer/handler/factories/send-user-irrigation-mail.js";
 
 import {
+  IrrigationMailerScheduler,
   SendNewsletter,
   SendUserAccountNotification,
   SendUserIrrigationMail,
@@ -67,7 +68,7 @@ export default [
     queue_name: QUEUES.IRRIGATION_REPORTS_SCHEDULER,
     workers: [
       {
-        name: irrigationMailerScheduler.worker_name,
+        name: IrrigationMailerScheduler.worker_name,
         handle: (command) => irrigationMailerScheduler.handle(command),
       },
     ],

@@ -10,7 +10,7 @@ export class EquipmentMapper {
       },
       Id_Organ: equipment.Id_Organ,
       Id_Type: null,
-      Enabled: false,
+      Enabled: true,
     };
   }
   static toPersistency(equipment) {

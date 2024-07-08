@@ -6,7 +6,6 @@ import { EQUIPMENTS_API_BASE_URL } from "../../config/equipments-api.js";
 export class EquipmentsServices {
   async getMeteorologicalOrganCredentials(organName) {
     try {
-      console.log(EQUIPMENTS_API_BASE_URL);
       const { data } = await (
         await fetch(
           `${EQUIPMENTS_API_BASE_URL}/meteorological_organ/access_credentials?organName=${organName}`,

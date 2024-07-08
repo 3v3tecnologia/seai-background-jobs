@@ -24,7 +24,7 @@ services:
     # secrets:
     #   - db-password
     volumes:
-      - .docker/postgres/data:/var/lib/postgresql/data
+      - db-data:/var/lib/postgresql/data
     ports:
       - "5433:5432"
     restart: on-failure

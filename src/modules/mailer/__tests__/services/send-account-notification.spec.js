@@ -7,8 +7,6 @@ import { FileNotFoundError } from "../../errors/FileNotFound.js";
 
 import { HtmlTemplateEngineAdapter } from "../../infra/html-template-engine.js";
 
-import { SendUserAccountService } from "../../services/send-user-account-notification";
-
 describe.skip("#Send user account notification service", () => {
   let sendEmailService = null;
   let htmlTemplateCompiler = null;
@@ -16,7 +14,9 @@ describe.skip("#Send user account notification service", () => {
 
   beforeAll(() => {
     sendEmailService = new SendEmailDummy();
+
     htmlTemplateCompiler = new HtmlTemplateEngineAdapter();
+
     sendUserAccountNotification = new SendUserAccountNotification(
       sendEmailService,
       htmlTemplateCompiler

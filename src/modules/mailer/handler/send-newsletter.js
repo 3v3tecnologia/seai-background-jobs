@@ -1,11 +1,16 @@
-import { SendNewsletterCommand } from "../services/commands/send-newsletter.js";
-import { sendNewsletterEmailService } from "../services/factories/send-newsletter.js";
 import { Validator } from "../../../shared/validator.js";
+import { SendNewsletterCommand } from "../services/commands/send-newsletter.js";
 
 export class SendNewsletter {
   static worker_name = "SendNewsletter";
 
-  static async handler(payload) {
+  #sendNewsletterEmailService;
+
+  constructor(sendNewsletterEmailService) {
+    this.#sendNewsletterEmailService = sendNewsletterEmailService;
+  }
+
+  async handle(payload) {
     const payloadOrError = Validator.againstEmptyArray(
       payload,
       "Worker payload is null or undefined."
@@ -24,7 +29,7 @@ export class SendNewsletter {
 
     const sendNewsletterCommand = new SendNewsletterCommand(data);
 
-    const resultOrError = await sendNewsletterEmailService.execute(
+    const resultOrError = await this.#sendNewsletterEmailService.execute(
       sendNewsletterCommand
     );
 

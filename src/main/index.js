@@ -4,7 +4,7 @@ import { Logger } from "../shared/logger.js";
 
 import workers from "./workers.js";
 
-import { cronJobs } from "./cron.js";
+import { cronJobs } from "./config/cron.js";
 import { pgBoss } from "./lib/queue/pg-boss.js";
 
 await pgBoss.startQueueMonitoring();

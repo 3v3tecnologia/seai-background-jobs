@@ -1,6 +1,5 @@
-import { SendUserAccountNotificationCommand } from "../services/commands/send-user-account-notification.js";
-import { sendUserAccountService } from "../services/factories/send-user-account-notification.js";
 import { Validator } from "../../../shared/validator.js";
+import { SendUserAccountNotificationCommand } from "../services/commands/send-user-account-notification.js";
 
 export class SendUserAccountNotification {
   static worker_name = "SendUserAccountNotification";
@@ -12,7 +11,13 @@ export class SendUserAccountNotification {
     },
   };
 
-  static async handler(payload) {
+  #sendUserAccountService;
+
+  constructor(sendUserAccountService) {
+    this.#sendUserAccountService = sendUserAccountService;
+  }
+
+  async handle(payload) {
     const payloadOrError = Validator.againstEmptyArray(
       payload,
       "Worker payload is null or undefined."
@@ -27,7 +32,7 @@ export class SendUserAccountNotification {
 
     const inviteUserCommand = new SendUserAccountNotificationCommand(data);
 
-    const resultOrError = await sendUserAccountService.execute(
+    const resultOrError = await this.#sendUserAccountService.execute(
       inviteUserCommand
     );
 

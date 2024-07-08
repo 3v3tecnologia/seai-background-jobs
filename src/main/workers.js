@@ -1,16 +1,21 @@
+import { fetchEquipment } from "../modules/equipments/handler/factories/fetch-equipments.js";
+import { fetchEquipmentMeasurements } from "../modules/equipments/handler/factories/fetch-measurements.js";
 import {
   FetchEquipments,
   FetchEquipmentsMeasurements,
 } from "../modules/equipments/handler/index.js";
+import { irrigationMailerScheduler } from "../modules/mailer/handler/factories/irrigation_mailer_scheduler.js";
+import { sendNewsletter } from "../modules/mailer/handler/factories/send-newsletter.js";
+import { sendUserAccountNotification } from "../modules/mailer/handler/factories/send-user-account-notification.js";
+import { sendUserIrrigationMail } from "../modules/mailer/handler/factories/send-user-irrigation-mail.js";
 
 import {
-  IrrigationMailerScheduler,
   SendNewsletter,
   SendUserAccountNotification,
   SendUserIrrigationMail,
 } from "../modules/mailer/handler/index.js";
 
-import { QUEUES } from "./queues.js";
+import { QUEUES } from "./config/queues.js";
 
 export default [
   {
@@ -18,7 +23,7 @@ export default [
     workers: [
       {
         name: FetchEquipments.worker_name,
-        handle: (command) => FetchEquipments.handler(command),
+        handle: (command) => fetchEquipment.handle(command),
       },
     ],
   },
@@ -27,7 +32,7 @@ export default [
     workers: [
       {
         name: FetchEquipmentsMeasurements.worker_name,
-        handle: (command) => FetchEquipmentsMeasurements.handler(command),
+        handle: (command) => fetchEquipmentMeasurements.handle(command),
       },
     ],
   },
@@ -36,7 +41,7 @@ export default [
     workers: [
       {
         name: SendNewsletter.worker_name,
-        handle: (command) => SendNewsletter.handler(command),
+        handle: (command) => sendNewsletter.handle(command),
       },
     ],
   },
@@ -45,7 +50,7 @@ export default [
     workers: [
       {
         name: SendUserAccountNotification.worker_name,
-        handle: (command) => SendUserAccountNotification.handler(command),
+        handle: (command) => sendUserAccountNotification.handle(command),
       },
     ],
   },
@@ -54,7 +59,7 @@ export default [
     workers: [
       {
         name: SendUserIrrigationMail.worker_name,
-        handle: (command) => SendUserIrrigationMail.handler(command),
+        handle: (command) => sendUserIrrigationMail.handle(command),
       },
     ],
   },
@@ -62,8 +67,8 @@ export default [
     queue_name: QUEUES.IRRIGATION_REPORTS_SCHEDULER,
     workers: [
       {
-        name: IrrigationMailerScheduler.worker_name,
-        handle: (command) => IrrigationMailerScheduler.handler(command),
+        name: irrigationMailerScheduler.worker_name,
+        handle: (command) => irrigationMailerScheduler.handle(command),
       },
     ],
   },

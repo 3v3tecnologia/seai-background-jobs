@@ -1,6 +1,5 @@
-import { SendUserIrrigationMailDTO } from "../services/commands/send-user-irrigation-mail.js";
-import { sendUserIrrigationMailService } from "../services/factories/send-user-irrigation-mail.js";
 import { Validator } from "../../../shared/validator.js";
+import { SendUserIrrigationMailDTO } from "../services/commands/send-user-irrigation-mail.js";
 
 export class SendUserIrrigationMail {
   static worker_name = "SendUserIrrigationMail";
@@ -12,7 +11,13 @@ export class SendUserIrrigationMail {
     },
   };
 
-  static async handler(payload) {
+  #sendUserIrrigationMailService;
+
+  constructor(sendUserIrrigationMailService) {
+    this.#sendUserIrrigationMailService = sendUserIrrigationMailService;
+  }
+
+  async handle(payload) {
     const payloadOrError = Validator.againstEmptyArray(
       payload,
       "Worker payload is null or undefined."
@@ -27,7 +32,9 @@ export class SendUserIrrigationMail {
 
     const dto = new SendUserIrrigationMailDTO(data);
 
-    const resultOrError = await sendUserIrrigationMailService.execute(dto);
+    const resultOrError = await this.#sendUserIrrigationMailService.execute(
+      dto
+    );
 
     if (resultOrError.isError()) {
       throw resultOrError.error();

@@ -8,7 +8,7 @@ const MAILER_TRANSPORT_CONFIG = {
 };
 
 const MAILER_OPTIONS = {
-  from: MAILER_TRANSPORT_CONFIG.auth.user,
+  from: MAILER_TRANSPORT_CONFIG.auth.user || "sender-test@gmail.com",
   to: "test@gmail.com", //???
 };
 

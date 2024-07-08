@@ -1,9 +1,10 @@
 import { Logger } from "../../../shared/logger.js";
-import { pgBoss } from "../../../main/lib/queue/pg-boss.js";
-import { IrrigationRecommendationsService } from "../infra/api/irrigation.service.js";
 
 export class IrrigationMailerScheduler {
   static worker_name = "IrrigationMailerScheduler";
+
+  #irrigationRecommendationService;
+  #queueServices;
 
   static queue_options = {
     limiter: {
@@ -12,12 +13,12 @@ export class IrrigationMailerScheduler {
     },
   };
 
-  static async handler() {
-    const queueServices = pgBoss;
+  constructor(irrigationRecommendationService, queueServices) {
+    this.#irrigationRecommendationService = irrigationRecommendationService;
+    this.#queueServices = queueServices;
+  }
 
-    const irrigationRecommendationService =
-      new IrrigationRecommendationsService();
-
+  async handle() {
     const abortController = new AbortController();
 
     try {
@@ -25,7 +26,7 @@ export class IrrigationMailerScheduler {
       const decoderStream = new TextDecoder("utf-8");
 
       const responseStream =
-        await irrigationRecommendationService.getIrrigationsPerUserDataStream(
+        await this.#irrigationRecommendationService.getIrrigationsPerUserDataStream(
           abortController.signal
         );
 
@@ -39,12 +40,9 @@ export class IrrigationMailerScheduler {
 
         const data = decoderStream.decode(value, { stream: true });
 
-        // Process the chunk (e.g., log it or manipulate it)
-        console.log("to js data: ", JSON.parse(data));
-
         //What if the jobs services is down?
         if (data) {
-          await queueServices.enqueue("irrigation-reports", data);
+          await this.#queueServices.enqueue("irrigation-reports", data);
         }
       }
 
@@ -59,10 +57,7 @@ export class IrrigationMailerScheduler {
         obj: error,
       });
 
-      if (resultOrError.isError()) {
-        //  await queueServices.nack("irrigation-reports");
-        throw resultOrError.error();
-      }
+      throw error;
 
       // Return to queue
       //  await queueServices.nack("irrigation-reports");

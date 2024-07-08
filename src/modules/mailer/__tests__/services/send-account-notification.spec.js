@@ -1,11 +1,11 @@
 // npm run test:dev -i __tests__/units/services/send-account-notification/send-account-notification.spec.js
 import { beforeAll, describe, expect, jest, test } from "@jest/globals";
 
-import { SendEmailDummy } from "../doubles/services/send-email-dummy";
+import { SendEmailDummy } from "../doubles/services/send-email-dummy.js";
 
-import { FileNotFoundError } from "../../errors/FileNotFound";
+import { FileNotFoundError } from "../../errors/FileNotFound.js";
 
-import { HtmlTemplateEngineAdapter } from "../../infra/html-template-engine";
+import { HtmlTemplateEngineAdapter } from "../../infra/html-template-engine.js";
 
 import { SendUserAccountService } from "../../services/send-user-account-notification";
 

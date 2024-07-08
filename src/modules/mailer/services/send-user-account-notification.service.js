@@ -1,7 +1,7 @@
 import { Logger } from "../../../shared/logger.js";
 import { Left, Right } from "../../../shared/result.js";
 import { MAILER_OPTIONS } from "../config/mailer.js";
-import { getTemplate } from "../helpers/getTemplateFile.js";
+import templateFiles from "../helpers/getTemplateFile.js";
 
 export class SendUserAccountNotificationService {
   htmlTemplateCompiler;
@@ -19,7 +19,7 @@ export class SendUserAccountNotificationService {
 
       Logger.info(`Iniciando envio de email para  ${email}`);
 
-      const templateOrError = await getTemplate(templateName);
+      const templateOrError = await templateFiles.getTemplate(templateName);
 
       if (templateOrError.isError()) {
         return Left.create(templateOrError.error());

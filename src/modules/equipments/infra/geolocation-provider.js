@@ -1162,12 +1162,6 @@ export class GeolocationProvider {
       this.#MULTI_POLYGON.coordinates
     );
 
-    const value = booleanPointInPolygon(pointToCheck, multiPolygonGeometry);
-
-    if (value === false) {
-      console.log(value);
-    }
-
-    return value;
+    return booleanPointInPolygon(pointToCheck, multiPolygonGeometry);
   }
 }

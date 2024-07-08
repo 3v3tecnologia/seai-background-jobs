@@ -6,7 +6,7 @@ import fs from "node:fs/promises";
 import { Logger } from "../../../shared/logger.js";
 import { Right } from "../../../shared/result.js";
 
-export async function getTemplate(templateName) {
+const getTemplate = async (templateName) => {
   if (HTML_TEMPLATES.has(templateName) === false) {
     Logger.error(
       `Não foi possível identificar template para para o serviço solicitado`
@@ -33,4 +33,8 @@ export async function getTemplate(templateName) {
     file: templateFile,
     info: templateInfo,
   });
-}
+};
+
+export default {
+  getTemplate,
+};

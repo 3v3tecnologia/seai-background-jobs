@@ -1,14 +1,10 @@
 // npm run test:dev -i __tests__/units/services/send-newsletter/send-newsletter.spec.js
-import { describe, expect, test, jest } from "@jest/globals";
+import { describe, expect, jest, test } from "@jest/globals";
 
+import { SendNewsletterCommand } from "../../services/commands/send-newsletter.js";
+import { SendNewsletterEmail } from "../../services/send-newsletter.js";
 import { NewsletterServicesFaker } from "../doubles/infra/services/faker-newsletter-api.js";
 import { NodemailerAdapterStub } from "../doubles/infra/services/mailer/send-email.js";
-import { SendNewsletterEmail } from "../../services/send-newsletter.js";
-import {
-  MAILER_TRANSPORT_CONFIG,
-  MAILER_OPTIONS,
-} from "../../config/mailer.js";
-import { SendNewsletterCommand } from "../../services/commands/send-newsletter.js";
 
 describe("# Send Newsletter", () => {
   test("When has news should be able to send newsletter emails", async () => {

@@ -19,5 +19,13 @@ export const HTML_TEMPLATES = (function () {
         service_url: USERS_SERVICES_API_URL.FORGOT_PASSWORD,
       },
     ],
+    [
+      "user_irrigation_suggestion",
+      {
+        path: `${dir}/irrigation-suggestion.html`,
+        subject: "SEAI - Recomendação de lâmina",
+        service_url: USERS_SERVICES_API_URL.FORGOT_PASSWORD,
+      },
+    ],
   ]);
 })();

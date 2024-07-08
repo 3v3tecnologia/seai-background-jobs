@@ -1,8 +1,8 @@
-import { SendEmailService } from "../../infra/services/send-email.js";
 import { HtmlTemplateEngineAdapter } from "../../infra/html-template-engine.js";
-import { SendUserAccountService } from "../send-user-account-notification.js";
+import { SendEmailService } from "../../infra/mailer.js";
+import { SendUserAccountNotificationService } from "../send-user-account-notification.service.js";
 
-const sendUserAccountService = new SendUserAccountService(
+const sendUserAccountService = new SendUserAccountNotificationService(
   new SendEmailService(),
   new HtmlTemplateEngineAdapter()
 );

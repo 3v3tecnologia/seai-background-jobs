@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Montserrat", sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        max-width: 700px;
+        margin: 0 auto;
+        background-color: #1b3f82;
+        padding: 20px;
+        color: #ffffff;
+      }
+      .header {
+        text-align: center;
+        padding: 40px 0 20px 0;
+        position: relative;
+      }
+      .logo {
+        position: absolute;
+        top: 1px;
+        left: 20px;
+        font-size: 1.5em;
+        font-weight: 400;
+      }
+      .title-container {
+        text-align: center;
+        margin-top: 20px;
+        margin-right: 40px;
+      }
+      .title-container h1 {
+        margin: 0;
+        font-size: 2.3em;
+        font-weight: 400;
+      }
+      .subheader {
+        text-align: center;
+        margin-top: 0px;
+        margin-right: -30px;
+      }
+      .subheader p {
+        margin: 0;
+        font-size: 1.5em;
+      }
+      .drop {
+        background-color: #99bdff;
+        height: 50px;
+        width: 50px;
+        border-radius: 0% 50% 50% 50%;
+        transform: rotate(45deg);
+        box-shadow: inset -15px 6px 0px -6px #99bdff;
+        margin-left: 410px;
+        margin-top: -50px;
+      }
+      .table-container {
+        background-color: #ffffff;
+        color: #000000;
+        overflow: hidden;
+        margin-top: 50px;
+      }
+      table {
+        width: 100%;
+        min-width: 600px;
+        border-collapse: collapse;
+        margin: 0 0;
+      }
+      th,
+      td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #dddddd;
+        color: #212529;
+        position: center;
+        text-align: center;
+        border-left: 1px solid #ccc;
+        border-right: 1px solid #ccc;
+        border-bottom: 1px solid #ccc;
+        border-color: #8d9fc0;
+      }
+      th {
+        background-color: #99bdff;
+        position: center;
+        text-align: center;
+      }
+      .highlight {
+        font-weight: 700;
+      }
+      .btn-container {
+        text-align: center;
+        margin-top: 60px;
+      }
+      .btn {
+        background-color: #99bdff;
+        color: #1b3f82;
+        padding: 10px 20px;
+        text-decoration: none;
+        border-radius: 4px;
+        display: inline-block;
+        width: 200px;
+      }
+
+      th:nth-child(1),
+      td:nth-child(1) {
+        width: 120px;
+      }
+
+      th:nth-child(6),
+      td:nth-child(6) {
+        width: 120px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <div class="logo">SEAI</div>
+        <div class="title-container">
+          <h1>Lâmina</h1>
+        </div>
+        <div class="subheader">
+          <p>Diária</p>
+        </div>
+        <div class="drop"></div>
+      </div>
+      <div class="table-container">
+        {{#if notification}}
+        <h1>{{notification}}</h1>
+        {{else}}
+        <table>
+          <thead>
+            <tr>
+              <th>Cultura</th>
+              <th>Lâmina</th>
+              <th>Dia da cultura</th>
+              <th>Data de plantio</th>
+              <th>Estádio fenológico</th>
+              <th>Tempo de irrigação</th>
+              <th>Aviso</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each irrigations}}
+            <tr>
+              <td>{{Crop.Name}}</td>
+
+              {{#if Crop.RepositionBlade}}
+              <td class="highlight">{{Crop.RepositionBlade}}</td>
+              {{else}}
+              <td>-</td>
+
+              {{/if}} {{#if Crop.CropDays}}
+              <td>{{Crop.CropDays}}</td>
+              {{else}}
+              <td>-</td>
+
+              {{/if}} {{#if Crop.PlantingDate}}
+              <td>{{Crop.PlantingDate}}</td>
+              {{else}}
+              <td>-</td>
+
+              {{/if}} {{#if Crop.Stage}}
+              <td class="highlight">{{Crop.Stage}}</td>
+              {{else}}
+              <td>-</td>
+
+              {{/if}} {{#if Crop.IrrigationTime}}
+              <td>{{Crop.IrrigationTime}}</td>
+              {{else}}
+              <td>-</td>
+
+              {{/if}} {{#if Crop.Warning}}
+              <td>{{Crop.Warning}}</td>
+              {{else}}
+              <td>-</td>
+              {{/if}}
+            </tr>
+
+            {{/each}}
+          </tbody>
+        </table>
+        {{/if}}
+      </div>
+      <div class="btn-container">
+        <a href="#" class="btn">Acessar SEAI</a>
+      </div>
+    </div>
+  </body>
+</html>

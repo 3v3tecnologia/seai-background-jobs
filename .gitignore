@@ -1,5 +1,5 @@
 /node_modules
-*.env
+*.env.development.local
 *.txt
 *coverage
 .env

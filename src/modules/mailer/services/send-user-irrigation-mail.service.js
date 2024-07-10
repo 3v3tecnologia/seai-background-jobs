@@ -1,5 +1,6 @@
 import { Logger } from "../../../shared/logger.js";
 import { Left, Right } from "../../../shared/result.js";
+import { SEAI_MAIN_PAGE_URL } from "../config/api.js";
 import { MAILER_OPTIONS } from "../config/mailer.js";
 import templateFiles from "../helpers/getTemplateFile.js";
 
@@ -39,6 +40,7 @@ export class SendUserIrrigationMailService {
           notification: dto.getNotification(),
           from: MAILER_OPTIONS.from,
           subject: template.info.subject,
+          link: SEAI_MAIN_PAGE_URL,
         },
       });
 

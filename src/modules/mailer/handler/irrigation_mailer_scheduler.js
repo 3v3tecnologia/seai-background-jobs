@@ -40,9 +40,20 @@ export class IrrigationMailerScheduler {
 
         const data = decoderStream.decode(value, { stream: true });
 
-        //What if the jobs services is down?
+        const currentDate = new Date();
+        currentDate.setHours(currentDate.getHours());
+
+        const day = `${currentDate.getMonth() + 1}`.padStart(2, "0")
+        const month = `${currentDate.getDate()}`.padStart(2, "0")
+
+        const formattedDate = `${currentDate.getFullYear()}/${month}/${day}`;
+
         if (data) {
-          await this.#queueServices.enqueue("irrigation-reports", data);
+          await this.#queueServices.enqueue("irrigation-reports", data,{
+            retryDelay: 60,
+            retryLimit: 3,
+            startAfter: formattedDate+"T09:00:00.00Z"
+          });
         }
       }
 

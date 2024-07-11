@@ -1,4 +1,4 @@
-import { USER_API_BASE_URL, USERS_SERVICES_API_URL } from "./api.js";
+import { USER_API_BASE_URL } from "./api.js";
 
 export const HTML_TEMPLATES = (function () {
   const dir = "./resources/mail/templates";
@@ -24,7 +24,6 @@ export const HTML_TEMPLATES = (function () {
       {
         path: `${dir}/irrigation-suggestion.html`,
         subject: "SEAI - Recomendação de lâmina",
-        service_url: USERS_SERVICES_API_URL.FORGOT_PASSWORD,
       },
     ],
   ]);

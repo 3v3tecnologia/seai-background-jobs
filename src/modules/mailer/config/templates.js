@@ -1,4 +1,4 @@
-import { USERS_SERVICES_API_URL } from "./api.js";
+import { USER_API_BASE_URL, USERS_SERVICES_API_URL } from "./api.js";
 
 export const HTML_TEMPLATES = (function () {
   const dir = "./resources/mail/templates";
@@ -8,7 +8,7 @@ export const HTML_TEMPLATES = (function () {
       {
         path: `${dir}/create_user_account.html`,
         subject: "SEAI - Verifique o seu email",
-        service_url: USERS_SERVICES_API_URL.CREATE_USER,
+        service_url: USER_API_BASE_URL + "/initial-register-infos",
       },
     ],
     [
@@ -16,7 +16,7 @@ export const HTML_TEMPLATES = (function () {
       {
         path: `${dir}/forgot_password.html`,
         subject: "SEAI - Verifique o seu email",
-        service_url: USERS_SERVICES_API_URL.FORGOT_PASSWORD,
+        service_url: USER_API_BASE_URL + "/forgot-password",
       },
     ],
     [

@@ -41,18 +41,16 @@ export class IrrigationMailerScheduler {
         const data = decoderStream.decode(value, { stream: true });
 
         const currentDate = new Date();
-        currentDate.setHours(currentDate.getHours());
+        // Schedule to 9hrs AM
+        currentDate.setHours(9, 0, 0, 0);
 
-        const day = `${currentDate.getMonth() + 1}`.padStart(2, "0")
-        const month = `${currentDate.getDate()}`.padStart(2, "0")
-
-        const formattedDate = `${currentDate.getFullYear()}/${month}/${day}`;
+        const startAfter = currentDate.toISOString();
 
         if (data) {
-          await this.#queueServices.enqueue("irrigation-reports", data,{
+          await this.#queueServices.enqueue("irrigation-reports", data, {
             retryDelay: 60,
             retryLimit: 3,
-            startAfter: formattedDate+"T09:00:00.00Z"
+            startAfter,
           });
         }
       }

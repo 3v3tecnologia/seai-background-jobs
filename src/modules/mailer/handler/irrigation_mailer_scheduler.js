@@ -22,6 +22,11 @@ export class IrrigationMailerScheduler {
     const abortController = new AbortController();
 
     try {
+      const currentDate = new Date();
+      // Schedule to 9hrs AM
+      currentDate.setHours(9, 0, 0, 0);
+
+      const startAfter = currentDate.toISOString();
       // Convert a stream of text in a binary encoding into strings
       const decoderStream = new TextDecoder("utf-8");
 
@@ -40,12 +45,6 @@ export class IrrigationMailerScheduler {
 
         const data = decoderStream.decode(value, { stream: true });
 
-        const currentDate = new Date();
-        // Schedule to 9hrs AM
-        currentDate.setHours(9, 0, 0, 0);
-
-        const startAfter = currentDate.toISOString();
-
         if (data) {
           await this.#queueServices.enqueue("irrigation-reports", data, {
             retryDelay: 60,
@@ -56,7 +55,7 @@ export class IrrigationMailerScheduler {
       }
 
       Logger.info({
-        msg: "Sucesso ao agendar relatórios de recomendação de lâmina",
+        msg: `Sucesso ao agendar relatórios de recomendação de lâmina para ${startAfter}`,
       });
     } catch (error) {
       abortController.abort();

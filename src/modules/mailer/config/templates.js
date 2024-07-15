@@ -12,6 +12,14 @@ export const HTML_TEMPLATES = (function () {
       },
     ],
     [
+      "createIrrigantAccount",
+      {
+        path: `${dir}/create_user_account.html`,
+        subject: "SEAI - Verifique o seu email",
+        service_url: USER_API_BASE_URL + "/initial-register-infos",
+      },
+    ],
+    [
       "forgotUserPassword",
       {
         path: `${dir}/forgot_password.html`,

@@ -4,7 +4,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import fs from "node:fs/promises";
 import { Logger } from "../../../shared/logger.js";
-import { Right } from "../../../shared/result.js";
+import { Left, Right } from "../../../shared/result.js";
 
 const getTemplate = async (templateName) => {
   if (HTML_TEMPLATES.has(templateName) === false) {

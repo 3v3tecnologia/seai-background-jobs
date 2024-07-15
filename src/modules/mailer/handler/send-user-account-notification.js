@@ -1,3 +1,4 @@
+import { Logger } from "../../../shared/logger.js";
 import { Validator } from "../../../shared/validator.js";
 import { SendUserAccountNotificationCommand } from "../services/commands/send-user-account-notification.js";
 

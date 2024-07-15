@@ -16,7 +16,7 @@ export const HTML_TEMPLATES = (function () {
       {
         path: `${dir}/create_user_account.html`,
         subject: "SEAI - Verifique o seu email",
-        service_url: USER_API_BASE_URL + "/initial-register-infos",
+        service_url: USER_API_BASE_URL + "/account/activate",
       },
     ],
     [

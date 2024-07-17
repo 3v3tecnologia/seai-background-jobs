@@ -6,7 +6,7 @@ export const HTML_TEMPLATES = (function () {
     [
       "createUserAccount",
       {
-        path: `${dir}/create_user_account.html`,
+        path: `${dir}/register_users.html`,
         subject: "SEAI - Verifique o seu email",
         service_url: USER_API_BASE_URL + "/initial-register-infos",
       },
@@ -14,7 +14,7 @@ export const HTML_TEMPLATES = (function () {
     [
       "createIrrigantAccount",
       {
-        path: `${dir}/create_user_account.html`,
+        path: `${dir}/register_users.html`,
         subject: "SEAI - Verifique o seu email",
         service_url: USER_API_BASE_URL + "/account/activate",
       },
@@ -22,7 +22,7 @@ export const HTML_TEMPLATES = (function () {
     [
       "forgotUserPassword",
       {
-        path: `${dir}/forgot_password.html`,
+        path: `${dir}/redefined_password.html`,
         subject: "SEAI - Verifique o seu email",
         service_url: USER_API_BASE_URL + "/forgot-password",
       },

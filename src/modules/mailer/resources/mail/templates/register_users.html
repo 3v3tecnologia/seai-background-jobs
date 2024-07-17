@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Template</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css">
+    <style>
+        body,
+        html {
+            margin: 0;
+            height: 100%;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f0f0;
+        }
+
+        .template {
+            width: 670px;
+            height: 543px;
+            background-color: #1b3f82;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: #ffffff;
+            padding: 20px;
+            position: relative;
+        }
+
+        .header-text {
+            font-size: 20px;
+            margin-top: 20px;
+            margin-bottom: 25px;
+        }
+
+        .subheader-text {
+            font-size: 25px;
+            font-weight: bold;
+            margin-bottom: 25px;
+        }
+
+        .white-rectangle {
+            width: 90%;
+            height: 250px;
+            background-color: #ffffff;
+            position: absolute;
+            border-radius: 10px;
+            left: 50%;
+            bottom: 180px;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .white-rectangle .icon {
+            color: #1b3f82;
+            font-size: 40px;
+            margin-bottom: 20px;
+            margin-top: -20px;
+            font-weight: bold;
+        }
+
+        .white-rectangle p {
+            color: #1b3f82;
+            font-size: 18px;
+            margin: 0;
+        }
+
+        .white-rectangle .extra-text {
+            margin-top: 10px;
+            font-size: 16px;
+        }
+
+        .button-container {
+            margin-top: 20px;
+        }
+
+        .button-container>a {
+            text-decoration: none;
+            background-color: #1b3f82;
+            color: #ffffff;
+            font-size: 16px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .content {
+            flex: 1;
+        }
+
+        .additional-texts {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        .additional-texts div {
+            margin-bottom: 20px;
+        }
+
+        .additional-texts .text1 {
+            margin-bottom: 5px;
+        }
+
+        .additional-texts .intro-text {
+            font-size: 14px;
+            color: #ffffff;
+        }
+
+        .footer {
+            width: 100%;
+            max-width: 670px;
+            display: flex;
+            background-color: #ffffff;
+            color: #1b3f82;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            position: absolute;
+            bottom: 0;
+        }
+
+        .footer div {
+            text-align: center;
+            flex: 1;
+        }
+
+        .footer div:first-child {
+            text-align: left;
+        }
+
+        .footer div:last-child {
+            text-align: right;
+        }
+
+        .footer a {
+            color: inherit;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="template">
+        <div class="header-text">SEAI</div>
+        <div class="subheader-text">Cadastro de novo usuário</div>
+        <div class="content">
+
+        </div>
+        <div class="white-rectangle">
+            <i class="mdi mdi-email icon"></i>
+            <p>Olá! Bem-vindo(a) ao SEAI.</p>
+            <p class="extra-text">Para concluir o seu cadastro no SEAI, realize a confirmação clicando no botão abaixo.
+            </p>
+            <div class="button-container">
+                <a href="{{service_url}}/{{user_code}}">Confirmar e-mail</button>
+            </div>
+        </div>
+        <div class="additional-texts">
+            <div class="intro-text">*Caso você não tenha solicitado cadastro, favor desconsiderar essa mensagem*</div>
+            <div class="text1">
+                <p>Contatos SEAI</p>
+            </div>
+            <div class="text2">
+                <p>Contatos SEAI</p>
+            </div>
+        </div>
+        <div class="footer">
+            <div>Telefone: (85) 4141-1997</div>
+            <div><a href="{{seai_url}}">Acessar SEAI</a></div>
+            <div>suporte@seai.com.br</div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -8,7 +8,7 @@ export const HTML_TEMPLATES = (function () {
       {
         path: `${dir}/register_users.html`,
         subject: "SEAI - Verifique o seu email",
-        service_url: USER_API_BASE_URL + "/initial-register-infos",
+        service_url: USER_API_BASE_URL + "/account/initial-register-infos",
       },
     ],
     [
@@ -16,7 +16,7 @@ export const HTML_TEMPLATES = (function () {
       {
         path: `${dir}/register_users.html`,
         subject: "SEAI - Verifique o seu email",
-        service_url: USER_API_BASE_URL + "/account/activate",
+        service_url: USER_API_BASE_URL + "/account/irrigant/activate",
       },
     ],
     [
@@ -24,7 +24,7 @@ export const HTML_TEMPLATES = (function () {
       {
         path: `${dir}/redefined_password.html`,
         subject: "SEAI - Verifique o seu email",
-        service_url: USER_API_BASE_URL + "/forgot-password",
+        service_url: USER_API_BASE_URL + "/account/reset-password",
       },
     ],
     [

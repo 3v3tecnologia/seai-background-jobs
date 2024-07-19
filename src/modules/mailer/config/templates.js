@@ -8,7 +8,7 @@ export const HTML_TEMPLATES = (function () {
       {
         path: `${dir}/register_users.html`,
         subject: "SEAI - Verifique o seu email",
-        service_url: USER_API_BASE_URL + "/account/initial-register-infos",
+        service_url: USER_API_BASE_URL + "/initial-register-infos",
       },
     ],
     [

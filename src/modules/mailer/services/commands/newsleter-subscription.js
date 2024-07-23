@@ -4,7 +4,7 @@ export class NewsletterSubscriptionDTO {
 
   constructor(props) {
     this.#email = props.email;
-    this.#link = props.confirmation_link;
+    this.#link = props.link;
 
     Object.freeze(this);
   }

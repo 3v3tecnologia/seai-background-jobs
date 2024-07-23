@@ -28,6 +28,11 @@ export class SendNewsletterEmailService {
           msg: `Não há leitores inscritos na notícia ${idNews}`,
         });
 
+        await this.newsletterService.updateNewsletterSendAt({
+          id: idNews,
+          date: new Date(),
+        });
+
         return Left.create(new Error("Deve haver no mínimo um destinatário"));
       }
 

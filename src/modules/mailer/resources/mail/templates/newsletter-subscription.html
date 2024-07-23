@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Template</title>
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .template {
+            width: 100%;
+            max-width: 670px;
+            margin: 0 auto;
+            background-color: #1b3f82;
+            color: #ffffff;
+            padding: 20px;
+            box-sizing: border-box;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-text,
+        .subheader-text {
+            text-align: center;
+        }
+
+        .white-rectangle {
+            width: 90%;
+            margin: 20px auto;
+            background-color: #ffffff;
+            color: #1b3f82;
+            padding: 20px;
+            border-radius: 10px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        .white-rectangle .icon {
+            font-size: 40px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .button-container {
+            margin-top: 20px;
+        }
+
+        .button-container button {
+            background-color: #1b3f82;
+            color: #ffffff;
+            font-size: 16px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .additional-texts {
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .footer {
+            width: 107%;
+            background-color: #ffffff;
+            color: #1b3f82;
+            padding: 25px;
+            box-sizing: border-box;
+            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            top: 20px;
+            left: -20px;
+        }
+
+        .footer a {
+            color: inherit;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="template">
+        <div class="header-text" style="font-size: 20px; margin-top: 20px; margin-bottom: 25px;">SEAI</div>
+        <div class="subheader-text" style="font-size: 25px; font-weight: bold; margin-bottom: 25px;">Inscrição notícias
+        </div>
+        <div class="white-rectangle">
+            <div class="icon"></div>
+
+            <p>Para concluir sua inscrição confirme clicando no botão abaixo.</p>
+
+            <div class="button-container">
+                <a href="{{link}}">Confirmar inscrição</a>
+            </div>
+
+        </div>
+        <div class="additional-texts">
+            <div class="intro-text" style="font-size: 14px; margin-bottom: 30px;">*Caso você não tenha solicitado
+                cadastro, favor
+                desconsiderar essa mensagem*</div>
+            <div class="text2" style="font-size: 18px; margin-bottom: 10px;">Contatos SEAI</div>
+        </div>
+        <div class="footer">
+            <div>Telefone: (85) 4141-1997</div>
+            <div><a href="{{seai_url}}">Acessar SEAI</a></div>
+            <div>suporte@seai.com.br</div>
+        </div>
+    </div>
+</body>
+
+</html>

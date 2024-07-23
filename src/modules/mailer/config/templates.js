@@ -12,6 +12,13 @@ export const HTML_TEMPLATES = (function () {
       },
     ],
     [
+      "newsletter-subscription",
+      {
+        path: `${dir}/newsletter-subscription.html`,
+        subject: "SEAI - Verifique o seu email",
+      },
+    ],
+    [
       "createIrrigantAccount",
       {
         path: `${dir}/register_users.html`,

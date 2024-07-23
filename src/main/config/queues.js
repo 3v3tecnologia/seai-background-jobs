@@ -5,4 +5,5 @@ export const QUEUES = {
   USER_ACCOUNT_NOTIFICATION: "user-account-notification",
   IRRIGATION_REPORTS: "irrigation-reports",
   IRRIGATION_REPORTS_SCHEDULER: "irrigation-reports-scheduler",
+  NEWSLETTER_SUBSCRIPTION_NOTIFICATION: "newsletter-subscriber-notification",
 };

@@ -17,11 +17,11 @@ export class NewsletterApi {
       if (data) {
         return {
           Id: data.Id,
-          Author: {
-            Id: data.Fk_Sender,
-            Email: data.Email,
-            Organ: data.Organ,
-          },
+          // Author: {
+          //   Id: data.Fk_Sender,
+          //   Email: data.Email,
+          //   Organ: data.Organ,
+          // },
           Title: data.Title,
           Description: data.Description,
           Data: data.Data.data,

@@ -46,11 +46,16 @@
             font-weight: bold;
         }
 
+        .welcome-text {
+            font-size: 25px;
+            margin-bottom: 20px;
+        }
+
         .button-container {
             margin-top: 20px;
         }
 
-        .button-container button {
+        .button-container a {
             background-color: #1b3f82;
             color: #ffffff;
             font-size: 16px;
@@ -58,6 +63,7 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            text-decoration: none;
         }
 
         .additional-texts {
@@ -90,22 +96,19 @@
 <body>
     <div class="template">
         <div class="header-text" style="font-size: 20px; margin-top: 20px; margin-bottom: 25px;">SEAI</div>
-        <div class="subheader-text" style="font-size: 25px; font-weight: bold; margin-bottom: 25px;">Inscrição notícias
-        </div>
+        <div class="subheader-text" style="font-size: 25px; font-weight: bold; margin-bottom: 25px;">Inscrição nas
+            notícias</div>
         <div class="white-rectangle">
-            <div class="icon"></div>
-
-            <p>Para concluir sua inscrição confirme clicando no botão abaixo.</p>
-
+            <div class="icon">✉️</div>
+            <p class="welcome-text">Olá! Bem-vindo(a) ao notícias SEAI.</p>
+            <p>Para concluir sua inscrição, confirme clicando no botão abaixo.</p>
             <div class="button-container">
                 <a href="{{link}}">Confirmar inscrição</a>
             </div>
-
         </div>
         <div class="additional-texts">
-            <div class="intro-text" style="font-size: 14px; margin-bottom: 30px;">*Caso você não tenha solicitado
-                cadastro, favor
-                desconsiderar essa mensagem*</div>
+            <div class="intro-text" style="font-size: 14px; margin-bottom: 30px;">*Caso você não tenha solicitado a
+                inscrição, por favor desconsiderar essa mensagem.*</div>
             <div class="text2" style="font-size: 18px; margin-bottom: 10px;">Contatos SEAI</div>
         </div>
         <div class="footer">

@@ -1,6 +1,6 @@
 import { Validator } from "../../../../shared/validator.js";
 
-export class SendUserAccountNotificationCommand {
+export class SendUserAccountNotificationInputDTO {
   #email;
   #action;
   #redirect_url;

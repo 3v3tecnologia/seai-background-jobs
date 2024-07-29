@@ -1,5 +1,5 @@
 import { Validator } from "../../../shared/validator.js";
-import { SendNewsletterCommand } from "../services/commands/send-newsletter.js";
+import { SendNewsletterInputDTO } from "../services/dto/send-newsletter.js";
 
 export class SendNewsletter {
   static worker_name = "SendNewsletter";
@@ -27,7 +27,7 @@ export class SendNewsletter {
     // Destruct from pg-boss job payload object
     const { id, data, name } = payload[0];
 
-    const sendNewsletterCommand = new SendNewsletterCommand(data);
+    const sendNewsletterCommand = new SendNewsletterInputDTO(data);
 
     const resultOrError = await this.#sendNewsletterEmailService.execute(
       sendNewsletterCommand

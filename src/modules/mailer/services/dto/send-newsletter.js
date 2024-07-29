@@ -1,6 +1,6 @@
 import { Validator } from "../../../../shared/validator.js";
 
-export class SendNewsletterCommand {
+export class SendNewsletterInputDTO {
   #props = {
     newsId: null,
   };

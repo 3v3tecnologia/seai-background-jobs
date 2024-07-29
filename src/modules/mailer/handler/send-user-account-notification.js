@@ -29,7 +29,7 @@ export class SendUserAccountNotification {
     }
 
     // Destruct from pg-boss job payload object
-    const { id, data, name } = payload[0];
+    const { data } = payload[0];
 
     const inviteUserCommand = new SendUserAccountNotificationCommand(data);
 

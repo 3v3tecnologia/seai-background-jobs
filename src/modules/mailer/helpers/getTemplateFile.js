@@ -1,24 +1,24 @@
-import { HTML_TEMPLATES } from "../config/templates.js";
-import { FileNotFoundError } from "../errors/FileNotFound.js";
+import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import fs from "node:fs/promises";
 import { Logger } from "../../../shared/logger.js";
-import { Left, Right } from "../../../shared/result.js";
+import { AVAILABLE_HTML_TEMPLATES_PATHS } from "../config/availables-templates.js";
+import { FileNotFoundError } from "../errors/FileNotFound.js";
 
-const getTemplate = async (templateName) => {
-  if (HTML_TEMPLATES.has(templateName) === false) {
+const getTemplate = async (action) => {
+  const templateInfo = AVAILABLE_HTML_TEMPLATES_PATHS.get(action);
+
+  if (!templateInfo) {
     Logger.error(
       `Não foi possível identificar template para para o serviço solicitado`
     );
-    return Left.create(new FileNotFoundError(templateName));
-  }
 
-  const templateInfo = HTML_TEMPLATES.get(templateName);
+    throw new FileNotFoundError(action);
+  }
 
   Logger.info(`Lendo arquivo  de ${templateInfo.path}...`);
 
-  const templateFile = await fs.readFile(
+  return await fs.readFile(
     path.resolve(
       path.dirname(fileURLToPath(import.meta.url)),
       "..",
@@ -28,11 +28,6 @@ const getTemplate = async (templateName) => {
       encoding: "utf-8",
     }
   );
-
-  return Right.create({
-    file: templateFile,
-    info: templateInfo,
-  });
 };
 
 export default {

@@ -28,7 +28,7 @@ export class SendNewsletterCommand {
     Object.freeze(this);
   }
 
-  getNewsId() {
+  get id() {
     return this.#props.newsId;
   }
 }

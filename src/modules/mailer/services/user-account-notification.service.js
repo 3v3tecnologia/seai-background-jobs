@@ -1,6 +1,7 @@
 import { Logger } from "../../../shared/logger.js";
 import { Left, Right } from "../../../shared/result.js";
 import { MAILER_OPTIONS } from "../config/mailer.js";
+import { SUPPORT_CONTACT } from "../config/support_contact.js";
 import templateFiles from "../helpers/getTemplateFile.js";
 
 export class SendUserAccountNotificationService {
@@ -13,39 +14,29 @@ export class SendUserAccountNotificationService {
 
   async execute(command) {
     try {
-      const email = command.getEmail();
-      const code = command.getCode();
-      const templateName = command.getTemplateName();
+      const { email, redirect_url, action } = command;
 
       Logger.info(`Iniciando envio de email para  ${email}`);
 
-      const templateOrError = await templateFiles.getTemplate(templateName);
-
-      if (templateOrError.isError()) {
-        return Left.create(templateOrError.error());
-      }
-
-      const template = templateOrError.value();
+      // "forgot-user-account"  | "create-user-account", | "newsletter-subscription"
+      const templateFile = await templateFiles.getTemplate(action);
 
       const html = await this.htmlTemplateCompiler.compile({
-        file: template.file,
+        file: templateFile,
         args: {
-          user_code: code,
-          user_email: email,
-          from: MAILER_OPTIONS.from,
-          subject: template.info.subject,
-          service_url: template.info.service_url,
+          redirect_url,
+          contact: SUPPORT_CONTACT,
         },
       });
 
       await this.sendMail.send({
         from: MAILER_OPTIONS.from,
         to: email,
-        subject: template.info.subject,
+        subject: "SEAI - Verifique o seu email",
         html,
       });
 
-      Logger.info(`Email para cadastro de usuário enviado com sucesso`);
+      Logger.info(`Email enviado com sucesso`);
 
       return Right.create(`Sucesso ao enviar email`);
     } catch (error) {

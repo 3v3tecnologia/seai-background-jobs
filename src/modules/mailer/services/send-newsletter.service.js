@@ -54,7 +54,6 @@ export class SendNewsletterEmailService {
       const html = await this.#htmlTemplateCompiler.compile({
         file: templateFile,
         args: {
-          redirect_url,
           unsubscribe_url: "",
           contact: SUPPORT_CONTACT,
           content: newsletterContent,

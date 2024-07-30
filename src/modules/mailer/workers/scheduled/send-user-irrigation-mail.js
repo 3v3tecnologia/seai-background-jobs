@@ -1,15 +1,8 @@
-import { Validator } from "../../../shared/validator.js";
-import { SendUserIrrigationMailInputDTO } from "../services/dto/send-user-irrigation-mail.js";
+import { Validator } from "../../../../shared/validator.js";
+import { SendUserIrrigationMailInputDTO } from "../../services/dto/send-user-irrigation-mail.js";
 
 export class SendUserIrrigationMail {
   static worker_name = "SendUserIrrigationMail";
-
-  static queue_options = {
-    limiter: {
-      max: 100000,
-      duration: 70000,
-    },
-  };
 
   #sendUserIrrigationMailService;
 

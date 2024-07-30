@@ -39,6 +39,23 @@ services:
       - back-tier
       - custom-proxy
 
+  rabbit1:
+    image: "rabbitmq:3-management"
+    hostname: "rabbit1"
+    environment:
+      RABBITMQ_ERLANG_COOKIE: "SWQOKODSQALRPCLNMEQG"
+      RABBITMQ_DEFAULT_USER: "rabbitmq"
+      RABBITMQ_DEFAULT_PASS: "rabbitmq"
+      RABBITMQ_DEFAULT_VHOST: "/"
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    labels:
+      NAME: "rabbitmq1"
+    volumes:
+      - .docker/rabbitmq/data/:/var/lib/rabbitmq/
+      - .docker/rabbitmq/log/:/var/log/rabbitmq
+
 volumes:
   db-data: {}
   nodemodules: {}
@@ -49,6 +66,8 @@ volumes:
 #     file: password.txt
 
 networks:
+  rabbitmq_go_net:
+    driver: bridge
   back-tier:
   custom-proxy:
     external: true

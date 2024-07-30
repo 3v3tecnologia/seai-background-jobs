@@ -1,22 +1,27 @@
-import { fetchEquipment } from "../modules/equipments/handler/factories/fetch-equipments.js";
-import { fetchEquipmentMeasurements } from "../modules/equipments/handler/factories/fetch-measurements.js";
-import {
-  FetchEquipments,
-  FetchEquipmentsMeasurements,
-} from "../modules/equipments/handler/index.js";
-import { irrigationMailerScheduler } from "../modules/mailer/handler/factories/irrigation_mailer_scheduler.js";
-import { sendNewsletter } from "../modules/mailer/handler/factories/send-newsletter.js";
-import { sendUserAccountNotification } from "../modules/mailer/handler/factories/send-user-account-notification.js";
-import { sendUserIrrigationMail } from "../modules/mailer/handler/factories/send-user-irrigation-mail.js";
-
 import {
   IrrigationMailerScheduler,
   SendNewsletter,
   SendUserAccountNotification,
   SendUserIrrigationMail,
-} from "../modules/mailer/handler/index.js";
+} from "../../../modules/mailer/handler/index.js";
 
-import { QUEUES } from "./config/queues.js";
+import {
+  FetchEquipments,
+  FetchEquipmentsMeasurements,
+} from "../../../modules/equipments/handler/index.js";
+
+import {
+  fetchEquipment,
+  fetchEquipmentMeasurements,
+} from "../../../modules/equipments/handler/factories/index.js";
+
+import {
+  irrigationMailerScheduler,
+  sendNewsletter,
+  sendUserAccountNotification,
+  sendUserIrrigationMail,
+} from "../../../modules/mailer/jobs/factories/index.js";
+import { QUEUES } from "../../config/queues.js";
 
 export default [
   {

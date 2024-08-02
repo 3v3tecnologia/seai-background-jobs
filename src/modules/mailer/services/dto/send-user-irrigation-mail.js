@@ -1,4 +1,4 @@
-export class SendUserIrrigationMailDTO {
+export class SendUserIrrigationMailInputDTO {
   #props = {
     Name: null,
     Email: null,

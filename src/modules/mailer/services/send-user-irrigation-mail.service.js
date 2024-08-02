@@ -21,33 +21,24 @@ export class SendUserIrrigationMailService {
 
       Logger.info(`Iniciando envio de email para  ${email}`);
 
-      const templateOrError = await templateFiles.getTemplate(
+      const templateFile = await templateFiles.getTemplate(
         "user_irrigation_suggestion"
       );
 
-      if (templateOrError.isError()) {
-        return Left.create(templateOrError.error());
-      }
-
-      const template = templateOrError.value();
-
       const html = await this.#htmlTemplateCompiler.compile({
-        file: template.file,
+        file: templateFile,
         args: {
           name,
-          email,
           irrigations,
           notification: dto.getNotification(),
-          from: MAILER_OPTIONS.from,
-          subject: template.info.subject,
-          link: SEAI_MAIN_PAGE_URL,
+          website_url: SEAI_MAIN_PAGE_URL,
         },
       });
 
       await this.#sendMail.send({
         from: MAILER_OPTIONS.from,
         to: email,
-        subject: template.info.subject,
+        subject: "SEAI - Recomendação de lâmina",
         html,
       });
 

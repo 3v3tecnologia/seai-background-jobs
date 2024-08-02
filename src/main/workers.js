@@ -5,14 +5,12 @@ import {
   FetchEquipmentsMeasurements,
 } from "../modules/equipments/handler/index.js";
 import { irrigationMailerScheduler } from "../modules/mailer/handler/factories/irrigation_mailer_scheduler.js";
-import { newsletterSubscriptionNotification } from "../modules/mailer/handler/factories/newsletter-subscription.js";
 import { sendNewsletter } from "../modules/mailer/handler/factories/send-newsletter.js";
 import { sendUserAccountNotification } from "../modules/mailer/handler/factories/send-user-account-notification.js";
 import { sendUserIrrigationMail } from "../modules/mailer/handler/factories/send-user-irrigation-mail.js";
 
 import {
   IrrigationMailerScheduler,
-  NewsletterSubscriptionNotification,
   SendNewsletter,
   SendUserAccountNotification,
   SendUserIrrigationMail,
@@ -72,15 +70,6 @@ export default [
       {
         name: IrrigationMailerScheduler.worker_name,
         handle: (command) => irrigationMailerScheduler.handle(command),
-      },
-    ],
-  },
-  {
-    queue_name: QUEUES.NEWSLETTER_SUBSCRIPTION_NOTIFICATION,
-    workers: [
-      {
-        name: NewsletterSubscriptionNotification.worker_name,
-        handle: (command) => newsletterSubscriptionNotification.handle(command),
       },
     ],
   },

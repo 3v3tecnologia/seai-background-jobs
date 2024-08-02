@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Template</title>
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .template {
+            width: 100%;
+            max-width: 670px;
+            margin: 0 auto;
+            background-color: #1b3f82;
+            color: #ffffff;
+            padding: 20px;
+            box-sizing: border-box;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-text,
+        .subheader-text {
+            text-align: center;
+        }
+
+        .white-rectangle {
+            width: 90%;
+            margin: 20px auto;
+            background-color: #ffffff;
+            color: #1b3f82;
+            padding: 20px;
+            border-radius: 10px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        .white-rectangle .icon {
+            font-size: 40px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .button-container {
+            margin-top: 20px;
+        }
+
+        .button-container a {
+            background-color: #1b3f82;
+            color: #ffffff;
+            font-size: 16px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .additional-texts {
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .footer {
+            width: 107%;
+            background-color: #ffffff;
+            color: #1b3f82;
+            padding: 25px;
+            box-sizing: border-box;
+            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            top: 20px;
+            left: -20px;
+        }
+
+        .footer a {
+            color: inherit;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="template">
+        <div class="header-text" style="font-size: 20px; margin-top: 20px; margin-bottom: 25px;">SEAI Newsletter</div>
+        <div class="white-rectangle">
+            {{{content}}}
+
+        </div>
+
+
+        <div><a href="{{unsubscribe_url}}">Desinscrever</a></div>
+
+        <div class="footer">
+            <div>Telefone: {{contact.phone}}</div>
+            <div><a href="{{contact.site}}">Acessar SEAI</a></div>
+            <div>{{contact.email}}</div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,9 +1,9 @@
 import { Validator } from "../../../../shared/validator.js";
 
-export class SendNewsletterCommand {
-  #props = {
-    newsId: null,
-  };
+export class SendUserAccountNotificationInputDTO {
+  #email;
+  #action;
+  #redirect_url;
   constructor(props) {
     const hasNullOrUndefinedProps = Validator.againstNullOrUndefined({
       name: "data",
@@ -15,7 +15,7 @@ export class SendNewsletterCommand {
     }
 
     const isValidPayloadOrError = Validator.againstNullOrUndefinedProperties(
-      ["id"],
+      ["email", "action", "redirect_url"],
       props
     );
 
@@ -23,12 +23,21 @@ export class SendNewsletterCommand {
       throw isValidPayloadOrError.error();
     }
 
-    this.#props.newsId = props.id;
+    this.#email = props.email;
+    this.#action = props.action;
+    this.#redirect_url = props.redirect_url;
 
     Object.freeze(this);
   }
 
-  getNewsId() {
-    return this.#props.newsId;
+  get email() {
+    return this.#email;
+  }
+
+  get action() {
+    return this.#action;
+  }
+  get redirect_url() {
+    return this.#redirect_url;
   }
 }

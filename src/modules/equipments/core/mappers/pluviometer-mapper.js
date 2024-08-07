@@ -10,7 +10,7 @@ export class PluviometerWithMeasurementsMapper {
       ...EquipmentMapper.toDomain(pluviometerEqp),
       Measurements: {
         Time: time,
-        Pluviometry: toFloat >= 0 ? toFloat : null,
+        Precipitation: toFloat >= 0 ? toFloat : null,
       },
     };
   }

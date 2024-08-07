@@ -173,8 +173,6 @@ export class EquipmentsServices {
 
       const { data } = await response.json();
 
-      console.log(data);
-
       Logger.info({
         msg: `Sucesso ao salva leituras de ${type}`,
       });

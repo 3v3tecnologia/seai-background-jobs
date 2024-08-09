@@ -16,16 +16,17 @@ export class SendNewsletterEmailService {
 
   async execute(command) {
     try {
-      const { id } = command;
+      const { id, title, description, content } = command;
 
       Logger.info({
-        msg: `Iniciando envio de emails da notícia ${id}`,
+        msg: `Iniciando envio de emails da notícia`,
       });
 
-      const news = await this.#newsletterService.getNewsById(id);
+      // TO-DO : get from database or get from params
+      // const news = await this.#newsletterService.getNewsById(Id);
 
-      if (news === null) {
-        return Left.create(new Error(`Notícia ${id} não existe`));
+      if (content === null) {
+        return Left.create(new Error(`Notícia não existe`));
       }
 
       const subscribers =
@@ -33,11 +34,12 @@ export class SendNewsletterEmailService {
 
       if (subscribers === null) {
         Logger.warn({
-          msg: `Não há leitores inscritos na notícia ${id}`,
+          msg: `Não há leitores inscritos na notícia`,
         });
 
+        // TO-DO: 
         await this.#newsletterService.updateNewsletterSendAt({
-          id: id,
+          id,
           date: new Date(),
         });
 
@@ -46,35 +48,44 @@ export class SendNewsletterEmailService {
 
       const templateFile = await templateFiles.getTemplate("newsletter");
 
-      const buffer = Buffer.from(news.Data);
+      const newsletterContent = Buffer.from(content).toString("utf-8");
 
-      const newsletterContent = buffer.toString("utf-8");
-      // const html = await blobToHTML(bufferToBlob(news.Data));
+      const emailPromises = []
 
-      const html = await this.#htmlTemplateCompiler.compile({
-        file: templateFile,
-        args: {
-          unsubscribe_url: "",
-          contact: SUPPORT_CONTACT,
-          content: newsletterContent,
-        },
+      for (const subscriber of subscribers) {
+        const {
+          Email,
+          Code
+        } = subscriber
+
+        const html = await this.#htmlTemplateCompiler.compile({
+          file: templateFile,
+          args: {
+            unsubscribe_url: `http://test:8080/unsubscribe/${Code}`,
+            contact: SUPPORT_CONTACT,
+            content: newsletterContent,
+          },
+        });
+
+        Logger.info({
+          msg: "Enviando newsletter...",
+        });
+
+        // TO-DO: schedule newsletter to send
+        emailPromises.push(this.#sendMail.send({
+          to: Email,
+          subject: title,
+          html,
+        }))
+      }
+
+      const results = await Promise.all(emailPromises)
+
+      results.forEach(result => {
+        console.log(`Message to ${result.envelope.to} sent: ${result.messageId}`);
       });
 
-      Logger.info({
-        msg: "Enviando newsletter...",
-      });
-
-      await this.#sendMail.send({
-        to: subscribers.join(","),
-        subject: "NEWSLETTER",
-        html,
-        cc: "*******",
-      });
-
-      Logger.info({
-        msg: "Newsletter enviada com sucesso...",
-      });
-
+      // TO-DO: How to update send-at
       await this.#newsletterService.updateNewsletterSendAt({
         id: id,
         date: new Date(),

@@ -1,82 +1,47 @@
-class DbLogger {
-  logRepository;
-  constructor(logRepository) {
-    this.logRepository = logRepository;
+import { Logger } from "../logger.js";
+
+export class DatabaseLogger {
+  source;
+  context;
+
+  constructor(source,context) {
+    this.source = source;
+    this.context = context
   }
 
-  toPersistency(logs) {
-    return Array.isArray(logs) ? logs : [logs];
+  warn(message ) {
+    Logger.warn({
+      msg:message
+    })
+
+    this.source.save({
+      Status: 'warn',
+      Message: message,
+      Context: this.context
+    })
   }
 
-  async save(logs) {
-    throw new Error("Not implemented");
+  info(message) {
+    Logger.info({
+      msg:message
+    })
+
+    this.source.save({
+      Status: 'info',
+      Message: message,
+      Context: this.context
+    })
   }
 
-  async add(logs) {
-    await this.save(this.toPersistency(logs));
-  }
+  error(message) {
+    Logger.error({
+      msg:message
+    })
 
-  async addError(log) {
-    await this.add({
-      message: log,
-      type: "error",
-    });
-  }
-}
-
-export class CalcETOLogger extends DbLogger {
-  constructor(logRepository) {
-    super(logRepository);
-    Object.freeze(this);
-  }
-  async save(logs) {
-    const toPersistency = logs.map((log) => {
-      const logData = {
-        Operation: "Calc ETO",
-        Message: log.message,
-        Status: log.type,
-      };
-
-      if (Reflect.has(log, "raw") && Reflect.has(log.raw, "equipment")) {
-        Object.assign(logData, {
-          FK_Equipment: log.raw.equipment,
-        });
-      }
-      return logData;
-    });
-
-    await this.logRepository.create({
-      logs: toPersistency,
-      tableName: "ETL",
-    });
-    // await this.logRepository.create(logs, "Calc_Et0");
-  }
-}
-
-export class FuncemeDataMinerLogger extends DbLogger {
-  constructor(logRepository) {
-    super(logRepository);
-    Object.freeze(this);
-  }
-  async save(logs) {
-    const toPersistency = logs.map((log) => {
-      const logData = {
-        Operation: "Equipments measures",
-        Message: log.message,
-        Status: log.type,
-      };
-
-      if (Reflect.has(log, "raw") && Reflect.has(log.raw, "equipment")) {
-        Object.assign(logData, {
-          FK_Equipment: log.raw.equipment,
-        });
-      }
-      return logData;
-    });
-
-    await this.logRepository.create({
-      logs: toPersistency,
-      tableName: "ETL",
-    });
+    this.source.save({
+      Status: 'error',
+      Message: message,
+      Context: this.context
+    })
   }
 }

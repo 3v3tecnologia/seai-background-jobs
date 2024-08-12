@@ -14,12 +14,12 @@ export const cronJobs = [
   },
   {
     queue: QUEUES.FETCH_MEASUREMENTS,
-    cron: "0 1 * * *",
+    cron: "0 */8 * * *",
     data: null,
     options: {
       tz: "America/Fortaleza",
       retryLimit: 3,
-      retryDelay: 60,
+      retryDelay: 120,
       priority: 2,
     },
   },

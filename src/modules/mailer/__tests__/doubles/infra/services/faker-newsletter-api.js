@@ -4,7 +4,7 @@ export class NewsletterServicesFaker {
 
   constructor(news, subscribers) {
     this.#newsList = news;
-    this.#subscribers = subscribers || null;
+    this.#subscribers = subscribers || [];
   }
 
   async getNewsById(id) {

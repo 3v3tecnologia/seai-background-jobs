@@ -1,3 +1,9 @@
+import { env } from '../../../main/config/app.js'
+
+/**
+ * Use a dedicated bulk delivery provider: 
+ * use a provider that offers a dedicated SMTP for bulk email 
+*/
 const MAILER_TRANSPORT_CONFIG = {
   port: Number(process.env.MAIL_PORT),
   host: process.env.MAIL_HOST,
@@ -7,7 +13,7 @@ const MAILER_TRANSPORT_CONFIG = {
     user: process.env.MAIL_USERNAME,
     pass: process.env.MAIL_PASSWORD,
   },
-  debug: true, // show debug output
+  debug: env === 'debug', // show debug output
   logger: true, // log information in console
   maxMessages: Infinity, // Allow an unlimited number of messages per connection
   maxConnections: 5 // Limit the number of simultaneous connections

@@ -54,13 +54,14 @@ export class NewsletterApi {
         return data;
       }
 
-      return null;
+      return [];
     } catch (error) {
       Logger.error({
         msg: "Falha ao buscar destinatários da notícia",
         obj: error,
       });
-      return Left.create(new Error(error));
+      throw error
+      // return Left.create(new Error(error));
     }
   }
 

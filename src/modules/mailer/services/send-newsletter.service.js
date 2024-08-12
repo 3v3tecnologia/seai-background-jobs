@@ -1,5 +1,6 @@
 import { Logger } from "../../../shared/logger.js";
 import { Left, Right } from "../../../shared/result.js";
+import { NEWSLETTER_UNSUBSCRIBE_PAGE } from "../config/api.js";
 import { SUPPORT_CONTACT } from "../config/support_contact.js";
 import templateFiles from "../helpers/getTemplateFile.js";
 
@@ -14,87 +15,83 @@ export class SendNewsletterEmailService {
     this.#htmlTemplateCompiler = htmlTemplateCompiler;
   }
 
-  async execute(command) {
+  async sendToSubscriber(subscriber, news, template) {
+    const {
+      Email,
+      Code
+    } = subscriber
+
+    const html = await this.#htmlTemplateCompiler.compile({
+      file: template,
+      args: {
+        unsubscribe_url: `${NEWSLETTER_UNSUBSCRIBE_PAGE}/${Code}`,
+        contact: SUPPORT_CONTACT, // TO-DO: fetch from database or get from .env
+        content: news.content,
+      },
+    });
+
+    Logger.info({
+      msg: `Enviando notícia`,
+    });
+
+    // TO-DO: schedule newsletter to send
+    const result = await this.#sendMail.send({
+      to: Email,
+      subject: news.title,
+      html,
+    })
+
+    Logger.info({
+      msg: `Message to ${Email} sent`
+    })
+  }
+
+  async execute({ id, title, description, content }) {
     try {
-      const { id, title, description, content } = command;
 
-      Logger.info({
-        msg: `Iniciando envio de emails da notícia`,
-      });
+      // Someone was deleted a news
+      const existingNewsletter = await this.#newsletterService.getNewsById(id);
 
-      // TO-DO : get from database or get from params
-      // const news = await this.#newsletterService.getNewsById(Id);
-
-      if (content === null) {
+      if (existingNewsletter === null) {
         return Left.create(new Error(`Notícia não existe`));
       }
 
       const subscribers =
         await this.#newsletterService.getAllRecipientsEmails();
 
-      if (subscribers === null) {
-        Logger.warn({
-          msg: `Não há leitores inscritos na notícia`,
-        });
 
+      // Will throw an error if there are no subscribers?
+
+      if (subscribers.length == 0) {
         // TO-DO: 
-        await this.#newsletterService.updateNewsletterSendAt({
-          id,
-          date: new Date(),
-        });
 
-        return Left.create(new Error("Deve haver no mínimo um destinatário"));
+        Logger.warn({
+          msg: "Não há usuários cadastrados nas notícias"
+        })
       }
 
       const templateFile = await templateFiles.getTemplate("newsletter");
 
       const newsletterContent = Buffer.from(content).toString("utf-8");
 
-      const emailPromises = []
+      const emailPromises = subscribers.map((subscriber) => this.sendToSubscriber(subscriber, {
+        content: newsletterContent,
+        title
+      }, templateFile))
 
-      for (const subscriber of subscribers) {
-        const {
-          Email,
-          Code
-        } = subscriber
+      await Promise.all(emailPromises)
 
-        const html = await this.#htmlTemplateCompiler.compile({
-          file: templateFile,
-          args: {
-            unsubscribe_url: `http://test:8080/unsubscribe/${Code}`,
-            contact: SUPPORT_CONTACT,
-            content: newsletterContent,
-          },
-        });
-
-        Logger.info({
-          msg: "Enviando newsletter...",
-        });
-
-        // TO-DO: schedule newsletter to send
-        emailPromises.push(this.#sendMail.send({
-          to: Email,
-          subject: title,
-          html,
-        }))
-      }
-
-      const results = await Promise.all(emailPromises)
-
-      results.forEach(result => {
-        console.log(`Message to ${result.envelope.to} sent: ${result.messageId}`);
-      });
-
-      // TO-DO: How to update send-at
+      // E se acontecer algum erro em algum envio ou compilação de template?
       await this.#newsletterService.updateNewsletterSendAt({
         id: id,
         date: new Date(),
       });
 
       return Right.create("Sucesso ao enviar notícia");
+
     } catch (error) {
       Logger.error({
-        msg: "Falha ao enviar notícias.",
+        msg: "Falha ao enviar notícia",
         obj: error,
       });
 

@@ -72,12 +72,10 @@ export class SendNewsletterEmailService {
 
       const newsletterContent = Buffer.from(content).toString("utf-8");
 
-      const emailPromises = subscribers.map((subscriber) => this.sendToSubscriber(subscriber, {
+      await Promise.all(subscribers.map((subscriber) => this.sendToSubscriber(subscriber, {
         content: newsletterContent,
         title
-      }, templateFile))
-
-      await Promise.all(emailPromises)
+      }, templateFile)))
 
       // E se acontecer algum erro em algum envio ou compilação de template?
       await this.#newsletterService.updateNewsletterSendAt({

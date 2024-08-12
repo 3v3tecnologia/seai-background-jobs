@@ -25,6 +25,7 @@ export class SendUserIrrigationMailService {
         "user_irrigation_suggestion"
       );
 
+
       const html = await this.#htmlTemplateCompiler.compile({
         file: templateFile,
         args: {

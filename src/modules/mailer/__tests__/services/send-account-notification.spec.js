@@ -1,4 +1,4 @@
-// npm run test:dev -i __tests__/units/services/send-account-notification/send-account-notification.spec.js
+// npm run test:unit -i src/modules/mailer/__tests__/services/send-account-notification.spec.js
 import { beforeAll, describe, expect, jest, test } from "@jest/globals";
 
 import { SendEmailDummy } from "../doubles/services/send-email-dummy.js";

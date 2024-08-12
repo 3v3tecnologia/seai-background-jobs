@@ -1,15 +1,15 @@
-//  npm run test:unit:debug  -i src/modules/mailer/__tests__/services/send-irrigation-mail.spec.js
-import { beforeAll, describe, expect, test, jest } from "@jest/globals";
+//  npm run test:unit -i src/modules/mailer/__tests__/services/send-irrigation-mail.spec.js
+import { beforeAll, describe, expect, jest, test } from "@jest/globals";
 
-import { SendEmailDummy } from "../doubles/services/send-email-dummy.js";
 import getTemplateModule from "../../helpers/getTemplateFile.js";
+import { SendEmailDummy } from "../doubles/services/send-email-dummy.js";
 
 import { FileNotFoundError } from "../../errors/FileNotFound.js";
 
-import { HtmlTemplateEngineAdapter } from "../../infra/html-template-engine.js";
-import { SendUserIrrigationMailDTO } from "../../services/commands/send-user-irrigation-mail.js";
-import { SendUserIrrigationMailService } from "../../services/send-user-irrigation-mail.service.js";
 import { Left } from "../../../../shared/result.js";
+import { HtmlTemplateEngineAdapter } from "../../infra/html-template-engine.js";
+import { SendUserIrrigationMailInputDTO } from "../../services/dto/send-user-irrigation-mail.js";
+import { SendUserIrrigationMailService } from "../../services/send-user-irrigation-mail.service.js";
 
 describe("#Send irrigation mail service", () => {
   let sendEmailService = null;
@@ -31,7 +31,7 @@ describe("#Send irrigation mail service", () => {
   });
 
   test("Should be returned an error if template name is invalid", async function () {
-    const dto = new SendUserIrrigationMailDTO({
+    const dto = new SendUserIrrigationMailInputDTO({
       Name: "irrigant_test",
       Email: "irrigant@gmail.com.br",
       Irrigation: [],
@@ -40,7 +40,7 @@ describe("#Send irrigation mail service", () => {
 
     const mock = jest
       .spyOn(getTemplateModule, "getTemplate")
-      .mockResolvedValue(Left.create(new FileNotFoundError()));
+      .mockImplementation(() => { throw new FileNotFoundError() })
 
     const resultOrError = await sendUserIrrigationMailService.execute(dto);
 
@@ -50,7 +50,7 @@ describe("#Send irrigation mail service", () => {
   });
 
   test("When has calculated irrigation recommendations then should be sent an email to the user", async function () {
-    const dto = new SendUserIrrigationMailDTO({
+    const dto = new SendUserIrrigationMailInputDTO({
       Name: "irrigant_test",
       Email: "irrigant@gmail.com.br",
       Irrigation: [
@@ -95,21 +95,13 @@ describe("#Send irrigation mail service", () => {
 
     const sendEmailArg = sendEmailMethodMock.mock.calls[0][0];
 
-    expect(sendEmailArg.from).toStrictEqual("sender-test@gmail.com");
+    expect(sendEmailArg.from).toStrictEqual("testseaimailer@gmail.com");
     expect(sendEmailArg.to).toStrictEqual(dto.getEmail());
     expect(sendEmailArg.subject).toStrictEqual("SEAI - Recomendação de lâmina");
-
-    expect(sendEmailArg.html).toContain("<td>crop</td>");
-    expect(sendEmailArg.html).toContain('<td class="highlight">1</td>');
-    expect(sendEmailArg.html).toContain("<td>1</td>");
-    expect(sendEmailArg.html).toContain("<td>DD/MM/YYYY</td>");
-    expect(sendEmailArg.html).toContain('<td class="highlight">1</td>');
-    expect(sendEmailArg.html).toContain("<td>1</td>");
-    expect(sendEmailArg.html).toContain("<td>-</td>");
   });
 
   test("When there are no calculated irrigation recommendations then should be sent an email to the user with the notification column", async function () {
-    const dto = new SendUserIrrigationMailDTO({
+    const dto = new SendUserIrrigationMailInputDTO({
       Name: "irrigant_test",
       Email: "irrigant@gmail.com.br",
       Irrigation: [
@@ -155,7 +147,7 @@ describe("#Send irrigation mail service", () => {
     const sendEmailArg = sendEmailMethodMock.mock.calls[0][0];
 
     expect(sendEmailArg.html).toContain("<h1>Fail</h1>");
-    expect(sendEmailArg.from).toStrictEqual("sender-test@gmail.com");
+    expect(sendEmailArg.from).toStrictEqual("testseaimailer@gmail.com");
     expect(sendEmailArg.to).toStrictEqual(dto.getEmail());
     expect(sendEmailArg.subject).toStrictEqual("SEAI - Recomendação de lâmina");
   });

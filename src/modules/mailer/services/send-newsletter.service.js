@@ -1,6 +1,6 @@
 import { Logger } from "../../../shared/logger.js";
 import { Left, Right } from "../../../shared/result.js";
-import { NEWSLETTER_UNSUBSCRIBE_PAGE } from "../config/api.js";
+import { NEWSLETTER_UNSUBSCRIBE_SITE } from "../config/redirect_links.js";
 import { SUPPORT_CONTACT } from "../config/support_contact.js";
 import templateFiles from "../helpers/getTemplateFile.js";
 
@@ -24,7 +24,7 @@ export class SendNewsletterEmailService {
     const html = await this.#htmlTemplateCompiler.compile({
       file: template,
       args: {
-        unsubscribe_url: `${NEWSLETTER_UNSUBSCRIBE_PAGE}/${Code}`,
+        unsubscribe_url: `${NEWSLETTER_UNSUBSCRIBE_SITE}/${Code}`,
         contact: SUPPORT_CONTACT, // TO-DO: fetch from database or get from .env
         content: news.content,
       },
@@ -35,7 +35,7 @@ export class SendNewsletterEmailService {
     });
 
     // TO-DO: schedule newsletter to send
-    const result = await this.#sendMail.send({
+    await this.#sendMail.send({
       to: Email,
       subject: news.title,
       html,
@@ -48,8 +48,6 @@ export class SendNewsletterEmailService {
 
   async execute({ id, title, description, content }) {
     try {
-
-      // Someone was deleted a news
       const existingNewsletter = await this.#newsletterService.getNewsById(id);
 
       if (existingNewsletter === null) {

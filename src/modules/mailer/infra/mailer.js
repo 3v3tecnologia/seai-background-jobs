@@ -40,6 +40,12 @@ export class SendEmailService {
       });
     }
 
+    if (options.bcc) {
+      Object.assign(command, {
+        bcc: options.bcc,
+      });
+    }
+
     /**
      * {
         accepted: [ ],

@@ -10,7 +10,7 @@ const getTemplate = async (action) => {
 
   if (!templateInfo) {
     Logger.error(
-      `Não foi possível identificar template para para o serviço solicitado`
+      `Não foi possível identificar template para o serviço solicitado.`
     );
 
     throw new FileNotFoundError(action);

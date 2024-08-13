@@ -2,7 +2,10 @@ import { Validator } from "../../../../shared/validator.js";
 
 export class SendNewsletterInputDTO {
   #props = {
-    newsId: null,
+    id: null,
+    title: null,
+    description: null,
+    content: null,
   };
   constructor(props) {
     const hasNullOrUndefinedProps = Validator.againstNullOrUndefined({
@@ -15,7 +18,7 @@ export class SendNewsletterInputDTO {
     }
 
     const isValidPayloadOrError = Validator.againstNullOrUndefinedProperties(
-      ["id"],
+      ["id", "title", "description", "content"],
       props
     );
 
@@ -23,12 +26,27 @@ export class SendNewsletterInputDTO {
       throw isValidPayloadOrError.error();
     }
 
-    this.#props.newsId = props.id;
+    this.#props.id = props.id;
+    this.#props.title = props.title;
+    this.#props.description = props.description;
+    this.#props.content = props.content;
 
     Object.freeze(this);
   }
 
   get id() {
-    return this.#props.newsId;
+    return this.#props.id;
+  }
+
+  get title() {
+    return this.#props.title;
+  }
+
+  get description() {
+    return this.#props.description;
+  }
+
+  get content() {
+    return this.#props.content;
   }
 }

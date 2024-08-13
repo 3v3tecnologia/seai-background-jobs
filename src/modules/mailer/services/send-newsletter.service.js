@@ -1,5 +1,6 @@
 import { Logger } from "../../../shared/logger.js";
 import { Left, Right } from "../../../shared/result.js";
+import { NEWSLETTER_UNSUBSCRIBE_SITE } from "../config/redirect_links.js";
 import { SUPPORT_CONTACT } from "../config/support_contact.js";
 import templateFiles from "../helpers/getTemplateFile.js";
 
@@ -14,76 +15,79 @@ export class SendNewsletterEmailService {
     this.#htmlTemplateCompiler = htmlTemplateCompiler;
   }
 
-  async execute(command) {
+  async sendToSubscriber(subscriber, news, template) {
+    const {
+      Email,
+      Code
+    } = subscriber
+
+    const html = await this.#htmlTemplateCompiler.compile({
+      file: template,
+      args: {
+        unsubscribe_url: `${NEWSLETTER_UNSUBSCRIBE_SITE}/${Code}`,
+        contact: SUPPORT_CONTACT, // TO-DO: fetch from database or get from .env
+        content: news.content,
+      },
+    });
+
+    Logger.info({
+      msg: `Enviando notícia`,
+    });
+
+    // TO-DO: schedule newsletter to send
+    await this.#sendMail.send({
+      to: Email,
+      subject: news.title,
+      html,
+    })
+
+    Logger.info({
+      msg: `Message to ${Email} sent`
+    })
+  }
+
+  async execute({ id, title, description, content }) {
     try {
-      const { id } = command;
+      const existingNewsletter = await this.#newsletterService.getNewsById(id);
 
-      Logger.info({
-        msg: `Iniciando envio de emails da notícia ${id}`,
-      });
-
-      const news = await this.#newsletterService.getNewsById(id);
-
-      if (news === null) {
-        return Left.create(new Error(`Notícia ${id} não existe`));
+      if (existingNewsletter === null) {
+        return Left.create(new Error(`Notícia não existe`));
       }
 
       const subscribers =
         await this.#newsletterService.getAllRecipientsEmails();
 
-      if (subscribers === null) {
+
+      // Will throw an error if there are no subscribers?
+
+      if (subscribers.length == 0) {
+        // TO-DO: 
+
         Logger.warn({
-          msg: `Não há leitores inscritos na notícia ${id}`,
-        });
-
-        await this.#newsletterService.updateNewsletterSendAt({
-          id: id,
-          date: new Date(),
-        });
-
-        return Left.create(new Error("Deve haver no mínimo um destinatário"));
+          msg: "Não há usuários cadastrados nas notícias"
+        })
       }
 
       const templateFile = await templateFiles.getTemplate("newsletter");
 
-      const buffer = Buffer.from(news.Data);
+      const newsletterContent = Buffer.from(content).toString("utf-8");
 
-      const newsletterContent = buffer.toString("utf-8");
-      // const html = await blobToHTML(bufferToBlob(news.Data));
+      await Promise.all(subscribers.map((subscriber) => this.sendToSubscriber(subscriber, {
+        content: newsletterContent,
+        title
+      }, templateFile)))
 
-      const html = await this.#htmlTemplateCompiler.compile({
-        file: templateFile,
-        args: {
-          unsubscribe_url: "",
-          contact: SUPPORT_CONTACT,
-          content: newsletterContent,
-        },
-      });
-
-      Logger.info({
-        msg: "Enviando newsletter...",
-      });
-
-      await this.#sendMail.send({
-        to: subscribers.join(","),
-        subject: "NEWSLETTER",
-        html,
-        cc: "*******",
-      });
-
-      Logger.info({
-        msg: "Newsletter enviada com sucesso...",
-      });
-
+      // E se acontecer algum erro em algum envio ou compilação de template?
       await this.#newsletterService.updateNewsletterSendAt({
         id: id,
         date: new Date(),
       });
 
       return Right.create("Sucesso ao enviar notícia");
+
     } catch (error) {
       Logger.error({
-        msg: "Falha ao enviar notícias.",
+        msg: "Falha ao enviar notícia",
         obj: error,
       });
 

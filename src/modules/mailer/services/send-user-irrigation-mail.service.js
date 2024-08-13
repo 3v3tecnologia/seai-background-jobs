@@ -1,7 +1,7 @@
 import { Logger } from "../../../shared/logger.js";
 import { Left, Right } from "../../../shared/result.js";
-import { SEAI_MAIN_PAGE_URL } from "../config/api.js";
 import { MAILER_OPTIONS } from "../config/mailer.js";
+import { SEAI_IRRIGANT_SITE } from "../config/redirect_links.js";
 import templateFiles from "../helpers/getTemplateFile.js";
 
 export class SendUserIrrigationMailService {
@@ -25,13 +25,14 @@ export class SendUserIrrigationMailService {
         "user_irrigation_suggestion"
       );
 
+
       const html = await this.#htmlTemplateCompiler.compile({
         file: templateFile,
         args: {
           name,
           irrigations,
           notification: dto.getNotification(),
-          website_url: SEAI_MAIN_PAGE_URL,
+          website_url: SEAI_IRRIGANT_SITE,
         },
       });
 

@@ -13,11 +13,11 @@ export class EquipmentsServicesFaker {
       pluviometersMeasurements,
       meteorologicalOrgans,
     } = {
-      equipmentList: null,
-      stationsMeasurements: null,
-      pluviometersMeasurements: null,
-      meteorologicalOrgans: null,
-    }
+        equipmentList: null,
+        stationsMeasurements: null,
+        pluviometersMeasurements: null,
+        meteorologicalOrgans: null,
+      }
   ) {
     this.equipmentList = equipmentList ? equipmentList : [];
     this.stationsMeasurementsList = stationsMeasurements
@@ -29,25 +29,19 @@ export class EquipmentsServicesFaker {
     this.organsList = meteorologicalOrgans
       ? meteorologicalOrgans
       : [
-          {
-            Id: 1,
-            Name: "FUNCEME",
-            Host: "testr",
-            User: "test",
-            Password: "test",
-          },
-        ];
+        {
+          Id: 1,
+          Name: "FUNCEME"
+        },
+      ];
   }
 
-  async getMeteorologicalOrganCredentials(organName) {
+  async getMeteorologicalOrganIdentifier(organName) {
     const organ = this.organsList.find((organ) => organ.Name === organName);
     return organ
       ? {
-          Id: organ.Id,
-          Host: organ.Host,
-          User: organ.User,
-          Password: organ.Password,
-        }
+        Id: organ.Id
+      }
       : null;
   }
 

@@ -4,7 +4,7 @@ import { Left, Right } from "../../../../shared/result.js";
 import { EQUIPMENTS_API_BASE_URL } from "../../config/equipments-api.js";
 
 export class EquipmentsServices {
-  async getMeteorologicalOrganCredentials(organName) {
+  async getMeteorologicalOrganIdentifier(organName) {
     try {
       const { data } = await (
         await fetch(
@@ -18,13 +18,10 @@ export class EquipmentsServices {
       ).json();
 
       if (data) {
-        const { Id, Host, User, Password } = data;
+        const { Id } = data;
 
         return {
-          Id,
-          Host,
-          User,
-          Password,
+          Id
         };
       }
 

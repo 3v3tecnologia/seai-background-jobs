@@ -10,6 +10,7 @@ import {
 } from "../../../core/mappers/index.js";
 import { Left, Right } from "../../../../../shared/result.js";
 import { EQUIPMENT_TYPE } from "../../../core/equipments-types.js";
+import { FUNCEME_FTP_CREDENTIALS } from "../../../config/equipments-api.js";
 
 export class FetchFuncemeEquipments {
   #ftpClient;
@@ -18,7 +19,6 @@ export class FetchFuncemeEquipments {
   constructor(ftpClientAdapter, equipmentsApi) {
     this.#ftpClient = ftpClientAdapter;
     this.#equipmentsApi = equipmentsApi;
-    // this.#logger = logger;
   }
 
   async getLastUpdatedFileName(folder) {
@@ -76,11 +76,9 @@ export class FetchFuncemeEquipments {
         msg: `Iniciando busca de credenciais de acesso para FTP do órgão ${organName}`,
       });
 
-      // Must be replaced with environment variables
       const meteorologicalOrgan =
         await this.#equipmentsApi.getMeteorologicalOrganCredentials(organName);
 
-      console.log(meteorologicalOrgan);
 
       if (meteorologicalOrgan === null) {
         return Left.create(
@@ -90,14 +88,13 @@ export class FetchFuncemeEquipments {
         );
       }
 
-      // Start a new Connection to FTP
       await this.#ftpClient.connect({
-        host: meteorologicalOrgan.Host,
-        user: meteorologicalOrgan.User,
-        password: meteorologicalOrgan.Password,
+        host: FUNCEME_FTP_CREDENTIALS.HOST,
+        user: FUNCEME_FTP_CREDENTIALS.USER,
+        password: FUNCEME_FTP_CREDENTIALS.PASSWORD,
       });
 
-      // Add timeout?
+      // IDEA: Add timeout?
       const [stationLists, pluviometerList] = await Promise.all([
         this.getFiles(FUNCEME_FTP_DIRECTORIES.directories.station.folder),
         this.getFiles(FUNCEME_FTP_DIRECTORIES.directories.pluviometer.folder),
@@ -122,7 +119,7 @@ export class FetchFuncemeEquipments {
         ),
       ];
 
-      // If throw error but connection still alive?
+      // QUESTION: If throw error but connection still alive?
       await this.#ftpClient.close();
 
       const equipments = new Map([
@@ -162,7 +159,7 @@ function getLastMeasurements(date, organId) {
     list.forEach((data) => {
       const measure = data.Measurements.find((measure) => measure.data == date);
       if (measure) {
-        // Add mapper to tomain
+        // TO-DO: Add mapper to tomain
         eqps.push({
           Code: data.Code,
           Name: data.Name,

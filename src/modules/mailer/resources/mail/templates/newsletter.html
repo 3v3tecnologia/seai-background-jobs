@@ -113,8 +113,8 @@
             left: -10px;
         }
 
-        .footer a {
-            color: inherit;
+        .link {
+            color: #ffffff;
             text-decoration: underline;
         }
     </style>
@@ -133,11 +133,11 @@
             {{{content}}}
         </div>
 
-        <div><a href="{{unsubscribe_url}}">Desinscrever</a></div>
+        <div style="float: right;"><a href="{{unsubscribe_url}}" class="link">Desinscrever</a></div>
 
         <div class="footer">
             <div>Telefone: {{contact.phone}}</div>
-            <div><a href="{{contact.site}}">Acessar SEAI</a></div>
+            <div><a href="{{contact.site}}" class="link">Acessar SEAI</a></div>
             <div>{{contact.email}}</div>
         </div>
     </div>

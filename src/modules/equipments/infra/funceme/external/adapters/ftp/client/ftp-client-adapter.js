@@ -77,19 +77,19 @@ export class FTPClientAdapter {
         );
       });
 
-      this.connection.on("greeting", (msg) =>
+      this.connection.once("greeting", (msg) =>
         Logger.info({
           msg: `[Greeting] -${msg}`,
         })
       );
 
-      this.connection.on("end", () =>
+      this.connection.once("end", () =>
         Logger.info({
           msg: "Conexão FTP fechada...",
         })
       );
 
-      this.connection.on("ready", () => {
+      this.connection.once("ready", () => {
         resolve(true);
       });
     });

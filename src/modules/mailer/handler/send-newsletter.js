@@ -1,5 +1,6 @@
 import { Validator } from "../../../shared/validator.js";
 import { SendNewsletterInputDTO } from "../services/dto/send-newsletter.js";
+import { Logger } from '../../../shared/logger.js'
 
 export class SendNewsletter {
   static worker_name = "SendNewsletter";

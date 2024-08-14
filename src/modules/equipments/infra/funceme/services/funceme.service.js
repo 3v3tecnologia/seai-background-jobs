@@ -77,7 +77,7 @@ export class FetchFuncemeEquipments {
       });
 
       const meteorologicalOrgan =
-        await this.#equipmentsApi.getMeteorologicalOrganCredentials(organName);
+        await this.#equipmentsApi.getMeteorologicalOrganIdentifier(organName);
 
 
       if (meteorologicalOrgan === null) {

@@ -18,7 +18,7 @@ export class SendUserAccountNotificationService {
 
       Logger.info(`Iniciando envio de email para  ${email}`);
 
-      // "forgot-user-account"  | "create-user-account", | "newsletter-subscription"
+      // "forgot-user-account"  | "create-user-account"
       const templateFile = await templateFiles.getTemplate(action);
 
       const html = await this.htmlTemplateCompiler.compile({

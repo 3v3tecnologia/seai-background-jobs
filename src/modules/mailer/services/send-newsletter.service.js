@@ -57,12 +57,7 @@ export class SendNewsletterEmailService {
       const subscribers =
         await this.#newsletterService.getAllRecipientsEmails();
 
-
-      // Will throw an error if there are no subscribers?
-
       if (subscribers.length == 0) {
-        // TO-DO: 
-
         Logger.warn({
           msg: "Não há usuários cadastrados nas notícias"
         })

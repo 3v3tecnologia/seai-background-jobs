@@ -98,19 +98,24 @@
             margin-top: 50px;
         }
 
-        footer {
+        .footer {
+            display: block;
             width: 100%;
             background-color: #1b3f82;
             color: #ffffff;
             padding: 25px;
             box-sizing: border-box;
             text-align: center;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: relative;
-            top: 20px;
-            left: -10px;
+        }
+
+        .contact-item {
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 15px;
+        }
+
+        .contact-item:last-child {
+            margin-right: 0;
         }
 
         .link {
@@ -124,10 +129,8 @@
     <div class="template">
         <div class="header-text">
             <div class="header-content">
-                <span class="header-line1">Notícias</span>
-                <span class="header-line2">SEAI</span>
+                <span class="header-line1">Notícias SEAI ✉️</span>
             </div>
-            <span class="email-icon">✉️</span>
         </div>
         <div class="white-rectangle">
             {{{content}}}
@@ -135,9 +138,9 @@
 
 
         <footer class="footer">
-            <div>Telefone: {{contact.phone}}</div>
-            <div><a href="{{contact.site}}" class="link">Acessar SEAI</a></div>
-            <div>{{contact.email}}</div>
+            <div class="contact-item">Telefone: {{contact.phone}}</div>
+            <div class="contact-item"><a href="{{contact.site}}" class="link">Acessar SEAI</a></div>
+            <div class="contact-item">{{contact.email}}</div>
         </footer>
     </div>
 </body>

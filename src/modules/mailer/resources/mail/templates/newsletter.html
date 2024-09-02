@@ -120,7 +120,7 @@
         }
 
         .link {
-            /* color: #ffffff !important; */
+            color: #ffffff !important;
             text-decoration: underline;
         }
     </style>
@@ -139,10 +139,11 @@
 
 
         <footer class="footer">
-            <div class="contact-item" style="color: #ffffff">Telefone: {{contact.phone}}</div>
-            <div class="contact-item"><a href="{{contact.site}}" class="link" style="color: #ffffff">Acessar SEAI</a>
+            <div class="contact-item" style="color: #ffffff !important;">Telefone: {{contact.phone}}</div>
+            <div class="contact-item"><a href="{{contact.site}}" class="link" style="color: #ffffff !important;">Acessar
+                    SEAI</a>
             </div>
-            <div class="contact-item" style="color: #ffffff">{{contact.email}}</div>
+            <div class="contact-item" class="link" style="color: #ffffff !important;">{{contact.email}}</div>
         </footer>
     </div>
 </body>

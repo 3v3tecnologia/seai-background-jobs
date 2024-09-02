@@ -109,7 +109,7 @@
         }
 
         .contact-item {
-            color: #ffffff !important;
+            /* color: #ffffff !important; */
             display: inline-block;
             vertical-align: middle;
             margin-right: 15px;
@@ -120,7 +120,7 @@
         }
 
         .link {
-            color: #ffffff !important;
+            /* color: #ffffff !important; */
             text-decoration: underline;
         }
     </style>
@@ -139,9 +139,10 @@
 
 
         <footer class="footer">
-            <div class="contact-item">Telefone: {{contact.phone}}</div>
-            <div class="contact-item"><a href="{{contact.site}}" class="link">Acessar SEAI</a></div>
-            <div class="contact-item">{{contact.email}}</div>
+            <div class="contact-item" style="color: #ffffff">Telefone: {{contact.phone}}</div>
+            <div class="contact-item"><a href="{{contact.site}}" class="link" style="color: #ffffff">Acessar SEAI</a>
+            </div>
+            <div class="contact-item" style="color: #ffffff">{{contact.email}}</div>
         </footer>
     </div>
 </body>

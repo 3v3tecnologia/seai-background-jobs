@@ -15,18 +15,18 @@ export class SendNewsletterEmailService {
     this.#htmlTemplateCompiler = htmlTemplateCompiler;
   }
 
-  async sendToSubscriber(subscriber, news, template) {
-    const {
-      Email,
-      Code
-    } = subscriber
+  async sendToSubscriber({
+    Email,
+    Code
+  }, content = [], template) {
+
 
     const html = await this.#htmlTemplateCompiler.compile({
       file: template,
       args: {
         unsubscribe_url: `${NEWSLETTER_UNSUBSCRIBE_SITE}/${Code}`,
-        contact: SUPPORT_CONTACT, // TO-DO: fetch from database or get from .env
-        content: news.content,
+        contact: SUPPORT_CONTACT,
+        content,
       },
     });
 
@@ -37,7 +37,7 @@ export class SendNewsletterEmailService {
     // TO-DO: schedule newsletter to send
     await this.#sendMail.send({
       to: Email,
-      subject: news.title,
+      subject: "SEAI - NOTÍCIAS",
       html,
     })
 
@@ -46,12 +46,18 @@ export class SendNewsletterEmailService {
     })
   }
 
-  async execute({ id, title, description, content }) {
+  async execute() {
     try {
-      const existingNewsletter = await this.#newsletterService.getNewsById(id);
+      // Current date in YYYY-MM-DD format
+      const date = new Date().toISOString().split('T')[0]
 
-      if (existingNewsletter === null) {
-        return Left.create(new Error(`Notícia não existe`));
+      const contents = await this.#newsletterService.getNewsBySendDate(date);
+
+      console.log("contents");
+      console.log(contents);
+
+      if (contents.length === 0) {
+        return Left.create(new Error(`Notícias não encontradas`));
       }
 
       const subscribers =
@@ -63,20 +69,14 @@ export class SendNewsletterEmailService {
         })
       }
 
-      const templateFile = await templateFiles.getTemplate("newsletter");
+      const template = await templateFiles.getTemplate("newsletter");
 
-      const newsletterContent = Buffer.from(content).toString("utf-8");
 
-      await Promise.all(subscribers.map((subscriber) => this.sendToSubscriber(subscriber, {
-        content: newsletterContent,
-        title
-      }, templateFile)))
+      // INFO: Check if bulk message is a valid solution
+      await Promise.all(subscribers.map((subscriber) => this.sendToSubscriber(subscriber, contents, template)))
 
       // E se acontecer algum erro em algum envio ou compilação de template?
-      await this.#newsletterService.updateNewsletterSendAt({
-        id: id,
-        date: new Date(),
-      });
+      await this.#newsletterService.updateNewsletterSendAt(date);
 
       return Right.create("Sucesso ao enviar notícia");
 

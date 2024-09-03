@@ -62,14 +62,12 @@
         }
 
         .white-rectangle {
-            width: 95%;
             margin: 20px auto;
             background-color: #ffffff;
             color: #1b3f82;
             padding: 20px;
             border-radius: 10px;
             box-sizing: border-box;
-            text-align: center;
         }
 
         .white-rectangle .icon {
@@ -123,6 +121,34 @@
             color: #ffffff !important;
             text-decoration: underline;
         }
+
+        .post-description {
+            margin: 0;
+            font-weight: 400;
+            color: rgba(117, 117, 117, 1);
+            line-height: 20px;
+            font-size: 16px;
+
+            display: -webkit-box;
+            -webkit-line-clamp: 6;
+            /* Number of lines to show */
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .post-title {
+            margin: 0;
+            font-weight: bold;
+            color: #0a0a0a;
+            font-size: 18px;
+            text-decoration: underline;
+            display: block;
+            cursor: pointer;
+        }
+
+        .post {
+            padding: 12px 12px 3px;
+        }
     </style>
 </head>
 
@@ -133,12 +159,20 @@
                 <span class="header-line1">Notícias SEAI ✉️</span>
             </div>
         </div>
-        <div class="white-rectangle">
-            {{{content}}}
+        <div class="posts-container">
+
+            <div class="white-rectangle">
+                {{#each content}}
+                <article class="post" style="margin-bottom:32px;margin-top:24px">
+                    <a href="{{Link}}" class="post-title">{{Title}}</a>
+                    <div style="margin-top:8px">
+                        <h3 class="post-description">{{Description}}</h3>
+                    </div>
+                </article>
+                {{/each}}
+            </div>
         </div>
-
-
-        <footer class="footer">
+        <footer class=" footer">
             <div class="contact-item" style="color: #ffffff !important;">Telefone: {{contact.phone}}</div>
             <div class="contact-item"><a href="{{contact.site}}" class="link" style="color: #ffffff !important;">Acessar
                     SEAI</a>

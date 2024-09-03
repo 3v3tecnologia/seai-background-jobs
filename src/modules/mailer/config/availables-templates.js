@@ -28,7 +28,7 @@ export const AVAILABLE_HTML_TEMPLATES_PATHS = (function () {
     [
       "newsletter",
       {
-        path: `${dir}/newsletter.html`,
+        path: `${dir}/daily-newsletter.html`,
       },
     ],
   ]);

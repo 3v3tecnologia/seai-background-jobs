@@ -12,27 +12,25 @@ export class SendNewsletter {
   }
 
   async handle(payload) {
-    const payloadOrError = Validator.againstEmptyArray(
-      payload,
-      "Worker payload is null or undefined."
-    );
+    // const payloadOrError = Validator.againstEmptyArray(
+    //   payload,
+    //   "Worker payload is null or undefined."
+    // );
 
-    if (payloadOrError.isError()) {
-      Logger.error({
-        msg: "Falha ao enviar notícias",
-        obj: payloadOrError.error(),
-      });
-      throw payloadOrError.error();
-    }
+    // if (payloadOrError.isError()) {
+    //   Logger.error({
+    //     msg: "Falha ao enviar notícias",
+    //     obj: payloadOrError.error(),
+    //   });
+    //   throw payloadOrError.error();
+    // }
 
-    // Destruct from pg-boss job payload object
-    const { id, data, name } = payload[0];
+    // // Destruct from pg-boss job payload object
+    // const { id, data, name } = payload[0];
 
-    const sendNewsletterCommand = new SendNewsletterInputDTO(data);
+    // const sendNewsletterCommand = new SendNewsletterInputDTO(data);
 
-    const resultOrError = await this.#sendNewsletterEmailService.execute(
-      sendNewsletterCommand
-    );
+    const resultOrError = await this.#sendNewsletterEmailService.execute();
 
     if (resultOrError.isError()) {
       Logger.error({

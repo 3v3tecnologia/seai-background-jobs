@@ -8,9 +8,9 @@ export class NewsletterApi {
    * @description 
    * Date in YYYY-MM-DD format
    * @param {string} date 
-   * @returns {{Title:string,Description:string, Link:string}[]}
+   * @returns {Promise<Array<{Title:string,Description:string, Link:string}>>}
    */
-  async getNewsBySendDate(date) {
+  async getUnsentNewsBySendDate(date) {
     try {
       const { data } = await (
         await fetch(`${NEWSLETTER_API_BASE_URL}/previews/${date}`, {
@@ -24,15 +24,18 @@ export class NewsletterApi {
 
     } catch (error) {
       Logger.error({
-        msg: "Falha ao carregar notícia",
+        msg: "Falha ao carregar notícias",
         obj: error,
       });
-      return null;
+      throw error
     }
   }
 
-
-  async getAllRecipientsEmails() {
+  /**
+   * @description Fetch subscribers emails
+   * @returns {Promise<Array<{Email:string,Code:string}>>} 
+   */
+  async getSubscribers() {
     try {
       const { data } = await (
         await fetch(`${NEWSLETTER_API_BASE_URL}/subscribers/email`, {
@@ -42,14 +45,10 @@ export class NewsletterApi {
         })
       ).json();
 
-      if (data) {
-        return data;
-      }
-
-      return [];
+      return data;
     } catch (error) {
       Logger.error({
-        msg: "Falha ao buscar destinatários da notícia",
+        msg: "Falha ao buscar destinatários",
         obj: error,
       });
       throw error
@@ -59,11 +58,11 @@ export class NewsletterApi {
   /**
    * @description Date in YYYY-MM-DD format
    * @param {string} date 
-   * @returns Error or String
+   * @returns {Promise<Left | Right>}
    */
-  async updateNewsletterSendAt(date) {
+  async markAsSent(date) {
     try {
-      const response = await fetch(`${NEWSLETTER_API_BASE_URL}/send-date/${date}`, {
+      const response = await fetch(`${NEWSLETTER_API_BASE_URL}/${date}`, {
         method: "PATCH",
         headers: {
           "Access-Key": SEAI_API_KEY,
@@ -72,7 +71,7 @@ export class NewsletterApi {
 
       if (response.status >= 400 && response.status <= 500) {
         Logger.error({
-          msg: "Falha ao tentar atualizar data de envio da notícia",
+          msg: "Falha ao tentar atualizar data de envio das notícias",
         });
 
         return Left.create(new Error(response.error));
@@ -84,7 +83,7 @@ export class NewsletterApi {
 
     } catch (error) {
       Logger.error({
-        msg: "Falha ao atualizar data de envio das notícias",
+        msg: "Falha ao tentar atualizar data de envio das notícias",
         obj: error,
       });
 

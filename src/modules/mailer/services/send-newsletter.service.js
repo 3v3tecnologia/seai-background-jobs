@@ -6,11 +6,11 @@ import templateFiles from "../helpers/getTemplateFile.js";
 
 export class SendNewsletterEmailService {
   #htmlTemplateCompiler;
-  #newsletterService;
+  #newsletterAPI;
   #sendMail;
 
-  constructor(newsletterService, sendMailAdapter, htmlTemplateCompiler) {
-    this.#newsletterService = newsletterService;
+  constructor(newsletterAPI, sendMailAdapter, htmlTemplateCompiler) {
+    this.#newsletterAPI = newsletterAPI;
     this.#sendMail = sendMailAdapter;
     this.#htmlTemplateCompiler = htmlTemplateCompiler;
   }
@@ -51,17 +51,17 @@ export class SendNewsletterEmailService {
       // Current date in YYYY-MM-DD format
       const date = new Date().toISOString().split('T')[0]
 
-      const contents = await this.#newsletterService.getNewsBySendDate(date);
-
-      console.log("contents");
-      console.log(contents);
+      const contents = await this.#newsletterAPI.getUnsentNewsBySendDate(date);
 
       if (contents.length === 0) {
-        return Left.create(new Error(`Notícias não encontradas`));
+        Logger.warn({
+          msg: `Notícias não encontradas`
+        })
+        return Right.create()
       }
 
       const subscribers =
-        await this.#newsletterService.getAllRecipientsEmails();
+        await this.#newsletterAPI.getSubscribers();
 
       if (subscribers.length == 0) {
         Logger.warn({
@@ -76,7 +76,7 @@ export class SendNewsletterEmailService {
       await Promise.all(subscribers.map((subscriber) => this.sendToSubscriber(subscriber, contents, template)))
 
       // E se acontecer algum erro em algum envio ou compilação de template?
-      await this.#newsletterService.updateNewsletterSendAt(date);
+      await this.#newsletterAPI.markAsSent(date);
 
       return Right.create("Sucesso ao enviar notícia");
 

@@ -34,4 +34,15 @@ export const cronJobs = [
       priority: 2,
     },
   },
+  {
+    queue: QUEUES.NEWSLETTER,
+    cron: "* 14 * * *",
+    data: null,
+    options: {
+      tz: "America/Fortaleza",
+      retryLimit: 3,
+      retryDelay: 60,
+      priority: 2,
+    },
+  },
 ];

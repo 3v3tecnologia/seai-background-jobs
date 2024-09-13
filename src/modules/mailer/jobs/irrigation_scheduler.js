@@ -1,49 +1,11 @@
 import "dotenv/config.js";
 
-import { pgBoss } from "../../../main/lib/queue/pg-boss.js";
 import { Logger } from "../../../shared/logger.js";
-import { IrrigationRecommendationsService } from "../infra/api/irrigation.service.js";
+import { sendUserIrrigationMailService } from "../services/factories/send-user-irrigation-mail.js";
 
-async function run() {
-  const abortController = new AbortController();
-
+(async function run() {
   try {
-    const currentDate = new Date();
-    // Schedule to 9hrs AM
-    currentDate.setHours(9, 0, 0, 0);
-
-    const startAfter = currentDate.toISOString();
-    // Convert a stream of text in a binary encoding into strings
-    const decoderStream = new TextDecoder("utf-8");
-
-    const responseStream =
-      await new IrrigationRecommendationsService().getIrrigationsPerUserDataStream(
-        abortController.signal
-      );
-
-    while (true) {
-      const { value, done } = await responseStream.read();
-
-      if (done) {
-        console.log("End of stream.");
-        break;
-      }
-
-      const data = decoderStream.decode(value, { stream: true });
-
-      if (data) {
-        await pgBoss.enqueue("irrigation-reports", data, {
-          retryDelay: 60,
-          retryLimit: 3,
-          startAfter,
-        });
-      }
-    }
-
-    Logger.info({
-      msg: `Sucesso ao agendar relatórios de recomendação de lâmina para ${startAfter}`,
-    });
-
+    await sendUserIrrigationMailService.execute()
     process.exit(0);
   } catch (error) {
     abortController.abort();
@@ -55,9 +17,7 @@ async function run() {
 
     process.exit(1);
   }
-}
-
-run();
+})()
 
 process.on("SIGINT", () => {
   console.log("Received SIGINT signal. Cleaning up...");

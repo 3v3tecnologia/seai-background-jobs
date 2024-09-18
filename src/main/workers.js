@@ -12,8 +12,8 @@ import { sendUserIrrigationMail } from "../modules/mailer/handler/factories/send
 import {
   IrrigationMailerScheduler,
   SendNewsletter,
-  SendUserAccountNotification,
   SendUserIrrigationMail,
+  UserAccountNotification
 } from "../modules/mailer/handler/index.js";
 
 import { QUEUES } from "./config/queues.js";
@@ -50,7 +50,7 @@ export default [
     queue_name: QUEUES.USER_ACCOUNT_NOTIFICATION,
     workers: [
       {
-        name: SendUserAccountNotification.worker_name,
+        name: UserAccountNotification.worker_name,
         handle: (command) => sendUserAccountNotification.handle(command),
       },
     ],

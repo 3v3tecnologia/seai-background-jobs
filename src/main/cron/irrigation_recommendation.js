@@ -1,22 +1,23 @@
 import "dotenv/config.js";
 
-import { fetchEquipmentsService } from "../services/factories/fetch-equipments.service.js";
-import { EquipmentCommand } from "../services/commands/command.js";
-import { Logger } from "../../../shared/logger.js";
+import { Logger } from "../../shared/logger.js";
+import { sendUserIrrigationMailService } from "../../modules/mailer/services/factories/send-user-irrigation-mail.js";
 
-async function run() {
+(async function () {
   try {
-    await fetchEquipmentsService.execute(new EquipmentCommand());
+    await sendUserIrrigationMailService.execute()
     process.exit(0);
   } catch (error) {
+    abortController.abort();
+
     Logger.error({
+      msg: "Falha ao agendar envio de emails das recomendações de lâmina",
       obj: error,
     });
+
     process.exit(1);
   }
-}
-
-run();
+})()
 
 process.on("SIGINT", () => {
   console.log("Received SIGINT signal. Cleaning up...");

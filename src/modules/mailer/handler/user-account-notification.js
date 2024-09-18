@@ -1,8 +1,8 @@
 import { Logger } from "../../../shared/logger.js";
 import { Validator } from "../../../shared/validator.js";
-import { SendUserAccountNotificationInputDTO } from "../services/dto/send-user-account-notification.js";
+import { AccountNotificationInput } from "../services/dto/send-user-account-notification.js";
 
-export class SendUserAccountNotification {
+export class UserAccountNotification {
   static worker_name = "SendUserAccountNotification";
 
   static queue_options = {
@@ -31,7 +31,7 @@ export class SendUserAccountNotification {
     // Destruct from pg-boss job payload object
     const { data } = payload[0];
 
-    const inviteUserCommand = new SendUserAccountNotificationInputDTO(data);
+    const inviteUserCommand = new AccountNotificationInput(data);
 
     const resultOrError = await this.#sendUserAccountService.execute(
       inviteUserCommand

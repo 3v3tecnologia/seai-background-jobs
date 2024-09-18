@@ -1,7 +1,7 @@
 import { Logger } from "../../../shared/logger.js";
 import { Left, Right } from "../../../shared/result.js";
 import { MAILER_OPTIONS } from "../config/mailer.js";
-import { SEAI_IRRIGANT_SITE } from "../config/redirect_links.js";
+import { IRRIGANT_WEBPAGE } from "../config/redirect_links.js";
 import templateFiles from "../helpers/getTemplateFile.js";
 import { IrrigationRecommendationsService } from "../infra/api/irrigation.service.js";
 
@@ -38,7 +38,7 @@ export class SendUserIrrigationMailService {
           name: Name,
           irrigations: Irrigation,
           notification: Notification,
-          website_url: SEAI_IRRIGANT_SITE,
+          website_url: IRRIGANT_WEBPAGE,
         },
       });
 

@@ -1,4 +1,5 @@
 import { Logger } from "../../../shared/logger.js";
+import { Left, Right } from "../../../shared/result.js";
 import { NEWSLETTER_UNSUBSCRIBE_SITE } from "../config/redirect_links.js";
 import { SUPPORT_CONTACT } from "../config/support_contact.js";
 import templateFiles from "../helpers/getTemplateFile.js";
@@ -28,7 +29,9 @@ export class SendNewsletterEmailService {
       },
     });
 
-    Logger.info(`Enviando notícia`);
+    Logger.info({
+      msg: `Enviando notícia`
+    });
 
     await this.#sendMail.send({
       to: Email,
@@ -36,34 +39,46 @@ export class SendNewsletterEmailService {
       html,
     })
 
-    Logger.info(`Message to ${Email} sent`)
+    Logger.info({
+      msg: `Message to ${Email} sent`
+    })
   }
 
   async execute() {
-    // Current date in YYYY-MM-DD format
-    const date = new Date().toISOString().split('T')[0]
+    try {
+      // Current date in YYYY-MM-DD format
+      const date = new Date().toISOString().split('T')[0]
 
-    const contents = await this.#newsletterAPI.getUnsentNewsBySendDate(date);
+      const contents = await this.#newsletterAPI.getUnsentNewsBySendDate(date);
 
-    if (contents.length === 0) {
-      Logger.warn(`Notícias não encontradas`)
-      return
+      if (contents.length === 0) {
+        Logger.warn({
+          msg: `Notícias não encontradas`
+        })
+        return Right.create()
+      }
+
+      const subscribers =
+        await this.#newsletterAPI.getSubscribers();
+
+      if (subscribers.length == 0) {
+        Logger.warn({
+          msg: "Não há usuários cadastrados nas notícias"
+        })
+      }
+
+      const template = await templateFiles.getTemplate("newsletter");
+
+      // INFO: Check if bulk message is a valid solution
+      await Promise.all(subscribers.map((subscriber) => this.#sendToSubscriber(subscriber, contents, template)))
+
+      // E se acontecer algum erro em algum envio ou compilação de template?
+      await this.#newsletterAPI.markAsSent(date);
+
+      return Right.create()
+    } catch (error) {
+      return Left.create(error);
     }
-
-    const subscribers =
-      await this.#newsletterAPI.getSubscribers();
-
-    if (subscribers.length == 0) {
-      Logger.warn("Não há usuários cadastrados nas notícias")
-    }
-
-    const template = await templateFiles.getTemplate("newsletter");
-
-    // INFO: Check if bulk message is a valid solution
-    await Promise.all(subscribers.map((subscriber) => this.#sendToSubscriber(subscriber, contents, template)))
-
-    // E se acontecer algum erro em algum envio ou compilação de template?
-    await this.#newsletterAPI.markAsSent(date);
 
   }
 }

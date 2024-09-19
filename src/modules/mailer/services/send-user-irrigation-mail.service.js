@@ -1,4 +1,5 @@
 import { Logger } from "../../../shared/logger.js";
+import { Left, Right } from "../../../shared/result.js";
 import { MAILER_OPTIONS } from "../config/mailer.js";
 import { IRRIGANT_WEBPAGE } from "../config/redirect_links.js";
 import templateFiles from "../helpers/getTemplateFile.js";
@@ -46,7 +47,9 @@ export class SendUserIrrigationMailService {
             Notification
           } = JSON.parse(data)
 
-          Logger.info(`Iniciando envio de email para  ${Email}`);
+          Logger.info({
+            msg: `Iniciando envio de email para  ${Email}`
+          });
 
           const templateFile = await templateFiles.getTemplate(
             "user_irrigation_suggestion"
@@ -69,11 +72,17 @@ export class SendUserIrrigationMailService {
             html,
           });
 
-          Logger.info(`Email enviado com sucesso para o usuário ${Name}`);
+          Logger.info({
+            msg: `Email enviado com sucesso para o usuário ${Name}`
+          });
         }
       }
 
-      Logger.info(`Sucesso ao agendar relatórios de recomendação de lâmina`);
+      Logger.info({
+        msg: `Sucesso ao enviar relatórios de recomendação de lâmina`
+      });
+
+      return Right.create()
 
     } catch (error) {
       abortController.abort();
@@ -82,6 +91,8 @@ export class SendUserIrrigationMailService {
         msg: "Falha ao agendar envio de emails das recomendações de lâmina",
         obj: error,
       });
+
+      return Left.create(error);
 
     }
   }

@@ -1,4 +1,5 @@
 import { Logger } from "../../../shared/logger.js";
+import { Left, Right } from "../../../shared/result.js";
 import { MAILER_OPTIONS } from "../config/mailer.js";
 import { GOV_WEBPAGE, IRRIGANT_WEBPAGE } from "../config/redirect_links.js";
 import { SUPPORT_CONTACT } from "../config/support_contact.js";
@@ -51,7 +52,9 @@ export class AccountNotificationService {
   async execute({ email, user_code, user_type, action }) {
     try {
 
-      Logger.info(`Iniciando envio de email para  ${email}`);
+      Logger.info({
+        msg: `Iniciando envio de email para  ${email}`
+      });
 
 
       const html = await this.#createHTMLTemplate({
@@ -70,15 +73,20 @@ export class AccountNotificationService {
         html,
       });
 
-      Logger.info(`Email enviado com sucesso`);
+      Logger.info({
+        msg: `Email enviado com sucesso`
+      });
 
-
+      return Right.create()
     } catch (error) {
       console.error(error);
+
       Logger.error({
         msg: "Falha ao enviar email.",
         obj: error.message,
       });
+
+      return Left.create(error);
 
     }
   }

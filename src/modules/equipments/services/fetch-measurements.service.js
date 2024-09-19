@@ -4,6 +4,7 @@ import { EQUIPMENT_TYPE } from "../core/equipments-types.js";
 import { MeasurementsMapper } from "../core/mappers/index.js";
 import { Filter } from "../helpers/filters.js";
 import { BelongTo } from "../helpers/predicates.js";
+import { EquipmentCommand } from "./commands/command.js";
 
 export class FetchEquipmentsMeasures {
   #fetchEquipmentsFromMeteorologicalEntity;
@@ -25,7 +26,7 @@ export class FetchEquipmentsMeasures {
   }
 
   // OBS: Sempre irá tentar buscar dados de medições do dia anterior a data informada
-  async execute(command) {
+  async execute(command = new EquipmentCommand()) {
     Logger.info({
       msg: `Iniciando busca de dados pelo FTP da FUNCEME pela data ${command.getDate()}`,
     });

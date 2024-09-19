@@ -5,6 +5,7 @@ export class AccountNotificationInput {
   #action;
 
   constructor(props) {
+    console.log(props);
     this.#email = props.email;
     this.#user_code = props.code;
     this.#user_type = props.user_type;

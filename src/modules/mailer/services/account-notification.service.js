@@ -1,20 +1,31 @@
 import { Logger } from "../../../shared/logger.js";
-import { Left, Right } from "../../../shared/result.js";
 import { MAILER_OPTIONS } from "../config/mailer.js";
-import { ACCOUNT_REDIRECT_LINK } from "../config/redirect_links.js";
+import { GOV_WEBPAGE, IRRIGANT_WEBPAGE } from "../config/redirect_links.js";
 import { SUPPORT_CONTACT } from "../config/support_contact.js";
 import MAIL_TEMPLATES from "../helpers/getTemplateFile.js";
 
 export class AccountNotificationService {
-  htmlTemplateCompiler;
-  sendMail;
+  #htmlTemplateCompiler;
+  #sendMail;
+  #urls;
 
   constructor(sendMailService, htmlTemplateCompiler) {
-    this.sendMail = sendMailService;
-    this.htmlTemplateCompiler = htmlTemplateCompiler;
+    this.#sendMail = sendMailService;
+    this.#htmlTemplateCompiler = htmlTemplateCompiler;
+
+    this.#urls = {
+      government: {
+        create_account: `${GOV_WEBPAGE}/initial-register-infos`,
+        recovery_account: `${GOV_WEBPAGE}/change-password`
+      },
+      irrigant: {
+        create_account: `${IRRIGANT_WEBPAGE}/activate`,
+        recovery_account: `${IRRIGANT_WEBPAGE}/reset-password`
+      }
+    }
   }
 
-  async createHTMLTemplate({
+  async #createHTMLTemplate({
     user,
     operation,
     redirect_url
@@ -26,18 +37,12 @@ export class AccountNotificationService {
       operation: '',
       redirect_url: '',
     }) {
-    console.log({
-      user,
-      operation,
-      redirect_url
-    });
-
     const template = await MAIL_TEMPLATES.getTemplate(operation);
 
-    return await this.htmlTemplateCompiler.compile({
+    return await this.#htmlTemplateCompiler.compile({
       file: template,
       args: {
-        redirect_url: redirect_url[operation] + `/${user.code}`,
+        redirect_url: redirect_url + `/${user.code}`,
         contact: SUPPORT_CONTACT,
       },
     });
@@ -49,17 +54,16 @@ export class AccountNotificationService {
       Logger.info(`Iniciando envio de email para  ${email}`);
 
 
-      const html = await this.createHTMLTemplate({
+      const html = await this.#createHTMLTemplate({
         user: {
           code: user_code,
           email: email,
         },
         operation: action,
-        redirect_url: ACCOUNT_REDIRECT_LINK[user_type][action],
+        redirect_url: this.#urls[user_type][action],
       })
 
-
-      await this.sendMail.send({
+      await this.#sendMail.send({
         from: MAILER_OPTIONS.from,
         to: email,
         subject: "SEAI - Verifique o seu email",
@@ -68,7 +72,7 @@ export class AccountNotificationService {
 
       Logger.info(`Email enviado com sucesso`);
 
-      return Right.create(`Sucesso ao enviar email`);
+
     } catch (error) {
       console.error(error);
       Logger.error({
@@ -76,7 +80,6 @@ export class AccountNotificationService {
         obj: error.message,
       });
 
-      return Left.create(error);
     }
   }
 }

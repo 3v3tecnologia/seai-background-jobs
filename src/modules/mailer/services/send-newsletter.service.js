@@ -14,11 +14,10 @@ export class SendNewsletterEmailService {
     this.#htmlTemplateCompiler = htmlTemplateCompiler;
   }
 
-  async sendToSubscriber({
+  async #sendToSubscriber({
     Email,
     Code
   }, content = [], template) {
-
 
     const html = await this.#htmlTemplateCompiler.compile({
       file: template,
@@ -29,20 +28,15 @@ export class SendNewsletterEmailService {
       },
     });
 
-    Logger.info({
-      msg: `Enviando notícia`,
-    });
+    Logger.info(`Enviando notícia`);
 
-    // TO-DO: schedule newsletter to send
     await this.#sendMail.send({
       to: Email,
       subject: "SEAI - NOTÍCIAS",
       html,
     })
 
-    Logger.info({
-      msg: `Message to ${Email} sent`
-    })
+    Logger.info(`Message to ${Email} sent`)
   }
 
   async execute() {
@@ -52,9 +46,7 @@ export class SendNewsletterEmailService {
     const contents = await this.#newsletterAPI.getUnsentNewsBySendDate(date);
 
     if (contents.length === 0) {
-      Logger.warn({
-        msg: `Notícias não encontradas`
-      })
+      Logger.warn(`Notícias não encontradas`)
       return
     }
 
@@ -62,20 +54,16 @@ export class SendNewsletterEmailService {
       await this.#newsletterAPI.getSubscribers();
 
     if (subscribers.length == 0) {
-      Logger.warn({
-        msg: "Não há usuários cadastrados nas notícias"
-      })
+      Logger.warn("Não há usuários cadastrados nas notícias")
     }
 
     const template = await templateFiles.getTemplate("newsletter");
 
-
     // INFO: Check if bulk message is a valid solution
-    await Promise.all(subscribers.map((subscriber) => this.sendToSubscriber(subscriber, contents, template)))
+    await Promise.all(subscribers.map((subscriber) => this.#sendToSubscriber(subscriber, contents, template)))
 
     // E se acontecer algum erro em algum envio ou compilação de template?
     await this.#newsletterAPI.markAsSent(date);
-
 
   }
 }

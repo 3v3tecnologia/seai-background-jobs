@@ -68,17 +68,17 @@ export class PgBossAdapter {
     return await this.#boss.send(name_queue, data, options);
   }
 
-  async registerWorker(queue, worker) {
+  async registerWorker(queue, worker, config = {
+    batchSize: 1,
+    includeMetadata: true,
+  }) {
     Logger.info({
       msg: `[⚙️] Registrando worker ${worker.name} para a fila ${queue}`,
     });
     await this.#boss.work(
       queue,
-      {
-        batchSize: 1,
-        includeMetadata: true,
-      },
-      worker.handle
+      config,
+      worker
     );
   }
 }

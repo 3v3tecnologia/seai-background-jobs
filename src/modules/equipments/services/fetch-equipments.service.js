@@ -8,6 +8,7 @@ import { EQUIPMENT_TYPE } from "../core/equipments-types.js";
 import { Filter } from "../helpers/filters.js";
 import { NotBelongTo } from "../helpers/predicates.js";
 import { Logger } from "../../../shared/logger.js";
+import { EquipmentCommand } from './commands/command.js'
 
 export class FetchEquipments {
   // Should be a array of services?
@@ -75,7 +76,7 @@ export class FetchEquipments {
   }
 
   // params : Date to Query
-  async execute(command) {
+  async execute(command = new EquipmentCommand()) {
     const equipmentsFromMeteorologicalEntityOrError =
       await this.#fetchEquipmentsFromMeteorologicalEntity.execute(command);
 

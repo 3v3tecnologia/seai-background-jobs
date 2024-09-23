@@ -15,11 +15,10 @@ export class SendNewsletterEmailService {
     this.#htmlTemplateCompiler = htmlTemplateCompiler;
   }
 
-  async sendToSubscriber({
+  async #sendToSubscriber({
     Email,
     Code
   }, content = [], template) {
-
 
     const html = await this.#htmlTemplateCompiler.compile({
       file: template,
@@ -31,10 +30,9 @@ export class SendNewsletterEmailService {
     });
 
     Logger.info({
-      msg: `Enviando notícia`,
+      msg: `Enviando notícia`
     });
 
-    // TO-DO: schedule newsletter to send
     await this.#sendMail.send({
       to: Email,
       subject: "SEAI - NOTÍCIAS",
@@ -71,22 +69,16 @@ export class SendNewsletterEmailService {
 
       const template = await templateFiles.getTemplate("newsletter");
 
-
       // INFO: Check if bulk message is a valid solution
-      await Promise.all(subscribers.map((subscriber) => this.sendToSubscriber(subscriber, contents, template)))
+      await Promise.all(subscribers.map((subscriber) => this.#sendToSubscriber(subscriber, contents, template)))
 
       // E se acontecer algum erro em algum envio ou compilação de template?
       await this.#newsletterAPI.markAsSent(date);
 
-      return Right.create("Sucesso ao enviar notícia");
-
+      return Right.create()
     } catch (error) {
-      Logger.error({
-        msg: "Falha ao enviar notícia",
-        obj: error,
-      });
-
       return Left.create(error);
     }
+
   }
 }

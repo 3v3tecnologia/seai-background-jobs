@@ -1,31 +1,15 @@
-import { Validator } from "../../../../shared/validator.js";
-
-export class SendUserAccountNotificationInputDTO {
+export class AccountNotificationInput {
   #email;
+  #user_code;
+  #user_type;
   #action;
-  #redirect_url;
+
   constructor(props) {
-    const hasNullOrUndefinedProps = Validator.againstNullOrUndefined({
-      name: "data",
-      value: props,
-    });
-
-    if (hasNullOrUndefinedProps.isError()) {
-      throw hasNullOrUndefinedProps.error();
-    }
-
-    const isValidPayloadOrError = Validator.againstNullOrUndefinedProperties(
-      ["email", "action", "redirect_url"],
-      props
-    );
-
-    if (isValidPayloadOrError.isError()) {
-      throw isValidPayloadOrError.error();
-    }
-
+    console.log(props);
     this.#email = props.email;
+    this.#user_code = props.code;
+    this.#user_type = props.user_type;
     this.#action = props.action;
-    this.#redirect_url = props.redirect_url;
 
     Object.freeze(this);
   }
@@ -34,10 +18,15 @@ export class SendUserAccountNotificationInputDTO {
     return this.#email;
   }
 
+  get user_code() {
+    return this.#user_code;
+  }
+
+  get user_type() {
+    return this.#user_type;
+  }
   get action() {
     return this.#action;
   }
-  get redirect_url() {
-    return this.#redirect_url;
-  }
+
 }

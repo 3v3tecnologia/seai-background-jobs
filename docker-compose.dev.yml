@@ -1,0 +1,70 @@
+services:
+  jobs:
+    build: 
+      context: workers
+      args:
+        - NODE_ENV=development
+    container_name: "jobs_workers"
+    volumes:
+      - ./workers:/usr/src/app
+      - jobs_nodemodules:/usr/src/app/node_modules
+    env_file:
+      - ./workers/.env.development.local
+    command: npm run start:dev:local
+    depends_on:
+      jobs_database:
+        condition: service_healthy
+    restart: on-failure
+    networks:
+      - workers
+      - seai-api
+
+  cron:
+    build: 
+      context: cron
+      args:
+        - NODE_ENV=development
+    container_name: "cron"
+    env_file:
+      - ./cron/.env.development.local
+    volumes:
+      - ./cron/src:/usr/src/app/src
+      - cron_nodemodules:/usr/src/app/node_modules
+    restart: on-failure
+    networks:
+      - seai-api
+
+  jobs_database:
+    image: postgres:14.2
+    container_name: "seai-jobs-database"
+    user: postgres
+    secrets:
+      - db-password
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    restart: on-failure
+    healthcheck:
+      test: [ "CMD", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - workers
+      - seai-api
+
+volumes:
+  db-data: {}
+  cron_nodemodules: {}
+  jobs_nodemodules: {}
+
+secrets:
+  db-password:
+    file: password.txt
+
+networks:
+  workers:
+  seai-api:
+    external: true
+    name: jobs

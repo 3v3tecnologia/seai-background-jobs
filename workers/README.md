@@ -24,3 +24,5 @@ npm run start:dev:local
 ```
 
 ## Rodando no container
+
+A maneira mais simples basta executar o docker compose que irá subir o banco de jobs e também os consumidores das filas.

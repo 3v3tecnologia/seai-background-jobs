@@ -14,5 +14,6 @@ RUN npm ci
 COPY ["./src","/usr/src/app/src/"]
 COPY [".env","/usr/src/app/"]
 
-ENTRYPOINT node ./src/index.js
+# ENTRYPOINT node ./src/index.js
+CMD ["node", "./src/index.js"]
 

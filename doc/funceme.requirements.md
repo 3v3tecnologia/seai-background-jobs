@@ -1,7 +1,0 @@
-### Comportamento esperado
-
--
-
-### Verificações
-
--

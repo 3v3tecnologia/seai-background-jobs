@@ -79,9 +79,6 @@ export class SendUserIrrigationMailService {
         }
       }
 
-      Logger.info({
-        msg: `Sucesso ao enviar relatórios de recomendação de lâmina`
-      });
 
       return Right.create()
 

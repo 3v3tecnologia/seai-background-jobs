@@ -2,14 +2,7 @@
 
 FROM node:18-bullseye-slim AS development
 
-ARG NODE_ENV=test
-ENV NODE_ENV $NODE_ENV
-
-RUN apt-get update && apt-get install -y --no-install-recommends ftp
-
-LABEL AUTHOR="SPINNAFRE"
-
-LABEL PROJECT_NAME="Background jobs with Pg-boss and Node.js"
+ENV NODE_ENV production
 
 WORKDIR /usr/src/app
 
@@ -21,9 +14,5 @@ RUN npm ci
 COPY ["./src","/usr/src/app/src/"]
 COPY [".env","/usr/src/app/"]
 
-
-# HEALTHCHECK --interval=30s \
-#     CMD node healthcheck.js
-
-ENTRYPOINT node ./src/main/workers/index.js
+ENTRYPOINT node ./src/index.js
 

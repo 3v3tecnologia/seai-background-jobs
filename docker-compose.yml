@@ -1,55 +1,66 @@
 services:
   jobs:
     build: 
-      context: .
-      args:
-        - NODE_ENV=$NODE_ENV
+      context: workers
     container_name: "jobs_workers"
     volumes:
-      - .:/usr/src/app
-      - nodemodules:/usr/src/app/node_modules
+      - ./workers:/usr/src/app
+      - jobs_nodemodules:/usr/src/app/node_modules
+    env_file:
+      - ./workers/.env
     depends_on:
       jobs_database:
         condition: service_healthy
     restart: on-failure
-  
     networks:
-      - back-tier
-      - custom-proxy
+      - workers
+      - seai-api
+
+  cron:
+    build: 
+      context: cron
+      args:
+        - NODE_ENV=production
+    container_name: "cron"
+    env_file:
+      - ./cron/.env
+    volumes:
+      - ./cron/src:/usr/src/app/src
+      - cron_nodemodules:/usr/src/app/node_modules
+    restart: on-failure
+    networks:
+      - seai-api
 
   jobs_database:
     image: postgres:14.2
     container_name: "seai-jobs-database"
     user: postgres
-    # secrets:
-    #   - db-password
+    secrets:
+      - db-password
     volumes:
       - db-data:/var/lib/postgresql/data
     ports:
       - "5433:5432"
     restart: on-failure
-    environment:
-      - POSTGRES_PASSWORD=${DB_JOB_PASSWORD}
     healthcheck:
       test: [ "CMD", "pg_isready" ]
       interval: 10s
       timeout: 5s
       retries: 5
     networks:
-      - back-tier
-      - custom-proxy
+      - workers
 
 volumes:
   db-data: {}
-  nodemodules: {}
-  nodemodules_api: {}
+  cron_nodemodules: {}
+  jobs_nodemodules: {}
 
-# secrets:
-#   db-password:
-#     file: password.txt
+secrets:
+  db-password:
+    file: password.txt
 
 networks:
-  back-tier:
-  custom-proxy:
+  workers:
+  seai-api:
     external: true
     name: jobs

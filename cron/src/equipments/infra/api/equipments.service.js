@@ -6,6 +6,9 @@ import { EQUIPMENTS_API_BASE_URL } from "../../config/equipments-api.js";
 
 export class EquipmentsServices {
   async getMeteorologicalOrganIdentifier(organName) {
+    console.log('EQUIP SERVICES  SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS');
+    console.log(process.env);
+    console.log("SEAI_API_KEY ", SEAI_API_KEY);
     try {
       const { data } = await (
         await fetch(

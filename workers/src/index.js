@@ -7,7 +7,6 @@ import { Logger } from "./lib/logger.js";
 
 await pgBoss.startQueueMonitoring();
 
-
 Logger.info({ msg: "[⚡] Iniciando workers..." });
 
 for (const task of workers) {

@@ -2,7 +2,7 @@
 
 FROM node:18-bullseye-slim AS development
 
-ARG NODE_ENV=test
+ARG NODE_ENV=production
 ENV NODE_ENV $NODE_ENV
 
 RUN apt-get update && apt-get install -y --no-install-recommends ftp

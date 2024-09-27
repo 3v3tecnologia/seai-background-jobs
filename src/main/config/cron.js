@@ -36,7 +36,7 @@ export const cronJobs = [
   },
   {
     queue: QUEUES.NEWSLETTER,
-    cron: "* 14 * * *",
+    cron: "0 14 * * *",
     data: null,
     options: {
       tz: "America/Fortaleza",

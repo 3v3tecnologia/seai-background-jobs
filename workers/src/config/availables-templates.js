@@ -9,22 +9,10 @@ export const AVAILABLE_HTML_TEMPLATES_PATHS = (function () {
       },
     ],
     [
-      "newsletter-subscription",
-      {
-        path: `${dir}/newsletter-subscription.html`,
-      },
-    ],
-    [
       "recovery_account",
       {
         path: `${dir}/redefined_password.html`,
       },
-    ],
-    [
-      "newsletter",
-      {
-        path: `${dir}/daily-newsletter.html`,
-      },
-    ],
+    ]
   ]);
 })();

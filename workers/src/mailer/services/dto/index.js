@@ -1,1 +1,1 @@
-export * from './send-user-account-notification.js'
+export * from './user-account-notification.js'

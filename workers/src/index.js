@@ -1,21 +1,35 @@
 import "dotenv/config.js";
 
-import workers from "./workers.js";
-
-import { pgBoss } from "./lib/pg-boss.js";
 import { Logger } from "./lib/logger.js";
+import { WorkersManager } from "./lib/queue/job-manager.js";
+import { PgBossAdapter } from "./lib/queue/pg-boss/pg-boss.js";
+import { QueueProvider } from "./lib/queue/queue-provider.js";
+import { RecoveryAccountJob } from "./mailer/job/recovery-account.js";
+import { CreateAccountJob } from "./mailer/job/create-account.js";
 
-await pgBoss.startQueueMonitoring();
 
-Logger.info({ msg: "[⚡] Iniciando workers..." });
+const queueProvider = new QueueProvider(new PgBossAdapter())
 
-for (const task of workers) {
-    await pgBoss.registerWorker(task.queue_name, task.worker);
+const workerManager = new WorkersManager(queueProvider)
+
+const workers = [RecoveryAccountJob, CreateAccountJob]
+
+try {
+
+    for (const worker of workers) {
+        workerManager.set(worker)
+    }
+
+
+    // Keep the process alive to receive messages
+    process.on('SIGINT', async () => {
+        await workerManager.stopMonitoring()
+        process.exit(0);
+    });
+
+} catch (error) {
+    console.error('Error:', error);
 }
-
-Logger.info({
-    msg: "[😉] Sucesso ao iniciar os workers...",
-});
 
 process.on("uncaughtException", (error) => {
     Logger.error({

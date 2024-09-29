@@ -6,7 +6,7 @@ import { AccountNotificationInput } from "../services/dto/user-account-notificat
 import { RecoveryAccount } from "../services/recovery-account.service.js";
 
 export class RecoveryAccountJob extends BackgroundJob {
-    type = "user-account-notification";
+    type = "recovery-account";
 
     constructor(queueProvider) {
         super(queueProvider)

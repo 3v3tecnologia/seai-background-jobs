@@ -6,7 +6,7 @@ import { AccountCreation } from "../services/create-account.service.js";
 import { AccountNotificationInput } from "../services/dto/user-account-notification.js";
 
 export class CreateAccountJob extends BackgroundJob {
-    type = "user-account-notification";
+    type = "create-account";
 
     constructor(queueProvider) {
         super(queueProvider)

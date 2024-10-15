@@ -1,48 +1,13 @@
 
 import { Logger } from "../../shared/logger.js";
-import { Left, Right } from "../../shared/result.js";
-import { NEWSLETTER_UNSUBSCRIBE_SITE } from "../config/redirect_links.js";
-import { SUPPORT_CONTACT } from "../config/support_contact.js";
-import templateFiles from "../helpers/getTemplateFile.js";
 
 export class SendNewsletterEmailService {
-  #htmlTemplateCompiler;
   #newsletterAPI;
-  #sendMail;
+  #queueProvider;
 
-  constructor(newsletterAPI, sendMailAdapter, htmlTemplateCompiler) {
+  constructor(newsletterAPI, queueProvider) {
     this.#newsletterAPI = newsletterAPI;
-    this.#sendMail = sendMailAdapter;
-    this.#htmlTemplateCompiler = htmlTemplateCompiler;
-  }
-
-  async #sendToSubscriber({
-    Email,
-    Code
-  }, content = [], template) {
-
-    const html = await this.#htmlTemplateCompiler.compile({
-      file: template,
-      args: {
-        unsubscribe_url: `${NEWSLETTER_UNSUBSCRIBE_SITE}/${Code}`,
-        contact: SUPPORT_CONTACT,
-        content,
-      },
-    });
-
-    Logger.info({
-      msg: `Enviando notícia`
-    });
-
-    await this.#sendMail.send({
-      to: Email,
-      subject: "SEAI - NOTÍCIAS",
-      html,
-    })
-
-    Logger.info({
-      msg: `Message to ${Email} sent`
-    })
+    this.#queueProvider = queueProvider;
   }
 
   async execute() {
@@ -56,7 +21,7 @@ export class SendNewsletterEmailService {
         Logger.warn({
           msg: `Notícias não encontradas`
         })
-        return Right.create()
+        return
       }
 
       const subscribers =
@@ -67,18 +32,20 @@ export class SendNewsletterEmailService {
           msg: "Não há usuários cadastrados nas notícias"
         })
       }
-
-      const template = await templateFiles.getTemplate("newsletter");
-
       // INFO: Check if bulk message is a valid solution
-      await Promise.all(subscribers.map((subscriber) => this.#sendToSubscriber(subscriber, contents, template)))
+      await Promise.all(subscribers.map(({ Email, Code }) => this.#queueProvider.send("newsletter", {
+        email: Email,
+        user_code: Code,
+        from: MAILER_OPTIONS.from,
+        content: contents
+      })))
 
-      // E se acontecer algum erro em algum envio ou compilação de template?
-      await this.#newsletterAPI.markAsSent(date);
-
-      return Right.create()
     } catch (error) {
-      return Left.create(error);
+
+      Logger.error({
+        msg: error.message,
+        obj: error
+      })
     }
 
   }

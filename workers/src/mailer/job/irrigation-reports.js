@@ -1,13 +1,13 @@
-import { MAILER_OPTIONS, MAILER_TRANSPORT_CONFIG } from "../../config/mailer.js";
 import { EmailService } from "../../helpers/mailer.js";
 import { HtmlTemplateEngineAdapter } from "../../infra/html-template-engine.js";
-import { Logger } from "../../lib/logger.js";
+import { Logger } from "../../helpers/logger.js";
 import { BackgroundJob } from "../../lib/queue/job.js";
-import { AccountNotificationInput } from "../services/dto/user-account-notification.js";
-import { RecoveryAccount } from "../services/recovery-account.service.js";
+import { MAILER_OPTIONS, MAILER_TRANSPORT_CONFIG } from "../../config/mailer.js";
+import { SendUserIrrigationMail } from "../services/send-user-irrigation-mail.service.js";
+import { IrrigationReportsNotificationInput } from "../services/dto/user-irrigation.js";
 
-export class RecoveryAccountJob extends BackgroundJob {
-    type = "recovery-account";
+export class IrrigationReportsJob extends BackgroundJob {
+    type = "irrigation-reports";
 
     constructor(queueProvider) {
         super(queueProvider)
@@ -17,10 +17,10 @@ export class RecoveryAccountJob extends BackgroundJob {
         try {
             console.log(`[${this.type}] Sent email to ${job}!`);
 
-            await new RecoveryAccount(
+            await new SendUserIrrigationMail(
                 new EmailService(MAILER_OPTIONS, MAILER_TRANSPORT_CONFIG),
                 new HtmlTemplateEngineAdapter()
-            ).execute(new AccountNotificationInput(job))
+            ).execute(new IrrigationReportsNotificationInput(job))
 
         } catch (error) {
             Logger.error({

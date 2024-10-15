@@ -1,10 +1,10 @@
 import { SendEmailService } from "../../infra/mailer.js";
-import { HtmlTemplateEngineAdapter } from "../../infra/html-template-engine.js";
-import { SendUserIrrigationMailService } from "../send-user-irrigation-mail.service.js";
+import { PgQueue } from "../../infra/queue/pg.js";
+import { SendIrrigationReportsService } from "../send-user-irrigation-mail.service.js";
 
-const sendUserIrrigationMailService = new SendUserIrrigationMailService(
+const sendUserIrrigationMailService = new SendIrrigationReportsService(
   new SendEmailService(),
-  new HtmlTemplateEngineAdapter()
+  new PgQueue()
 );
 
 export { sendUserIrrigationMailService };

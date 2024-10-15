@@ -1,6 +1,6 @@
 import { MAILER_OPTIONS } from "../../config/mailer.js";
 import { SUPPORT_CONTACT } from "../../config/support_contact.js";
-import { EmailSender } from "./email-sender.js";
+import { EmailSender } from '../../infra/email-sender.js'
 
 export class AccountCreation extends EmailSender {
     constructor(sendMailService, templateCompiler) {

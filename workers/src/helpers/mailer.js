@@ -1,10 +1,16 @@
 import nodemailer from "nodemailer";
-import { MAILER_OPTIONS, MAILER_TRANSPORT_CONFIG } from "../config/mailer.js";
-import { Logger } from "../../shared/logger.js";
+import { Logger } from "../../lib/logger.js";
 
-export class SendEmailService {
-  async sendMail(command) {
-    const transporter = nodemailer.createTransport(MAILER_TRANSPORT_CONFIG);
+
+export class EmailService {
+
+  constructor(mailer_options, mailer_transport_config) {
+    this.mailer_transport_config = mailer_transport_config
+    this.mailer_options = mailer_options
+  }
+
+  async #sendMail(command) {
+    const transporter = nodemailer.createTransport(this.mailer_transport_config);
 
     return new Promise((resolve, reject) => {
       transporter.sendMail(command, (err, info) => {
@@ -14,9 +20,10 @@ export class SendEmailService {
     });
   }
 
+
   async send(options) {
     const command = {
-      from: MAILER_OPTIONS.from,
+      from: this.mailer_options.from,
       to: options.to,
       subject: options.subject,
       attachments: options.attachments,
@@ -63,7 +70,8 @@ export class SendEmailService {
       }
      */
 
-    await this.sendMail(command);
+    await this.#sendMail(command);
+
 
     Logger.info({
       msg: "Email enviado com sucesso",

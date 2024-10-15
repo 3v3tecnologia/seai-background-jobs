@@ -1,5 +1,5 @@
+import { EmailSender } from '../../infra/email-sender.js'
 import { SUPPORT_CONTACT } from "../../config/support_contact.js";
-import { EmailSender } from "./email-sender.js";
 
 export class RecoveryAccount extends EmailSender {
     constructor(sendMailService, templateCompiler) {

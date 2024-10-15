@@ -1,8 +1,8 @@
 
 import path from "node:path";
 import fs from "node:fs/promises";
-import { MAILER_OPTIONS } from "../../config/mailer.js";
-import { Logger } from "../../lib/logger.js";
+import { MAILER_OPTIONS } from "../workers/src/config/mailer.js";
+import { Logger } from "../workers/src/helpers/logger.js";
 
 
 export class EmailSender {
@@ -70,5 +70,9 @@ export class EmailSender {
                 encoding: "utf-8",
             }
         )
+    }
+
+    async execute(data) {
+        throw new Error("Not implemented")
     }
 }

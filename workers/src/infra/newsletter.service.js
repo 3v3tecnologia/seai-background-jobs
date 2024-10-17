@@ -1,8 +1,7 @@
-
-import { Logger } from "../../../shared/logger.js";
-import { Left, Right } from "../../../shared/result.js";
+import { Left, Right } from '../helpers/result.js'
 import { SEAI_API_KEY } from "../config/api-key.js";
 import { NEWSLETTER_API_BASE_URL } from "../config/api.js";
+import { Logger } from "../helpers/logger.js";
 
 export class NewsletterApi {
   /**

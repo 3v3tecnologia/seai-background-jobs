@@ -12,7 +12,7 @@ export class QueueProviderProtocol {
         throw new Error('Not implemented')
     }
 
-    async consumeFromQueue(queueName, callback, options) {
+    async consumeFromQueue(queueName, callback, options, exchange) {
         throw new Error('Not implemented')
     }
 }
@@ -20,6 +20,7 @@ export class QueueProviderProtocol {
 export class QueueProvider extends QueueProviderProtocol {
 
     constructor(queueProvider) {
+        super()
         this.queueProvider = queueProvider
     }
 
@@ -37,7 +38,7 @@ export class QueueProvider extends QueueProviderProtocol {
 
     async consumeFromQueue(queueName, callback, options = {
         prefetch: 1,
-    }) {
-        await this.queueProvider.consumeFromQueue(queueName, callback, options)
+    }, exchange) {
+        await this.queueProvider.consumeFromQueue(queueName, callback, options, exchange)
     }
 }

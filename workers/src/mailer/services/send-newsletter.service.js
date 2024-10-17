@@ -1,8 +1,8 @@
 
+import { NEWSLETTER_UNSUBSCRIBE_SITE } from "../../config/api.js";
 import { MAILER_OPTIONS } from "../../config/mailer.js";
+import { SUPPORT_CONTACT } from "../../config/support_contact.js";
 import { EmailSender } from '../../infra/email-sender.js';
-import { NEWSLETTER_UNSUBSCRIBE_SITE } from "../config/redirect_links.js";
-import { SUPPORT_CONTACT } from "../config/support_contact.js";
 
 export class SendNewsletterEmail extends EmailSender {
   #newsletterAPI;

@@ -1,7 +1,7 @@
 
+import { IRRIGANT_WEBPAGE } from '../../config/api.js';
+import { MAILER_OPTIONS } from '../../config/mailer.js';
 import { EmailSender } from '../../infra/email-sender.js';
-import { MAILER_OPTIONS } from "../config/mailer.js";
-import { IRRIGANT_WEBPAGE } from "../config/redirect_links.js";
 
 export class SendUserIrrigationMail extends EmailSender {
   constructor(sendMailService, htmlTemplateCompiler) {

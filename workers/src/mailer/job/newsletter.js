@@ -8,15 +8,23 @@ import { SendNewsletterInput } from "../services/dto/newsletter.js";
 import { NewsletterApi } from "../../infra/newsletter.service.js";
 
 export class NewsletterJob extends BackgroundJob {
-    type = "newsletter";
+
 
     constructor(queueProvider) {
-        super(queueProvider)
+        super(queueProvider, "daily-newsletter", {
+            prefetch: 1,
+        },
+            {
+                name: 'newsletter',
+                type: 'direct',
+                routingKey: 'create'
+            }
+        )
     }
 
     async work(job) {
         try {
-            console.log(`[${this.type}] Sent email to ${job}!`);
+            console.log(`Sent email to ${job}!`);
 
             await new SendNewsletterEmail(
                 new NewsletterApi(),

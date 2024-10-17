@@ -1,4 +1,4 @@
-import { env } from './app.js'
+import { env } from './env.js'
 
 /**
  * Use a dedicated bulk delivery provider: 

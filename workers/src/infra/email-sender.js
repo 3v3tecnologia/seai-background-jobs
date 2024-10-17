@@ -1,9 +1,9 @@
 
 import path from "node:path";
 import fs from "node:fs/promises";
-import { MAILER_OPTIONS } from "../workers/src/config/mailer.js";
-import { Logger } from "../workers/src/helpers/logger.js";
-
+import { MAILER_OPTIONS } from "../config/mailer.js";
+import { Logger } from "../helpers/logger.js";
+import { fileURLToPath } from "node:url";
 
 export class EmailSender {
     sendMail;
@@ -35,7 +35,7 @@ export class EmailSender {
 
         const template = await this.loadTemplate(templatePath);
 
-        const html = this.templateCompiler.compile({
+        const html = await this.templateCompiler.compile({
             file: template,
             args: templateData,
         });
@@ -64,6 +64,7 @@ export class EmailSender {
             path.resolve(
                 path.dirname(fileURLToPath(import.meta.url)),
                 "..",
+                "mailer",
                 templatePath
             ),
             {

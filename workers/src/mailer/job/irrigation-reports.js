@@ -7,15 +7,22 @@ import { SendUserIrrigationMail } from "../services/send-user-irrigation-mail.se
 import { IrrigationReportsNotificationInput } from "../services/dto/user-irrigation.js";
 
 export class IrrigationReportsJob extends BackgroundJob {
-    type = "irrigation-reports";
 
     constructor(queueProvider) {
-        super(queueProvider)
+        super(queueProvider, "reports", {
+            prefetch: 1,
+        },
+            {
+                name: 'irrigant',
+                type: 'direct',
+                routingKey: 'create'
+            }
+        )
     }
 
     async work(job) {
         try {
-            console.log(`[${this.type}] Sent email to ${job}!`);
+            console.log(` Sent email to ${job}!`);
 
             await new SendUserIrrigationMail(
                 new EmailService(MAILER_OPTIONS, MAILER_TRANSPORT_CONFIG),

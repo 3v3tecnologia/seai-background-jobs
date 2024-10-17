@@ -1,0 +1,56 @@
+services:
+  jobs:
+    build: 
+      context: .
+    container_name: "jobs_workers"
+    volumes:
+      - .:/usr/src/app
+    env_file:
+      - ./.env
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    restart: on-failure
+    networks:
+      - rabbitmq_network
+      - seai-api
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    env_file:
+      - ./.env
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+      - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+    networks:
+      - rabbitmq_network
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    # extra_hosts:
+    #   - host.docker.internal:host-gateway
+
+
+volumes:
+  rabbitmq_data:
+  workers_nodemodules: {}
+
+networks:
+  rabbitmq_network:
+    driver: bridge
+    name: rabbitmq
+  workers:
+  seai-api:
+    external: true
+    # driver: bridge
+    name: seai_api

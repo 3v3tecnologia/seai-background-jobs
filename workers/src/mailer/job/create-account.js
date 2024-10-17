@@ -6,15 +6,23 @@ import { AccountCreation } from "../services/create-account.service.js";
 import { AccountNotificationInput } from "../services/dto/user-account-notification.js";
 import { MAILER_OPTIONS, MAILER_TRANSPORT_CONFIG } from "../../config/mailer.js";
 export class CreateAccountJob extends BackgroundJob {
-    type = "create-account";
+
 
     constructor(queueProvider) {
-        super(queueProvider)
+        super(queueProvider, "create-account", {
+            prefetch: 1,
+        },
+            {
+                name: 'account',
+                type: 'direct',
+                routingKey: 'create'
+            }
+        )
     }
 
     async work(job) {
         try {
-            console.log(`[${this.type}] Sent email to ${job}!`);
+            console.log(`Sent email to ${job}!`);
 
             await new AccountCreation(
                 new EmailService(MAILER_OPTIONS, MAILER_TRANSPORT_CONFIG),

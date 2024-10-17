@@ -1,5 +1,5 @@
 export class QueueProviderProtocol {
-    async sendMessage(queue, message) {
+    async send(exchange, routingKey = "", message) {
         throw new Error('Not implemented')
     }
 }

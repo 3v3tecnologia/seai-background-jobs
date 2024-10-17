@@ -1,10 +1,10 @@
-import { SendEmailService } from "../../infra/mailer.js";
-import { PgQueue } from "../../infra/queue/pg.js";
+import { IrrigationRecommendationsService } from "../../infra/api/irrigation.service.js";
+import { RabbitMqAdapter } from "../../infra/queue/rabbitmq/rabbitmq.js";
 import { SendIrrigationReportsService } from "../send-user-irrigation-mail.service.js";
 
 const sendUserIrrigationMailService = new SendIrrigationReportsService(
-  new SendEmailService(),
-  new PgQueue()
+  new IrrigationRecommendationsService(),
+  new RabbitMqAdapter(RABBIT_MQ_URL)
 );
 
 export { sendUserIrrigationMailService };

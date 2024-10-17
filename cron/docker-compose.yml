@@ -1,0 +1,26 @@
+services:
+  cron:
+    build: 
+      context: .
+    container_name: "cron"
+    env_file:
+      - .env
+    volumes:
+      - ./src:/usr/src/app/src
+      - cron_nodemodules:/usr/src/app/node_modules
+    restart: on-failure
+    networks:
+      - seai-api
+      - rabbitmq
+
+
+volumes:
+  cron_nodemodules: {}
+
+networks:
+  seai-api:
+    external: true
+    name: seai_api
+  rabbitmq:
+    external: true
+    name: rabbitmq

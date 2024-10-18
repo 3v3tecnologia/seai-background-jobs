@@ -3,7 +3,7 @@ services:
     build: 
       context: .
       args:
-        - NODE_ENV=$NODE_ENV
+        - NODE_ENV=development
     container_name: "jobs_workers"
     volumes:
       - .:/usr/src/app
@@ -12,19 +12,14 @@ services:
       jobs_database:
         condition: service_healthy
     restart: on-failure
-  
     networks:
       - back-tier
-      - custom-proxy
 
   jobs_database:
     image: postgres:14.2
-    container_name: "seai-jobs-database"
-    user: postgres
-    # secrets:
-    #   - db-password
+    container_name: "jobs-database"
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - .docker/postgres/data:/var/lib/postgresql/data
     ports:
       - "5433:5432"
     restart: on-failure
@@ -37,19 +32,14 @@ services:
       retries: 5
     networks:
       - back-tier
-      - custom-proxy
+      - jobs
 
 volumes:
   db-data: {}
   nodemodules: {}
-  nodemodules_api: {}
-
-# secrets:
-#   db-password:
-#     file: password.txt
 
 networks:
   back-tier:
-  custom-proxy:
-    external: true
+  jobs:
+    driver: bridge
     name: jobs

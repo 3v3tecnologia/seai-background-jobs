@@ -7,10 +7,6 @@ ENV NODE_ENV $NODE_ENV
 
 RUN apt-get update && apt-get install -y --no-install-recommends ftp
 
-LABEL AUTHOR="SPINNAFRE"
-
-LABEL PROJECT_NAME="Background jobs with Pg-boss and Node.js"
-
 WORKDIR /usr/src/app
 
 COPY package.json /usr/src/app/package.json

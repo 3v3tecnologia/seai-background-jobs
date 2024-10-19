@@ -18,21 +18,13 @@ export class SendNewsletterEmailService {
       const contents = await this.#newsletterAPI.getUnsentNewsBySendDate(date);
 
       if (contents.length === 0) {
-        Logger.warn({
-          msg: `Notícias não encontradas`
-        })
         return
       }
 
       const subscribers =
         await this.#newsletterAPI.getSubscribers();
 
-      if (subscribers.length == 0) {
-        Logger.warn({
-          msg: "Não há usuários cadastrados nas notícias"
-        })
-      }
-      // INFO: Check if bulk message is a valid solution
+
       await Promise.all(subscribers.map(({ Email, Code }) => this.#queueProvider.send("newsletter", {
         email: Email,
         user_code: Code,

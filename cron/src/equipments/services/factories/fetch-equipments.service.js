@@ -10,3 +10,4 @@ const fetchEquipmentsService = new FetchEquipments(
 );
 
 export { fetchEquipmentsService };
+

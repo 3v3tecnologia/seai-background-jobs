@@ -1,0 +1,9 @@
+/node_modules
+*.env.development.local
+*.txt
+*coverage
+.env
+*password.txt
+*coverage
+.docker/*
+rabbitmq.conf

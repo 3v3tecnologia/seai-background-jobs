@@ -89,6 +89,8 @@ export class FetchEquipments {
     const equipmentsFromMeteorologicalEntity =
       equipmentsFromMeteorologicalEntityOrError.value();
 
+    console.log(equipmentsFromMeteorologicalEntity);
+
     // Replace it to one query
     const alreadyRecordedEquipmentsOrError =
       await this.#equipmentsApi.getEquipmentsByTypes();

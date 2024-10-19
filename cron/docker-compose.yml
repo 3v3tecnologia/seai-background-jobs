@@ -10,17 +10,13 @@ services:
       - cron_nodemodules:/usr/src/app/node_modules
     restart: on-failure
     networks:
-      - seai-api
-      - rabbitmq
+      - jobs
 
 
 volumes:
   cron_nodemodules: {}
 
 networks:
-  seai-api:
+  jobs:
     external: true
-    name: seai_api
-  rabbitmq:
-    external: true
-    name: rabbitmq
+    name: jobs

@@ -1,1 +1,1 @@
-export const RABBIT_MQ_URL = process.env.RABBITMQ_URL || 'amqp://localhost'
+export const RABBIT_MQ_URL = process.env.MQ_URL || 'amqp://localhost'

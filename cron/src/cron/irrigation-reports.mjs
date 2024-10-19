@@ -3,7 +3,13 @@
     config({
         path: '/usr/src/app/.env'
     })
-    const { sendUserIrrigationMailService } = await import("../mailer/services/factories/send-user-irrigation-mail.js");
+    try {
+        const { sendUserIrrigationMailService } = await import("../mailer/services/factories/send-user-irrigation-mail.js");
 
-    await sendUserIrrigationMailService.execute()
+        await sendUserIrrigationMailService.execute()
+        process.exit(0)
+    } catch (error) {
+        console.log(error);
+        process.exit(1)
+    }
 })()

@@ -3,7 +3,12 @@
     config({
         path: '/usr/src/app/.env'
     })
-    const { sendNewsletterEmailService } = await import("../mailer/services/factories/send-newsletter.js");
+    try {
+        const { sendNewsletterEmailService } = await import("../mailer/services/factories/send-newsletter.js");
 
-    await sendNewsletterEmailService.execute()
+        await sendNewsletterEmailService.execute()
+    } catch (error) {
+        console.log(error);
+        process.exit(1)
+    }
 })()

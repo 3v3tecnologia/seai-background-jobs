@@ -6,9 +6,6 @@ import { EQUIPMENTS_API_BASE_URL } from "../../config/equipments-api.js";
 
 export class EquipmentsServices {
   async getMeteorologicalOrganIdentifier(organName) {
-    console.log('EQUIP SERVICES  SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS');
-    console.log(process.env);
-    console.log("SEAI_API_KEY ", SEAI_API_KEY);
     try {
       const { data } = await (
         await fetch(
@@ -38,6 +35,7 @@ export class EquipmentsServices {
 
   async bulkInsert({ items, id_organ }) {
     try {
+      console.log("bulkInsert ", { items, id_organ });
       const response = await fetch(EQUIPMENTS_API_BASE_URL, {
         method: "POST",
         headers: {

@@ -10,10 +10,6 @@ export class RecoveryAccountJob extends BackgroundJob {
     constructor(queueProvider) {
         super(queueProvider, "recovery-account", {
             prefetch: 1,
-        }, {
-            name: 'account',
-            type: 'direct',
-            routingKey: 'recovery'
         })
     }
 

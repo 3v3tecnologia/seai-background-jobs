@@ -11,12 +11,7 @@ export class CreateAccountJob extends BackgroundJob {
     constructor(queueProvider) {
         super(queueProvider, "create-account", {
             prefetch: 1,
-        },
-            {
-                name: 'account',
-                type: 'direct',
-                routingKey: 'create'
-            }
+        }
         )
     }
 

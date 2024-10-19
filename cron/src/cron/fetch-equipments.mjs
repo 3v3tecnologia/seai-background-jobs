@@ -4,7 +4,13 @@
     config({
         path: '/usr/src/app/.env'
     })
-    const { fetchEquipmentsService } = await import("../equipments/services/factories/fetch-equipments.service.js");
+    try {
+        const { fetchEquipmentsService } = await import("../equipments/services/factories/fetch-equipments.service.js");
 
-    await fetchEquipmentsService.execute()
+        await fetchEquipmentsService.execute()
+        process.exit(0)
+    } catch (error) {
+        console.log(error);
+        process.exit(1)
+    }
 })()

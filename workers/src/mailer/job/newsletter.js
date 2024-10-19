@@ -13,12 +13,7 @@ export class NewsletterJob extends BackgroundJob {
     constructor(queueProvider) {
         super(queueProvider, "daily-newsletter", {
             prefetch: 1,
-        },
-            {
-                name: 'newsletter',
-                type: 'direct',
-                routingKey: 'create'
-            }
+        }
         )
     }
 

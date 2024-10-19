@@ -3,7 +3,13 @@
     config({
         path: '/usr/src/app/.env'
     })
-    const { fetchEquipmentsMeasurementsService } = await import("../equipments/services/factories/fetch-measurements.service.js");
+    try {
+        const { fetchEquipmentsMeasurementsService } = await import("../equipments/services/factories/fetch-measurements.service.js");
 
-    await fetchEquipmentsMeasurementsService.execute()
+        await fetchEquipmentsMeasurementsService.execute()
+        process.exit(0)
+    } catch (error) {
+        console.log(error);
+        process.exit(1)
+    }
 })()

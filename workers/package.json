@@ -20,25 +20,21 @@
     "container:logs:watch": "docker container logs -f --tail 100 jobs_workers"
   },
   "keywords": [
-    "puppeteer",
     "ftp",
     "node",
     "scrapper"
   ],
-  "author": "Davi Silva <https://github.com/Spinnafre>",
   "license": "ISC",
   "dependencies": {
-    "amqplib": "^0.10.4",
-    "cors": "^2.8.5",
-    "dotenv": "^16.0.3",
-    "handlebars": "^4.7.8",
-    "nodemailer": "^6.9.4",
-    "nodemailer-express-handlebars": "^6.1.0",
-    "nodemailer-smtp-transport": "^2.7.4",
-    "pg": "^8.11.0",
-    "pg-boss": "^10.1.4",
-    "pino": "^8.15.0",
-    "pino-pretty": "^10.2.0"
+    "cors": "2.8.5",
+    "dotenv": "16.0.3",
+    "handlebars": "4.7.8",
+    "nodemailer": "6.9.4",
+    "nodemailer-smtp-transport": "2.7.4",
+    "pg": "8.11.0",
+    "pg-boss": "9.0.1",
+    "pino": "8.15.0",
+    "pino-pretty": "10.2.0"
   },
   "devDependencies": {
     "@jest/globals": "^29.5.0",

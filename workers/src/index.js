@@ -2,16 +2,16 @@ import "dotenv/config.js";
 
 import { Logger } from "./helpers/logger.js";
 import { WorkersManager } from "./lib/queue/job-manager.js";
+import { PgBossAdapter } from "./lib/queue/pg-boss/pb-boss.js";
 import { QueueProvider } from "./lib/queue/queue-provider.js";
-import { RabbitMqAdapter } from "./lib/queue/rabbitmq/rabbitmq.js";
+import { MQ_URL } from "./lib/queue/pg-boss/connection.js";
 import { CreateAccountJob } from "./mailer/job/create-account.js";
-import { RecoveryAccountJob } from "./mailer/job/recovery-account.js";
-import { RABBIT_MQ_URL } from "./lib/queue/rabbitmq/connection.js";
 import { IrrigationReportsJob } from "./mailer/job/irrigation-reports.js";
 import { NewsletterJob } from "./mailer/job/newsletter.js";
+import { RecoveryAccountJob } from "./mailer/job/recovery-account.js";
 
 
-const queueProvider = new QueueProvider(new RabbitMqAdapter(RABBIT_MQ_URL))
+const queueProvider = new QueueProvider(new PgBossAdapter(MQ_URL))
 
 const workerManager = new WorkersManager(queueProvider)
 

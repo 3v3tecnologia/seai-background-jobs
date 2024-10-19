@@ -11,12 +11,7 @@ export class IrrigationReportsJob extends BackgroundJob {
     constructor(queueProvider) {
         super(queueProvider, "reports", {
             prefetch: 1,
-        },
-            {
-                name: 'irrigant',
-                type: 'direct',
-                routingKey: 'create'
-            }
+        }
         )
     }
 

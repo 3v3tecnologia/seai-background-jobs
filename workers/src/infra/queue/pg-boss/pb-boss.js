@@ -19,8 +19,8 @@ export class PgBossAdapter extends QueueProviderProtocol {
 
             console.log("[✅] Monitoramento iniciado com sucesso");
         } catch (error) {
-            console.error('Error connecting to Pg-boss:', err);
-            throw err;
+            console.error('Error connecting to Pg-boss:', error);
+            throw error;
         }
     }
 

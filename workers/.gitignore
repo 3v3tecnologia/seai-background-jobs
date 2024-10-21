@@ -3,7 +3,8 @@
 *.txt
 *coverage
 .env
+.env.development
 *password.txt
 *coverage
-.docker/*
+.docker/postgres/data/*
 rabbitmq.conf

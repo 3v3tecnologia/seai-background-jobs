@@ -40,12 +40,6 @@ export class EmailSender {
             args: templateData,
         });
 
-        console.log(`Sending email to ${to}...`);
-        console.log(html);
-
-        Logger.info({
-            msg: `Sending email to ${to}:`
-        });
 
         await this.sendMail.send({
             from,

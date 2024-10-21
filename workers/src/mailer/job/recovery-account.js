@@ -2,7 +2,7 @@ import { MAILER_OPTIONS, MAILER_TRANSPORT_CONFIG } from "../../config/mailer.js"
 import { Logger } from "../../helpers/logger.js";
 import { EmailService } from "../../helpers/mailer.js";
 import { HtmlTemplateEngineAdapter } from "../../infra/html-template-engine.js";
-import { BackgroundJob } from "../../lib/queue/job.js";
+import { BackgroundJob } from "../../infra/queue/job.js";
 import { AccountNotificationInput } from "../services/dto/user-account-notification.js";
 import { RecoveryAccount } from "../services/recovery-account.service.js";
 

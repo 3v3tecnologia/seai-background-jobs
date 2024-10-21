@@ -22,3 +22,4 @@ RUN chmod +x /usr/src/app/register-cron.sh
 
 # ENTRYPOINT node src/cron.js
 CMD ["/usr/src/app/register-cron.sh"]
+

@@ -1,8 +1,8 @@
 /node_modules
-*.env.development.local
 *.txt
 *coverage
 .env
+.env.development
 *password.txt
 *coverage
 .docker/*

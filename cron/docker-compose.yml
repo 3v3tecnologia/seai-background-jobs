@@ -1,17 +1,15 @@
 services:
   cron:
-    build: 
+    build:
       context: .
     container_name: "cron"
     env_file:
       - .env
     volumes:
-      - ./src:/usr/src/app/src
       - cron_nodemodules:/usr/src/app/node_modules
     restart: on-failure
     networks:
       - jobs
-
 
 volumes:
   cron_nodemodules: {}
@@ -20,4 +18,3 @@ networks:
   jobs:
     external: true
     name: jobs
-

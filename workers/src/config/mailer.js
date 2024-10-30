@@ -7,11 +7,14 @@ import { env } from './env.js'
 const MAILER_TRANSPORT_CONFIG = {
   port: Number(process.env.MAIL_PORT),
   host: process.env.MAIL_HOST,
-  secure: Number(process.env.MAIL_PORT) === 465 ? true : false,
+  secure: false,
   pool: true, // Use SMTP pooling to keep the connection open for multiple emails
-  auth: {
-    user: process.env.MAIL_USERNAME,
-    pass: process.env.MAIL_PASSWORD,
+  // auth: {
+  //   user: process.env.MAIL_USERNAME,
+  //   pass: process.env.MAIL_PASSWORD,
+  // },
+  tls: {
+    rejectUnauthorized: false
   },
   debug: env === 'debug', // show debug output
   logger: true, // log information in console

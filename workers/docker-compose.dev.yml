@@ -1,0 +1,51 @@
+services:
+  jobs:
+    build: 
+      context: .
+    container_name: "jobs_workers"
+    volumes:
+      - .:/usr/src/app
+      - workers_nodemodules:/usr/src/app/node_modules
+    env_file:
+      - ./.env
+    depends_on:
+      jobs_database:
+        condition: service_healthy
+    restart: on-failure
+    networks:
+      - workers
+      - jobsmq
+
+  jobs_database:
+    image: postgres:14.2
+    container_name: "jobs-database"
+    volumes:
+      - ./.docker/postgres/schema:/docker-entrypoint-initdb.d
+      - .docker/postgres/data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    restart: on-failure
+    env_file:
+      - ./.env
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: iaes
+    healthcheck:
+      test: [ "CMD", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - workers
+      - jobsmq
+
+volumes:
+  workers_nodemodules: {}
+
+networks:
+  workers:
+  jobsmq:
+    name: jobs
+    driver: bridge
+
+    

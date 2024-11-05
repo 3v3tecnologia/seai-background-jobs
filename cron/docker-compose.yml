@@ -1,6 +1,6 @@
 services:
   cron:
-    build: 
+    build:
       context: .
     container_name: "cron"
     env_file:
@@ -9,5 +9,4 @@ services:
       - ./src:/usr/src/app/src
     restart: on-failure
     network_mode: host
-
 

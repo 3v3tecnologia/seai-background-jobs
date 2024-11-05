@@ -1,0 +1,22 @@
+services:
+  jobs_database:
+    image: postgres:14.2
+    container_name: "jobs-database"
+    volumes:
+      - .docker/postgres/data:/var/lib/postgresql/data
+      - ./.docker/postgres/schema:/docker-entrypoint-initdb.d
+    ports:
+      - "5433:5432"
+    restart: on-failure
+    env_file:
+      - ./.env
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: iaes
+    healthcheck:
+      test: [ "CMD", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+    

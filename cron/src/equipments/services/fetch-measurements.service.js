@@ -85,6 +85,7 @@ export class FetchEquipmentsMeasures {
     const toBulkInsertPromises = [];
 
     if (stationsMeasurements.length) {
+
       toBulkInsertPromises.push(
         this.#equipmentsApi.bulkInsertMeasurements({
           type: EQUIPMENT_TYPE.STATION,

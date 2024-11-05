@@ -7,17 +7,7 @@ services:
       - .env
     volumes:
       - ./src:/usr/src/app/src
-      - cron_nodemodules:/usr/src/app/node_modules
     restart: on-failure
-    networks:
-      - jobs
+    network_mode: host
 
-
-volumes:
-  cron_nodemodules: {}
-
-networks:
-  jobs:
-    external: true
-    name: jobs
 

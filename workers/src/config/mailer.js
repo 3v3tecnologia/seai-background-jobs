@@ -23,8 +23,7 @@ const MAILER_TRANSPORT_CONFIG = {
 };
 
 const MAILER_OPTIONS = {
-  from: "sender-test@gmail.com",
-  to: "test@gmail.com", //???
+  from: process.env.EMAIL_SENDER,
 };
 
 export { MAILER_OPTIONS, MAILER_TRANSPORT_CONFIG };

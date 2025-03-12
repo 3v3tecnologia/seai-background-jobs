@@ -41,7 +41,7 @@ export class SendIrrigationReportsService {
             Notification
           } = JSON.parse(data)
 
-          await this.#queueProvider.send("irrigation-reports", {
+          await this.#queueProvider.send("irrigation-suggestion", {
             email: Email,
             irrigation: {
               Name,

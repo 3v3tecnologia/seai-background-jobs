@@ -1,4 +1,4 @@
-import { ASYNC_JOB_URL } from "../../../../../workers/src/infra/queue/pg-boss/connection.js";
+import { ASYNC_JOB_URL } from "../../infra/queue/pg-boss/connection.js";
 import { NewsletterApi } from "../../infra/api/newsletter.service.js";
 import { PgBossMqAdapter } from "../../infra/queue/pg-boss/pgBoss.js";
 import { SendNewsletterEmailService } from "../send-newsletter.service.js";

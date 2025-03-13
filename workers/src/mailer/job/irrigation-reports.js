@@ -9,7 +9,7 @@ import { IrrigationReportsNotificationInput } from "../services/dto/user-irrigat
 export class IrrigationReportsJob extends BackgroundJob {
 
     constructor(queueProvider) {
-        super(queueProvider, "reports", {
+        super(queueProvider, "irrigation-suggestion", {
             prefetch: 1,
         }
         )

@@ -9,16 +9,16 @@ export class SendUserIrrigationMail extends EmailSender {
     this.templateName = "irrigation-suggestion";
   }
 
-  async execute({ email, irrigation } = { email: '', irrigation: { name: '', irrigations: [], notification: '' } }) {
+  async execute({ email, irrigation } = { email: '', irrigation: { Name: '', Irrigation: [], Notification: '' } }) {
     await this.sendEmail({
       to: email,
       from: MAILER_OPTIONS.from,
       subject: "SEAI - Recomendação de lâmina",
       templateName: this.templateName,
       templateData: {
-        name: Name,
-        irrigations: irrigation.irrigations,
-        notification: irrigation.notification,
+        name: irrigation.Name,
+        irrigations: irrigation.Irrigation,
+        notification: irrigation.Notification,
         website_url: IRRIGANT_WEBPAGE,
       },
     })

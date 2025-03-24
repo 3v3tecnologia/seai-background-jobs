@@ -25,10 +25,9 @@ export class SendNewsletterEmailService {
         await this.#newsletterAPI.getSubscribers();
 
 
-      await Promise.all(subscribers.map(({ Email, Code }) => this.#queueProvider.send("newsletter", {
+      await Promise.all(subscribers.map(({ Email, Code }) => this.#queueProvider.send("daily-newsletter", {
         email: Email,
         user_code: Code,
-        from: MAILER_OPTIONS.from,
         content: contents
       })))
 

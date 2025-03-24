@@ -8,14 +8,39 @@ export class SendIrrigationReportsService {
     this.#queueProvider = queueProvider;
   }
 
+  async scheduleIrrigationRecommendation(user_irrigation) {
+    try {
+      const {
+        Name,
+        Email,
+        Irrigation,
+        Notification
+      } = JSON.parse(user_irrigation)
+
+      await this.#queueProvider.send("irrigation-suggestion", {
+        email: Email,
+        irrigation: {
+          Name,
+          Email,
+          Irrigation,
+          Notification
+        }
+      })
+
+      Logger.info({ msg: `Relatório de irrigação para o usuário "${Email}" agendado com sucesso` })
+
+    } catch (error) {
+      Logger.error({
+        msg: "Erro ao fazer parse dos dados de irrigação",
+        obj: error,
+      });
+    }
+  }
+
   async execute() {
     const abortController = new AbortController();
 
     try {
-      const currentDate = new Date();
-      // Schedule to 9hrs AM
-      currentDate.setHours(9, 0, 0, 0);
-
       // Convert a stream of text in a binary encoding into strings
       const decoderStream = new TextDecoder("utf-8");
 
@@ -34,22 +59,14 @@ export class SendIrrigationReportsService {
         const data = decoderStream.decode(value, { stream: true });
 
         if (data) {
-          const {
-            Name,
-            Email,
-            Irrigation,
-            Notification
-          } = JSON.parse(data)
+          // Divide os dados em linhas e processa cada linha individualmente
+          // OBS: pode acontecer de na requisição receber vários JSON's então basta separar cada um pelo o delimitador NEWLINE ("\n")
+          // e processar cada item individualmente.
+          const lines = data.split('\n').filter(line => line.trim().length > 0);
 
-          await this.#queueProvider.send("irrigation-reports", {
-            email: Email,
-            irrigation: {
-              Name,
-              Email,
-              Irrigation,
-              Notification
-            }
-          })
+          for (const line of lines) {
+            await this.scheduleIrrigationRecommendation(line)
+          }
 
         }
       }

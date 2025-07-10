@@ -9,13 +9,13 @@ export class EquipmentParser extends CsvParser {
       .slice(0, 5)
       .map((data) => data.split(":")[1]);
 
-    const Altitude = altitude.trim();
-    const Longitude = longitude.trim();
-    const Latitude = latitude.trim();
+    const Altitude = altitude?.trim();
+    const Longitude = longitude?.trim();
+    const Latitude = latitude?.trim();
 
     return {
-      Code: code.trim(),
-      Name: name.trim(),
+      Code: code?.trim(),
+      Name: name?.trim(),
       Latitude: Latitude === "nan" ? null : Latitude,
       Altitude: Altitude === "nan" ? null : Altitude,
       Longitude: Longitude === "nan" ? null : Longitude,
